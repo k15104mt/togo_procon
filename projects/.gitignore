@@ -1,0 +1,17 @@
+Debug
+Release
+obj
+ipch
+
+*.sdf
+*.ico
+*.html
+*.suo
+*.exe
+*.ilk
+*.exe
+*.pdb
+*.lib
+*.db
+*.opendb
+*.vcxproj.user

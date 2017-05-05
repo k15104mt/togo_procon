@@ -111,9 +111,9 @@ int main() {
 	*/
 
 	
+	//再帰テスト用
 	//std::array<int, NUM> array = { 0,1,2,3 };
-	//std::vector<int> vector;
-
+	//std::vector<int> vector
 	//func(array, vector);
 
 	return 0;

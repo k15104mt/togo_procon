@@ -7,7 +7,7 @@
 
 class Piece:public Data{
   public:
-    Piece(int pointNum,std::vector<Point> &data)
+    Piece(std::vector<Point> &data);
     int checkHit(Data &) override;
   };
 

@@ -1,12 +1,8 @@
 #include"piece.hpp"
 
-using namespace std;
 
-Piece::Piece(int pointNum,vector<Point> &data){
-  cout<<"コンストラクタ"<<endl;
-  point.resize(pointNum);
-  point.pushback(data);
-  
+Piece::Piece(std::vector<Point> &data){
+  point.push_back(data);
 }
 
 int Piece::checkHit(Data &obj){  

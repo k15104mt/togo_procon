@@ -1,25 +1,5 @@
-#include<vector>
+#include"data.hpp"
 
-class Data{
-private:
-  std::vector<int> point;
-public:
-  std::vector<int> func(void);
-  
-};
-
-std::vector<int> Data::func(void){
-  //std::vector<int> point;
-  
+std::vector<std::vector<Point>> Data::getPoint(){  
   return point;
-}
-
-std::vector<int> a(){
-  std::vector<int> a;
-  return a;
-}
-
-int main(){
-  
-  return 0;
 }

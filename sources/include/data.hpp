@@ -1,16 +1,16 @@
 #ifndef _DATA_HPP_
 #define _DATA_HPP_
 
+
 #include<vector>
-//#include"utility.hpp"std::vector<std::vector<int>>
+#include"utility.hpp"
 
 class Data{
-private:
-   std::vector<int> point;
+protected:
+  std::vector<std::vector<Point>> point;
 public:
-  Data(){point.resize(5);}
-  std::vector<int> getAllPoint();
-  //virtual int checkHit(Data &)=0;
+  std::vector<std::vector<Point>> getPoint();
+  virtual int checkHit(Data &)=0;
 };
 
 #endif

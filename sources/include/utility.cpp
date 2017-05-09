@@ -32,6 +32,7 @@ int crossLine(std::vector<Point> data1,std::vector<Point> data2){
 	return 0;
 }
 
+//data1にdata２の頂点がすべて内包されてい
 int inPolygon(std::vector<Point> data1,std::vector<Point> data2){
   //data2のi番目の点がdata1のポリゴン内にあるかどうか
   for(int i=0;i<data2.size();++i){
@@ -49,6 +50,7 @@ int inPolygon(std::vector<Point> data1,std::vector<Point> data2){
   		if(cross(a,b)>0) x+=-1.0*(acos((double)(dot(a,b))/(a.size()*b.size()))*180.0/acos(-1.0));	
     }
     
+    //ここ多分誤差を考慮する感じにしたほうがいい
     if(i!=data2.size() || x==360){
       
     }else{

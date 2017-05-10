@@ -59,3 +59,9 @@ int inPolygon(std::vector<Point> data1,std::vector<Point> data2){
   }
   return 1;
 }
+
+
+int collisionPiece(std::vector<Point> &data1,std::vector<Point> &data2){
+  
+  
+}

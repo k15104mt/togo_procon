@@ -31,4 +31,6 @@ int crossLine(std::vector<Point>,std::vector<Point>);
 //•Ôã‚É‚ ‚éê‡‚à“à‘¤‚É“ü‚Á‚Ä‚¢‚é‚à‚Ì‚Æ‚·‚é
 int inPolygon(std::vector<Point>,std::vector<Point>);
 
+int collisionPiece(std::vector<Point>,std::vector<Point>);
+
 #endif

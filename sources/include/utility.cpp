@@ -50,6 +50,7 @@ int inPolygon(std::vector<Point> &data1,std::vector<Point> &data2){
   		if(cross(a,b)>0) x+=-1.0*(acos((double)(dot(a,b))/(a.size()*b.size()))*180.0/acos(-1.0));	
     }
     
+    //天上にもなく、360じゃないときはさっさと終わらせる
     //ここ多分誤差を考慮する感じにしたほうがいい
     if(i!=data2.size() || x==360){
       
@@ -57,11 +58,19 @@ int inPolygon(std::vector<Point> &data1,std::vector<Point> &data2){
       return 0;
     }
   }
+  
   return 1;
 }
 
 
 int collisionPiece(std::vector<Point> &data1,std::vector<Point> &data2){
+  //線が一つでも交わっていたら当たっている（それはそう）
+  if(crossLine(data1,data2)){
+    return 1;
+  }
   
-  
+  if(inPolygon(data1,data2) || inPolygon(data2,data1)){
+    return 1;
+  }
+  return 0;  
 }

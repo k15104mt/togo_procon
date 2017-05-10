@@ -19,17 +19,17 @@ public:
 using vector = Point;
 
 //内積ィ！！
-int dot(Vector a,Vector b){return a.x * b.x + a.y * b.y;}
+int dot(Vector &a,Vector &b){return a.x * b.x + a.y * b.y;}
 //外積ィ！！
-int cross(Vector a,Vector b){return a.x * b.x - a.y * b.x;}
+int cross(Vector &a,Vector &b){return a.x * b.x - a.y * b.x;}
 
 //すべての辺を見て交わっているものがあった場合は１を返す
-int crossLine(std::vector<Point>,std::vector<Point>);
+int crossLine(std::vector<Point>&,std::vector<Point>&);
 
 //第一引数のポリゴンに第二引数のすべての頂点が内包されている場合または
 //第二引数のポリゴンに第一引数のすべての頂点が内包されている場合に1を返す
 //返上にある場合も内側に入っているものとする
-int inPolygon(std::vector<Point>,std::vector<Point>);
+int inPolygon(std::vector<Point>&,std::vector<Point>&);
 
 int collisionPiece(std::vector<Point>,std::vector<Point>);
 

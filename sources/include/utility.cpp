@@ -3,8 +3,8 @@
 
 //二つの線分の始点、終点から、線分同士が交差しているかを返す
 //線分が平行な場合は交差していないものとなる
-int cl(Point Line1Start,Point Line1End,
-              Point Line2Start,Point Line2End){
+int cl(Point &Line1Start,Point &Line1End,
+              Point &Line2Start,Point &Line2End){
     
   if((((Line1Start.x-Line1End.x)*(Line2Start.y-Line1Start.y)+
   (Line1Start.y-Line1End.y)*(Line1Start.x-Line2Start.x))*
@@ -20,7 +20,7 @@ int cl(Point Line1Start,Point Line1End,
 	return 0;
 }
 
-int crossLine(std::vector<Point> data1,std::vector<Point> data2){
+int crossLine(std::vector<Point> &data1,std::vector<Point> &data2){
   for(int i=0;i<data1.size();++i){
     for(int j=0;j<data2.size();++j){
       if(cl(data1[i],data1[(i+1)%static_cast<int>(data1.size())],
@@ -33,7 +33,7 @@ int crossLine(std::vector<Point> data1,std::vector<Point> data2){
 }
 
 //data1にdata２の頂点がすべて内包されてい
-int inPolygon(std::vector<Point> data1,std::vector<Point> data2){
+int inPolygon(std::vector<Point> &data1,std::vector<Point> &data2){
   //data2のi番目の点がdata1のポリゴン内にあるかどうか
   for(int i=0;i<data2.size();++i){
     double x = 0.0;

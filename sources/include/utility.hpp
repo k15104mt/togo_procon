@@ -16,7 +16,7 @@ public:
 };
 
 //ベクトルも同じ型みたいなものだし多少はね
-using vector = Point;
+using Vector = Point;
 
 //内積ィ！！
 int dot(Vector &a,Vector &b){return a.x * b.x + a.y * b.y;}

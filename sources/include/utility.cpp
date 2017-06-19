@@ -22,7 +22,7 @@ int cl(Point &Line1Start,Point &Line1End,
 
 int crossLine(std::vector<Point> &data1,std::vector<Point> &data2){
   for(int i=0;i<data1.size();++i){
-    for(int j=0;j<data2.size();++j){
+   for(int j=0;j<data2.size();++j){
       if(cl(data1[i],data1[(i+1)%static_cast<int>(data1.size())],
                    data2[j],data2[(j+1)%static_cast<int>(data2.size())])){
         return 1;
@@ -72,5 +72,18 @@ int collisionPiece(std::vector<Point> &data1,std::vector<Point> &data2){
   if(inPolygon(data1,data2) || inPolygon(data2,data1)){
     return 1;
   }
+  
+  return 0;  
+}
+
+int collisionFrame(std::vector<Point> &data1,std::vector<Point> &data2){
+  if(crossLine(data1,data2)){
+    return 1;
+  }
+  
+  if(!inPolygon(data1,data2)){
+    return 1;
+  }
+  
   return 0;  
 }

@@ -8,8 +8,8 @@ class Point{
 public:
 	int x,y;
 	Point(int x,int y):x(x),y(y){};
-	Point & operator + (Point &obj){return Point(x+obj.x,y+obj.y);};
-	Point & operator - (Point &obj){return Point(x-obj.x,y-obj.y);};
+	Point operator + (Point &obj){return Point(x+obj.x,y+obj.y);};
+	Point operator - (Point &obj){return Point(x-obj.x,y-obj.y);};
   Point & operator = (Point &obj){x = obj.x; y = obj.y; return *this;};
   bool operator == (Point &obj){return x==obj.x && y==obj.y;};
   double size(){return sqrt(x*x+y*y);}
@@ -19,9 +19,9 @@ public:
 using Vector = Point;
 
 //内積ィ！！
-int dot(Vector &a,Vector &b){return a.x * b.x + a.y * b.y;}
+int dot(Vector&,Vector&);
 //外積ィ！！
-int cross(Vector &a,Vector &b){return a.x * b.x - a.y * b.x;}
+int cross(Vector&,Vector&);
 
 //すべての辺を見て交わっているものがあった場合は１を返す
 int crossLine(std::vector<Point>&,std::vector<Point>&);

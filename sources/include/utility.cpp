@@ -1,5 +1,14 @@
 #include"utility.hpp"
 
+//内積ィ！！
+int dot(Vector &a,Vector &b){
+  return a.x * b.x + a.y * b.y;
+}
+
+//外積ィ！！
+int cross(Vector &a,Vector &b){
+  return a.x * b.x - a.y * b.x;
+}
 
 //二つの線分の始点、終点から、線分同士が交差しているかを返す
 //線分が平行な場合は交差していないものとなる

@@ -5,11 +5,13 @@
 #include"data.hpp"
 #include"utility.hpp"
 
-class Piece:public Data{
-  public:
-    Piece(std::vector<Point> &data);
-    int checkHit(Data &) override;
-  };
+class Piece{
+private:
+  std::vector<std::vector<Point>> point;
+public:
+  Piece(std::vector<Point> &data);
+  std::vector<std::vector<Point>> getPoint();
+};
 
 
 #endif

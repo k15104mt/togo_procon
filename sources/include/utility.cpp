@@ -30,8 +30,8 @@ int cl(Point &Line1Start,Point &Line1End,
 }
 
 int crossLine(std::vector<Point> &data1,std::vector<Point> &data2){
-  for(int i=0;i<data1.size();++i){
-   for(int j=0;j<data2.size();++j){
+  for(int i=0;i<static_cast<int>(data1.size());++i){
+   for(int j=0;j<static_cast<int>(data2.size());++j){
       if(cl(data1[i],data1[(i+1)%static_cast<int>(data1.size())],
                    data2[j],data2[(j+1)%static_cast<int>(data2.size())])){
         return 1;
@@ -44,9 +44,9 @@ int crossLine(std::vector<Point> &data1,std::vector<Point> &data2){
 //data1‚Édata‚Q‚Ì’¸“_‚ª‚·‚×‚Ä“à•ï‚³‚ê‚Ä‚¢
 int inPolygon(std::vector<Point> &data1,std::vector<Point> &data2){
   //data2‚Ìi”Ô–Ú‚Ì“_‚ªdata1‚Ìƒ|ƒŠƒSƒ““à‚É‚ ‚é‚©‚Ç‚¤‚©
-  for(int i=0;i<data2.size();++i){
+  for(int i=0;i<static_cast<int>(data2.size());++i){
     double x = 0.0;
-    for(int j=0;j<data1.size();++j){
+    for(int j=0;j<static_cast<int>(data1.size());++j){
       Vector a = data1[(j+1)%data1.size()]-data2[i];
       Vector b = data1[j]-data2[i];
       

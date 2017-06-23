@@ -150,13 +150,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\sources\include\data.cpp" />
     <ClCompile Include="..\..\..\sources\include\piece.cpp" />
     <ClCompile Include="..\..\..\sources\include\utility.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\sources\include\data.hpp" />
     <ClInclude Include="..\..\..\sources\include\piece.hpp" />
     <ClInclude Include="..\..\..\sources\include\utility.hpp" />
   </ItemGroup>

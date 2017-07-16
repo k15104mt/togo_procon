@@ -7,7 +7,7 @@
 class Point{
 public:
 	int x,y;
-	Point();
+	Point() {};
 	Point(int x,int y):x(x),y(y){};
 	Point operator + (Point &obj){return Point(x+obj.x,y+obj.y);};
 	Point operator - (Point &obj){return Point(x-obj.x,y-obj.y);};

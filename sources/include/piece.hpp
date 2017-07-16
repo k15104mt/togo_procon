@@ -10,6 +10,7 @@ private:
 public:
   Piece(std::vector<Point> &data);
   std::vector<std::vector<Point>> getPoint();
+  int getSize();
 };
 
 

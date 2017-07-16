@@ -60,14 +60,13 @@ int solve(std::vector<Piece> &data,std::stack<int> &not_put){
 	  
 
 	}
-	
   }
 
   //‘S—v‘fŒ©‚Ä‚¢‚±‚¤‚È
   for (int i = 0; i < static_cast<int>(data.size()); ++i) {
 
-  }
 
+  }
 
 }
 

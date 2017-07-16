@@ -6,6 +6,7 @@
 #include<string>
 #include<sstream>
 #include<vector>
+#include<stack>
 #include<array>
 
 #define NUM 4
@@ -32,17 +33,46 @@ void func(std::array<int, NUM> &array, std::vector<int> &vector) {
   vector.pop_back();
 }
 
-std::vector<std::string> spilit(std::string input, char spilit_character) {
-  std::stringstream stream(input);
+class put_data {
+public:
+  put_data(int,int,Point&);
 
-  std::vector<std::string> result;
-  std::string temp;
-  while (std::getline(stream, temp, spilit_character)) {
-	result.push_back(temp);
+  int piece_num;
+  int point_num;
+  Point base_point;
+
+};
+
+put_data::put_data(int piece_num, int point_num, Point &base_point) {
+  this->piece_num = piece_num;
+  this->point_num = point_num;
+  this->base_point = base_point;
+}
+
+
+//再帰
+int solve(std::vector<Piece> &data,std::stack<int> &not_put){
+  //置かれずに飛ばされたピースがあるか
+  if (!not_put.empty()) {
+	std::stack<int> tmp;
+	//飛ばされたピースを置く
+	for (int i = 0; i < static_cast<int>(not_put.size()); ++i) {
+	  
+
+	}
+	
   }
 
-  return result;
+  //全要素見ていこうな
+  for (int i = 0; i < static_cast<int>(data.size()); ++i) {
+
+  }
+
+
 }
+
+//文字列分割の関数
+std::vector<std::string> split(std::string, char);
 
 int main() {
   //QRコードの数
@@ -66,10 +96,10 @@ int main() {
 	//QRコードi番目の文字列
 
 	//:でピースごとに区切る
-	auto pieceStr = spilit(input[i], ':');
+	auto pieceStr = split(input[i], ':');
 	for (int j = 1; j < pieceStr.size(); ++j) {
 	  // で頂点ごとに区切る
-	  auto numStr = spilit(pieceStr[j], ' ');
+	  auto numStr = split(pieceStr[j], ' ');
 
 	  if (i == input.size() - 1 && j == pieceStr.size() - 1) {
 		//最後のQRの最後のデータの場合はframePointに格納する
@@ -90,6 +120,8 @@ int main() {
 
 	}
   }
+
+
 
   /*確認用
   for (int i = 0; i < piecePoint.size(); ++i) {
@@ -115,4 +147,17 @@ int main() {
   //func(array, vector);
 
   return 0;
+}
+
+
+std::vector<std::string> split(std::string input, char spilit_character) {
+  std::stringstream stream(input);
+
+  std::vector<std::string> result;
+  std::string temp;
+  while (std::getline(stream, temp, spilit_character)) {
+	result.push_back(temp);
+  }
+
+  return result;
 }

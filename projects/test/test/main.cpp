@@ -9,65 +9,100 @@
 #include<stack>
 #include<array>
 
-#define NUM 4
 
-int roop = 0;
+std::vector<Point> framePoint;
 
-void func(std::array<int, NUM> &array, std::vector<int> &vector) {
-  //上で呼び出されたときに選択されている数字は選択しないようする（要改善）
-  for (int i = 0; i<static_cast<int>(array.size()); i++) {
-	if (([&]() {int n = 1; for (auto j : vector) { if (i == j) { n = 0; } }return n; }())) {
-	  vector.push_back(i);
-	  func(array, vector);
-	}
-  }
-  if (array.size() == vector.size()) {
-	printf("%8d:", roop);
-	for (auto i : vector) {
-	  std::cout << array[i] << " ";
-	}
-	std::cout << std::endl;
 
-	roop++;
-  }
-  vector.pop_back();
-}
-
-class put_data {
+//設置情報
+class putData {
 public:
-  put_data(int,int,Point&);
+  putData(int, int, int, Point&);
 
-  int piece_num;
-  int point_num;
-  Point base_point;
+  int piece_num;//ピース
+  int point_num;//回転
+  int vertex_num;//頂点
+  Point base_point;//原点がどの位置か
 
 };
 
-put_data::put_data(int piece_num, int point_num, Point &base_point) {
-  this->piece_num = piece_num;
-  this->point_num = point_num;
-  this->base_point = base_point;
-}
+putData::putData(int piece_num, int point_num, int vertex_num, Point &base_point) :
+  piece_num(piece_num), point_num(point_num), vertex_num(vertex_num), base_point(base_point) {}
 
 
-//再帰
-int solve(std::vector<Piece> &data,std::stack<int> &not_put){
-  //置かれずに飛ばされたピースがあるか
-  if (!not_put.empty()) {
-	std::stack<int> tmp;
-	//飛ばされたピースを置く
-	for (int i = 0; i < static_cast<int>(not_put.size()); ++i) {
-	  
+//当たり判定
+int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putData &put) {
+  std::vector<Point> cp1(data[put.piece_num].getPoint()[put.point_num]);
+  //移動
+  for (auto i : cp1) {
+	i.x += put.base_point.x;
+	i.y += put.base_point.y;
+  }
 
+  for (int i = 0; i < already_put.size();++i) {
+	std::vector<Point> cp2(data[already_put[i].piece_num].getPoint()[already_put[i].point_num]);
+	for (auto j : cp2) {
+	  j.x += already_put[i].base_point.x;
+	  j.y += already_put[i].base_point.y;
+	}
+	if (collisionPiece(cp1, cp2)) {
+	  return 1;
 	}
   }
 
-  //全要素見ていこうな
-  for (int i = 0; i < static_cast<int>(data.size()); ++i) {
+  if (collisionFrame(framePoint, cp1)){
+	return 1;
+  }
+  
+
+  return 0;
+}
+
+Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put) {
+
+}
+
+//再帰
+int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
+  //全ピース見ていこうな
+  for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
+	//今のピースがすでに置かれているかどうか
+	for (int j = 0; j < already_put.size(); ++j) {
+	  if (already_put[j].piece_num == i) {
+		break;
+	  }
+	}
+
+	for (int j = 0; j < data[i].getPoint().size(); ++j) {//回転の組み合わせの数
+	  for (int k = 0; k < data[i].getPoint()[j].size(); ++k) {//設置頂点
+		/*
 
 
+		ここに設置プログラム
+
+
+		*/
+
+
+		 Point tmp;
+		 putData put(i, j, k, tmp);
+		if (!checkHit(data,already_put,put)) {
+		  //もし当たり判定がokなら
+		  already_put.push_back(put);
+		  if (solve(data, already_put)) {
+			//もしreturn 1なら解き終わったってこと
+			return 1;
+		  }
+		}
+	  }
+	}
   }
 
+  if (data.size() == already_put.size()) {
+	//全部置いたってこと
+	return 1;
+  }
+  already_put.pop_back();
+  return 0;
 }
 
 //文字列分割の関数
@@ -89,7 +124,7 @@ int main() {
 
 
   std::vector<std::vector<Point>> piecePoint;
-  std::vector<Point> framePoint;
+ 
 
   for (int i = 0; i < input.size(); ++i) {
 	//QRコードi番目の文字列

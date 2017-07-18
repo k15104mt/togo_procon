@@ -16,6 +16,18 @@ public:
   double size(){return sqrt(x*x+y*y);}
 };
 
+//設置情報
+class putData {
+public:
+  putData(int, int, int, Point&);
+
+  int piece_num;//ピース
+  int point_num;//回転
+  int vertex_num;//頂点
+  Point base_point;//原点がどの位置か
+
+};
+
 //ベクトルも同じ型みたいなものだし多少はね
 using Vector = Point;
 

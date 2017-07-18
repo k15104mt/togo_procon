@@ -1,5 +1,9 @@
 #include"utility.hpp"
 
+putData::putData(int piece_num, int point_num, int vertex_num, Point &base_point) :
+  piece_num(piece_num), point_num(point_num), vertex_num(vertex_num), base_point(base_point) {}
+
+
 //“àÏƒBII
 int dot(Vector &a,Vector &b){
   return a.x * b.x + a.y * b.y;

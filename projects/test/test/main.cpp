@@ -12,23 +12,6 @@
 
 std::vector<Point> framePoint;
 
-
-//設置情報
-class putData {
-public:
-  putData(int, int, int, Point&);
-
-  int piece_num;//ピース
-  int point_num;//回転
-  int vertex_num;//頂点
-  Point base_point;//原点がどの位置か
-
-};
-
-putData::putData(int piece_num, int point_num, int vertex_num, Point &base_point) :
-  piece_num(piece_num), point_num(point_num), vertex_num(vertex_num), base_point(base_point) {}
-
-
 //当たり判定
 int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putData &put) {
   std::vector<Point> cp1(data[put.piece_num].getPoint()[put.point_num]);

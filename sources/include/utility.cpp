@@ -11,7 +11,7 @@ int dot(Vector &a,Vector &b){
 
 //外積ィ！！
 int cross(Vector &a,Vector &b){
-  return a.x * b.x - a.y * b.x;
+  return a.x * b.y - a.y * b.x;
 }
 
 //二つの線分の始点、終点から、線分同士が交差しているかを返す
@@ -50,11 +50,18 @@ int inPolygon(std::vector<Point> &data1,std::vector<Point> &data2){
   //data2のi番目の点がdata1のポリゴン内にあるかどうか
   for(int i=0;i<static_cast<int>(data2.size());++i){
     double x = 0.0;
+	int flag=1;
     for(int j=0;j<static_cast<int>(data1.size());++j){
       Vector a = data1[(j+1)%data1.size()]-data2[i];
       Vector b = data1[j]-data2[i];
+
+	  if (data1[j].x == data2[i].x && data1[j].y == data2[i].y) {
+		flag = 0;
+		break;
+	  }
       
       if(dot(a,b) <= 0 && cross(a,b) == 0){
+		flag = 0;
         break;
       }
       
@@ -65,7 +72,7 @@ int inPolygon(std::vector<Point> &data1,std::vector<Point> &data2){
     
     //天上にもなく、360じゃないときはさっさと終わらせる
     //ここ多分誤差を考慮する感じにしたほうがいい
-    if(x!=360){
+    if(flag && x!=360){
 	  return 0;
     }
   }

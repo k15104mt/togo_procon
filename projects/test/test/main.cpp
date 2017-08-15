@@ -103,26 +103,6 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
 std::vector<std::string> split(std::string, char);
 
 int main() {
-  std::vector<Point> c1, c2;
-  c1.push_back(Point(0, 0));
-  c1.push_back(Point(2, 0));
-  c1.push_back(Point(2, 2));
-  c1.push_back(Point(0, 2));
-
-  c2.push_back(Point(2, 0));
-  c2.push_back(Point(4, 0));
-  c2.push_back(Point(4, 2));
-  c2.push_back(Point(2, 2));
-
-
-  printf("checkhit=%d\n", collisionPiece(c1, c2));
-
-
-
-
-
-
-
   //QRƒR[ƒh‚Ì”
   int qrNum;
   std::cin >> qrNum;

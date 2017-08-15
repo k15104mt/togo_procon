@@ -52,10 +52,8 @@ int inPolygon(std::vector<Point> &data1,std::vector<Point> &data2){
     
     //天上にもなく、360じゃないときはさっさと終わらせる
     //ここ多分誤差を考慮する感じにしたほうがいい
-    if(i!=data2.size() || x==360){
-      
-    }else{
-      return 0;
+    if(x!=360){
+	  return 0;
     }
   }
   

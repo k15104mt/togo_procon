@@ -56,20 +56,18 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
   for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
 	//今のピースがすでに置かれているかどうか
 	if ([=]() {for (int j = 0; j < already_put.size(); ++j) { if (already_put[j].piece_num == i) { return 0; } }return 1; }()){
-
-	  printf("[%d]\n", i);
-
 	  for (int j = 0; j < data[i].getPoint().size(); ++j) {//回転の組み合わせの数
 		for (int k = 0; k < data[i].getPoint()[j].size(); ++k) {//設置頂点
-																/*
+
+		  /*
 
 
-																ここに設置プログラム
+		  ここに設置プログラム
 
 
-																*/
+		  */
 
-
+		  printf("今置きたいピース=%d\n", i);
 		  Point tmp = getPutPoint(data, already_put);
 		  putData put(i, j, k, tmp);
 		  if (!checkHit(data, already_put, put)) {
@@ -81,10 +79,11 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
 			}
 		  }
 		  else {
-			printf_s("Hit!!!!");
+			printf_s("Hit!!!!\n");
 		  }
 		}
 	  }
+
 
 	}
 

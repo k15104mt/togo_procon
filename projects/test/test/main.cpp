@@ -33,7 +33,7 @@ int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putDat
 	}
   }
 
-  //これはずらさないとヤバそうなやつ
+  //これはずらさないとヤバそうなやつ//やっぱりこれはずらさなくてもよいやつ
   if (collisionFrame(framePoint, cp1)){
 	printf("frame");
 	return 1;
@@ -176,7 +176,9 @@ int main() {
   std::vector<putData> already_put;
   solve(data, already_put);
 
- 
+  for (auto i : already_put) {
+	
+ }
 
 
   //再帰テスト用a

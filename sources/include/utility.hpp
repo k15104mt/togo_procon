@@ -9,11 +9,15 @@ public:
 	int x,y;
 	Point() {};
 	Point(int x,int y):x(x),y(y){};
+
 	Point operator + (Point &obj){return Point(x+obj.x,y+obj.y);};
 	Point operator - (Point &obj){return Point(x-obj.x,y-obj.y);};
-  Point & operator = (Point &obj){x = obj.x; y = obj.y; return *this;};
-  bool operator == (Point &obj){return x==obj.x && y==obj.y;};
-  double size(){return sqrt(x*x+y*y);}
+	Point & operator = (Point &obj){x = obj.x; y = obj.y; return *this;};
+	bool operator == (Point &obj){return x==obj.x && y==obj.y;};
+
+	double size() { return sqrt(x*x + y*y); };
+	void print() { printf("(%d,%d)", x, y); };
+	void println() { printf("(%d,%d)\n", x, y); };
 };
 
 //ê›íuèÓïÒ

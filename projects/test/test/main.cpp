@@ -22,7 +22,7 @@ int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putDat
 	i.y += put.base_point.y;
   }
 
-  for (int i = 0; i < already_put.size();++i) {
+  for (int i = 0; i < static_cast<int>(already_put.size());++i) {
 	std::vector<Point> cp2(data[already_put[i].piece_num].getPoint()[already_put[i].point_num]);
 	for (auto &j : cp2) {
 	  j.x += already_put[i].base_point.x;
@@ -57,9 +57,9 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
   //全ピース見ていこうな
   for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
 	//今のピースがすでに置かれているかどうか
-	if ([=]() {for (int j = 0; j < already_put.size(); ++j) { if (already_put[j].piece_num == i) { return 0; } }return 1; }()){
-	  for (int j = 0; j < data[i].getPoint().size(); ++j) {//回転の組み合わせの数
-		for (int k = 0; k < data[i].getPoint()[j].size(); ++k) {//設置頂点
+	if ([=]() {for (int j = 0; j < static_cast<int>(already_put.size()); ++j) { if (already_put[j].piece_num == i) { return 0; } }return 1; }()){
+	  for (int j = 0; j < static_cast<int>(data[i].getPoint().size()); ++j) {//回転の組み合わせの数
+		for (int k = 0; k < static_cast<int>(data[i].getPoint()[j].size()); ++k) {//設置頂点
 
 		  /*
 
@@ -123,18 +123,18 @@ int main() {
   std::vector<std::vector<Point>> piecePoint;
  
 
-  for (int i = 0; i < input.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(input.size()); ++i) {
 	//QRコードi番目の文字列
 
 	//:でピースごとに区切る
 	auto pieceStr = split(input[i], ':');
-	for (int j = 1; j < pieceStr.size(); ++j) {
+	for (int j = 1; j < static_cast<int>(pieceStr.size()); ++j) {
 	  // で頂点ごとに区切る
 	  auto numStr = split(pieceStr[j], ' ');
 
 	  if (i == input.size() - 1 && j == pieceStr.size() - 1) {
 		//最後のQRの最後のデータの場合はframePointに格納する
-		for (int k = 1; k < numStr.size(); k += 2) {
+		for (int k = 1; k < static_cast<int>(numStr.size()); k += 2) {
 		  Point pointTemp(stoi(numStr[k]), stoi(numStr[k + 1]));
 		  framePoint.push_back(pointTemp);
 		}
@@ -142,7 +142,7 @@ int main() {
 	  else {
 		//角頂点の座標をpieceTemoに数字に変換して格納して、piecePointに追加する
 		std::vector<Point> pieceTemp;
-		for (int k = 1; k < numStr.size(); k += 2) {
+		for (int k = 1; k < static_cast<int>(numStr.size()); k += 2) {
 		  Point pointTemp(stoi(numStr[k]), stoi(numStr[k + 1]));
 		  pieceTemp.push_back(pointTemp);
 		}
@@ -154,12 +154,14 @@ int main() {
 
   std::vector<Piece> data;
 
-  for (int i = 0; i < piecePoint.size(); i++) {
+  for (int i = 0; i < static_cast<int>(piecePoint.size()); i++) {
 	data.push_back(piecePoint[i]);
   }
 
   //------------------------------------------------------
-  for (int i = 0; i < piecePoint.size(); ++i) {
+  setColor(F_BLACK, B_WHITE|B_INTENSITY);
+
+  for (int i = 0; i < static_cast<int>(piecePoint.size()); ++i) {
 	std::cout << "piece[" << i << "]" << "(頂点数:" << piecePoint[i].size() << "):";
 	for (auto j : piecePoint[i]) {
 	  std::cout << "(" << j.x << "," << j.y << ") ";
@@ -173,6 +175,8 @@ int main() {
 	std::cout << "(" << i.x << "," << i.y << ") ";
   }
   std::cout << std::endl;
+
+  setColor();
 //------------------------------------------------------
 
 

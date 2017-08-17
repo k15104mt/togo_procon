@@ -1,5 +1,6 @@
 #include"piece.hpp"
 #include"utility.hpp"
+#include"color.hpp"
 
 #include<cstdio>
 #include<iostream>
@@ -46,7 +47,8 @@ int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putDat
 Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put) {
   Point tmp;
   scanf_s("%d %d",&tmp.x,&tmp.y);
-  printf_s("%d %dに設置\n", tmp.x, tmp.y);
+  tmp.print();
+  printf_s("に設置\n");
   return tmp;
 }
 
@@ -79,7 +81,9 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
 			}
 		  }
 		  else {
+			setColor(F_RED | F_INTENSITY);
 			printf_s("Hit!!!!\n");
+			setColor();
 		  }
 		}
 	  }
@@ -177,8 +181,9 @@ int main() {
   solve(data, already_put);
 
   for (auto i : already_put) {
-	
- }
+	printf("[%2d]ピース_[%2d]回転_[%2d]頂点を基準座標", i.piece_num, i.point_num, i.vertex_num);
+	i.base_point.println();
+  }
 
 
   //再帰テスト用a

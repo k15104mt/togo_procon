@@ -64,10 +64,11 @@ int inPolygon(std::vector<Point> &data1,std::vector<Point> &data2){
 		flag = 0;
         break;
       }
-      
+
+
       //角度を積極的に足していこう
       if(cross(a,b)<0) x+=(acos((double)(dot(a,b))/(a.size()*b.size()))*180.0/acos(-1.0));
-  		if(cross(a,b)>0) x+=-1.0*(acos((double)(dot(a,b))/(a.size()*b.size()))*180.0/acos(-1.0));	
+  	  if(cross(a,b)>0) x+=-1.0*(acos((double)(dot(a,b))/(a.size()*b.size()))*180.0/acos(-1.0));	
     }
     
     //天上にもなく、360じゃないときはさっさと終わらせる
@@ -90,7 +91,27 @@ int collisionPiece(std::vector<Point> &data1,std::vector<Point> &data2){
   if(inPolygon(data1,data2) || inPolygon(data2,data1)){
     return 1;
   }
-  
+
+  for (int i = 0; i<static_cast<int>(data2.size()); ++i) {
+	for (int j = 0; j<static_cast<int>(data1.size()); ++j) {
+	  Vector a = data1[(j + 1) % data1.size()] - data2[i];
+	  Vector b = data1[j] - data2[i];
+	  Vector c = data1[(j + 1) % data1.size()] - data1[j];
+	  Vector d = data2[(i + 1) % data2.size()] - data2[i];
+	  //外積が平行なとき→ベクトルが平行
+	  if (cross(c, d) == 0) {
+		//どちらかの頂点がのみが片方の辺の中に存在しているならHit!!
+		Vector e = data1[(j + 1) % data1.size()] - data2[(i + 1) % data2.size()];
+		Vector f = data1[j] - data2[(i + 1) % data2.size()];
+
+		if ((dot(a, b) < 0 && dot(e, f) > 0) || (dot(a, b) > 0 && dot(e, f) < 0)) {
+		  return 1;
+		}
+
+	  }
+	}
+  }
+
   return 0;  
 }
 
@@ -105,3 +126,4 @@ int collisionFrame(std::vector<Point> &data1,std::vector<Point> &data2){
   
   return 0;  
 }
+

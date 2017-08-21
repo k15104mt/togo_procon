@@ -61,14 +61,6 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
 	  for (int j = 0; j < static_cast<int>(data[i].getPoint().size()); ++j) {//回転の組み合わせの数
 		for (int k = 0; k < static_cast<int>(data[i].getPoint()[j].size()); ++k) {//設置頂点
 
-		  /*
-
-
-		  ここに設置プログラム
-
-
-		  */
-
 		  printf("今置きたいピース=%d\n", i);
 		  Point tmp = getPutPoint(data, already_put);
 		  putData put(i, j, k, tmp);
@@ -178,8 +170,20 @@ int main() {
 
   setColor();
 //------------------------------------------------------
-
-
+  int p = 0;
+  for (auto i : data) {
+	printf("%dピース\n",p);
+	int n = 0;
+	for (auto j : i.getPoint()) {
+	  printf("	%d回転\n	  ", n);
+	  for (auto k : j) {
+		printf("(%d,%d) ", k.x, k.y);
+	  }
+	  printf("\n");
+	  n++;
+	}
+	p++;
+  }
 
   std::vector<putData> already_put;
   solve(data, already_put);

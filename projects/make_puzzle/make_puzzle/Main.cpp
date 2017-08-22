@@ -55,8 +55,19 @@ void Main() {
 	//点描画
 	for (auto i : circle) { for (auto j : i) { j.draw(s3d::Color(100, 100, 100)); } }
 
-	if (now.size() && s3d::Input::MouseR.clicked) {
-	  now.pop_back();
+	if (s3d::Input::MouseR.clicked) {
+	  if (now.size()) {
+		now.pop_back();
+	  }
+	  else if (piece.size()) {
+		now = piece[piece.size()-1];
+		piece.pop_back();
+	  }
+	  else if(frame.size()){
+		now = frame;
+		frame.clear();
+	  }
+	  
 	}
 
 	if (frame.size() == 0) {

@@ -17,3 +17,4 @@ Engine
 *.db
 *.opendb
 *.vcxproj.user
+out.txt

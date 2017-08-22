@@ -188,12 +188,24 @@ int main() {
   std::vector<putData> already_put;
   solve(data, already_put);
 
+
+
   for (auto i : already_put) {
-	printf("[%2d]ピース_[%2d]回転_[%2d]頂点を基準座標", i.piece_num, i.point_num, i.vertex_num);
-	i.base_point.println();
+	printf("%d %d (%d,%d)\n", i.piece_num, i.point_num,i.base_point.x,i.base_point.y);
+  }
+
+  FILE *fp;
+  fopen_s(&fp,"out.txt","w");
+  if (fp != NULL) {
+	for (auto i : already_put) {
+	  fprintf_s(fp, "%d %d (%d,%d)\n", i.piece_num, i.point_num, i.base_point.x, i.base_point.y);
+	}
   }
 
 
+
+  getchar();
+  getchar();
   //再帰テスト用a
   //std::array<int, NUM> array = { 0,1,2,3 };
   //std::vector<int> vector

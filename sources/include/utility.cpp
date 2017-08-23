@@ -1,5 +1,22 @@
 #include"utility.hpp"
 
+#include<sstream>
+
+
+
+std::vector<std::string> split(std::string input, char spilit_character) {
+  std::stringstream stream(input);
+
+  std::vector<std::string> result;
+  std::string temp;
+  while (std::getline(stream, temp, spilit_character)) {
+	result.push_back(temp);
+  }
+
+  return result;
+}
+
+
 putData::putData(int piece_num, int point_num, int vertex_num, Point &base_point) :
   piece_num(piece_num), point_num(point_num), vertex_num(vertex_num), base_point(base_point) {}
 

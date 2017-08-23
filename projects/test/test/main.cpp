@@ -22,8 +22,6 @@ Point getPutPoint(std::vector<Piece> &, std::vector<putData> &);
 //再帰
 int solve(std::vector<Piece> &, std::vector<putData> &);
 
-//文字列分割の関数
-std::vector<std::string> split(std::string, char);
 
 int main() {
   //QRコードの数
@@ -214,17 +212,4 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
   //ここまで来たってことはダメだったってことだからpopしてバック
   already_put.pop_back();
   return 0;
-}
-
-
-std::vector<std::string> split(std::string input, char spilit_character) {
-  std::stringstream stream(input);
-
-  std::vector<std::string> result;
-  std::string temp;
-  while (std::getline(stream, temp, spilit_character)) {
-	result.push_back(temp);
-  }
-
-  return result;
 }

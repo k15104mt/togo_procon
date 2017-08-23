@@ -3,6 +3,11 @@
 
 #include<vector>
 #include<cmath>
+#include<string>
+
+
+//•¶š—ñ•ªŠ„‚ÌŠÖ”
+std::vector<std::string> split(std::string, char);
 
 class Point{
 public:

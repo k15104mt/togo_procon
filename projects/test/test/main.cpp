@@ -82,7 +82,7 @@ int main() {
   for (int i = 0; i < static_cast<int>(piecePoint.size()); ++i) {
 	std::cout << "piece[" << i << "]" << "(頂点数:" << piecePoint[i].size() << "):";
 	for (auto j : piecePoint[i]) {
-	  std::cout << "(" << j.x << "," << j.y << ") ";
+	  j.print();
 	}
 	std::cout << std::endl;
   }
@@ -90,7 +90,7 @@ int main() {
 
   std::cout << "frame（頂点数:" << framePoint.size() << "):";
   for (auto i : framePoint) {
-	std::cout << "(" << i.x << "," << i.y << ") ";
+	i.print();
   }
   std::cout << std::endl;
 
@@ -114,12 +114,12 @@ int main() {
   std::vector<putData> already_put;
   solve(data, already_put);
 
-
-
+  //回答表示
   for (auto i : already_put) {
 	printf("%d %d (%d,%d)\n", i.piece_num, i.point_num,i.base_point.x,i.base_point.y);
   }
 
+  //ファイル出力
   FILE *fp;
   fopen_s(&fp,"out.txt","w");
   if (fp != NULL) {
@@ -128,14 +128,8 @@ int main() {
 	}
   }
 
-
-
   getchar();
   getchar();
-  //再帰テスト用a
-  //std::array<int, NUM> array = { 0,1,2,3 };
-  //std::vector<int> vector
-  //func(array, vector);
 
   return 0;
 }

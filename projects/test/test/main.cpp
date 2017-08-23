@@ -13,82 +13,14 @@
 
 std::vector<Point> framePoint;
 
+
 //当たり判定
-int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putData &put) {
-  std::vector<Point> cp1(data[put.piece_num].getPoint()[put.point_num]);
-  //移動
-  move(cp1, put.base_point);
+int checkHit(std::vector<Piece> &, std::vector<putData> &, putData &);
 
-  for (int i = 0; i < static_cast<int>(already_put.size());++i) {
-	std::vector<Point> cp2(data[already_put[i].piece_num].getPoint()[already_put[i].point_num]);
-	//移動
-	move(cp2, already_put[i].base_point);
-
-	if (collisionPiece(cp1, cp2)) {
-	  printf("piece");
-	  return 1;
-	}
-  }
-
-  //これはずらさないとヤバそうなやつ//やっぱりこれはずらさなくてもよいやつ
-  if (collisionFrame(framePoint, cp1)){
-	printf("frame");
-	return 1;
-  }
-  
-
-  return 0;
-}
-
-Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put) {
-  Point tmp;
-  scanf_s("%d %d",&tmp.x,&tmp.y);
-  tmp.print();
-  printf_s("に設置\n");
-  return tmp;
-}
+Point getPutPoint(std::vector<Piece> &, std::vector<putData> &);
 
 //再帰
-int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
-  //全ピース見ていこうな
-  for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
-	//今のピースがすでに置かれているかどうか
-	if ([=]() {for (int j = 0; j < static_cast<int>(already_put.size()); ++j) { if (already_put[j].piece_num == i) { return 0; } }return 1; }()){
-	  for (int j = 0; j < static_cast<int>(data[i].getPoint().size()); ++j) {//回転の組み合わせの数
-		for (int k = 0; k < static_cast<int>(data[i].getPoint()[j].size()); ++k) {//設置頂点
-
-		  printf("今置きたいピース=%d\n", i);
-		  Point tmp = getPutPoint(data, already_put);
-		  putData put(i, j, k, tmp);
-		  if (!checkHit(data, already_put, put)) {
-			//もし当たり判定がokなら
-			already_put.push_back(put);
-			if (solve(data, already_put)) {
-			  //もしreturn 1なら解き終わったってこと
-			  return 1;
-			}
-		  }
-		  else {
-			setColor(F_RED | F_INTENSITY);
-			printf_s("Hit!!!!\n");
-			setColor();
-		  }
-		}
-	  }
-
-
-	}
-
-	
-  }
-
-  if (data.size() == already_put.size()) {
-	//全部置いたってこと
-	return 1;
-  }
-  already_put.pop_back();
-  return 0;
-}
+int solve(std::vector<Piece> &, std::vector<putData> &);
 
 //文字列分割の関数
 std::vector<std::string> split(std::string, char);
@@ -207,6 +139,80 @@ int main() {
   //std::vector<int> vector
   //func(array, vector);
 
+  return 0;
+}
+
+
+int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putData &put) {
+  std::vector<Point> cp1(data[put.piece_num].getPoint()[put.point_num]);
+  //移動
+  move(cp1, put.base_point);
+
+  for (int i = 0; i < static_cast<int>(already_put.size()); ++i) {
+	std::vector<Point> cp2(data[already_put[i].piece_num].getPoint()[already_put[i].point_num]);
+	//移動
+	move(cp2, already_put[i].base_point);
+
+	if (collisionPiece(cp1, cp2)) {
+	  printf("piece");
+	  return 1;
+	}
+  }
+
+  //これはずらさないとヤバそうなやつ//やっぱりこれはずらさなくてもよいやつ
+  if (collisionFrame(framePoint, cp1)) {
+	printf("frame");
+	return 1;
+  }
+
+  return 0;
+}
+
+
+Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put) {
+  Point tmp;
+  scanf_s("%d %d", &tmp.x, &tmp.y);
+  tmp.print();
+  printf_s("に設置\n");
+  return tmp;
+}
+
+int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
+  if (data.size() == already_put.size()) {
+	//全部置いたってこと
+	return 1;
+  }
+
+  //全ピース見ていこうな
+  for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
+														   //今のピースがすでに置かれているかどうか
+	if ([=]() {for (int j = 0; j < static_cast<int>(already_put.size()); ++j) { if (already_put[j].piece_num == i) { return 0; } }return 1; }()) {
+	  for (int j = 0; j < static_cast<int>(data[i].getPoint().size()); ++j) {//回転の組み合わせの数
+		for (int k = 0; k < static_cast<int>(data[i].getPoint()[j].size()); ++k) {//設置頂点
+
+		  printf("今置きたいピース=%d\n", i);
+		  Point tmp = getPutPoint(data, already_put);
+		  putData put(i, j, k, tmp);
+		  if (!checkHit(data, already_put, put)) {
+			//もし当たり判定がokなら
+			already_put.push_back(put);
+			if (solve(data, already_put)) {
+			  //もしreturn 1なら解き終わったってこと
+			  return 1;
+			}
+		  }
+		  else {
+			setColor(F_RED | F_INTENSITY);
+			printf_s("Hit!!!!\n");
+			setColor();
+		  }
+		}
+	  }
+	}
+  }
+
+  //ここまで来たってことはダメだったってことだからpopしてバック
+  already_put.pop_back();
   return 0;
 }
 

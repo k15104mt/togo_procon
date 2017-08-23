@@ -17,17 +17,13 @@ std::vector<Point> framePoint;
 int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putData &put) {
   std::vector<Point> cp1(data[put.piece_num].getPoint()[put.point_num]);
   //ˆÚ“®
-  for (auto &i : cp1) {
-	i.x += put.base_point.x;
-	i.y += put.base_point.y;
-  }
+  move(cp1, put.base_point);
 
   for (int i = 0; i < static_cast<int>(already_put.size());++i) {
 	std::vector<Point> cp2(data[already_put[i].piece_num].getPoint()[already_put[i].point_num]);
-	for (auto &j : cp2) {
-	  j.x += already_put[i].base_point.x;
-	  j.y += already_put[i].base_point.y;
-	}
+	//ˆÚ“®
+	move(cp2, already_put[i].base_point);
+
 	if (collisionPiece(cp1, cp2)) {
 	  printf("piece");
 	  return 1;

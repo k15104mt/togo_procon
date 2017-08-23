@@ -13,6 +13,7 @@ public:
 	Point operator + (Point &obj){return Point(x+obj.x,y+obj.y);};
 	Point operator - (Point &obj){return Point(x-obj.x,y-obj.y);};
 	Point & operator = (Point &obj){x = obj.x; y = obj.y; return *this;};
+	Point & operator += (Point &obj) { x += obj.x; y += obj.y; return *this; };
 	bool operator == (Point &obj){return x==obj.x && y==obj.y;};
 
 	double size() { return sqrt(x*x + y*y); };
@@ -39,6 +40,8 @@ using Vector = Point;
 int dot(Vector&,Vector&);
 //外積ィ！！
 int cross(Vector&,Vector&);
+
+void move(std::vector<Point>&, Point);
 
 //すべての辺を見て交わっているものがあった場合は１を返す
 int crossLine(std::vector<Point>&,std::vector<Point>&);

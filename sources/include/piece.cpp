@@ -6,20 +6,9 @@
 //‚Ç‚ê‚¾‚¯‰ñ“]‚·‚é‚©‚ÆŠî€“_‚ÌÀ•W‚ğ‘—‚è‰ñ“]Œã‚ÌÀ•W‚ğ•Ô‚·
 Point PointRotate(double angle, Point zeroPoint) {
 	Point r;
-	r.x = round(zeroPoint.x*cos(angle) - zeroPoint.y*sin(angle));
-	r.y = round(zeroPoint.x*sin(angle) + zeroPoint.y*cos(angle));
+	r.x = static_cast<int>(round(zeroPoint.x*cos(angle) - zeroPoint.y*sin(angle)));
+	r.y = static_cast<int>(round(zeroPoint.x*sin(angle) + zeroPoint.y*cos(angle)));
 	return r;
-}
-
-//‰ñ“]Œã‚¸‚ç‚·‚½‚ß‚Éx‚Æy‚ÌÅ¬’l‚ğæ“¾
-Point MinPoint(std::vector<Point> &data){
-	Point min;
-	min.x=0;min.y=0;
-	for(int i=0;i<data.size();i++){
-		if(min.x>std::abs(data[i].x))min.x=data[i].x;
-		if(min.y>std::abs(data[i].y))min.y=data[i].y;
-	}
-	return min;
 }
 
 Piece::Piece(std::vector<Point> &data){

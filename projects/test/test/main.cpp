@@ -175,6 +175,7 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put) {
   return tmp;
 }
 
+
 int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
   if (data.size() == already_put.size()) {
 	//‘S•”’u‚¢‚½‚Á‚Ä‚±‚Æ

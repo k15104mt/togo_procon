@@ -13,7 +13,6 @@
 
 std::vector<Point> framePoint;
 
-
 //“–‚½‚è”»’è
 int checkHit(std::vector<Piece> &, std::vector<putData> &, putData &);
 

@@ -13,8 +13,14 @@ struct  data {
 void Main() {
   s3d::Window::Resize(1200, 700);
   s3d::Window::SetTitle(L"パズル作成");
+
+  s3d::GUI gui(s3d::GUIStyle::Default);
+  gui.addln(L"copy",s3d::GUIButton::Create(L"copy"));
+  gui.setPos(1020, 0);
+
+
   //■■■■■■■■■■■■■■■■■■■■
-  AllocConsole();
+  //AllocConsole();
   FILE* out = 0; freopen_s(&out, "CON", "w", stdout);
   FILE* in = 0; freopen_s(&in, "CON", "r", stdin);
   //■■■■■■■■■■■■■■■■■■■■
@@ -136,6 +142,38 @@ void Main() {
 		  printf(" %d %d", (i.x-minx)/10,(i.y-miny)/10);
 		}
 		printf("\n");
+	  }
+
+	  if (now.size() == 0 && gui.button(L"copy").pushed) {
+		std::string str;
+		str += std::to_string(piece.size());
+
+		for (auto i : piece) {
+
+		  str += (":" + std::to_string(i.size()));
+		  int minx = 999, miny = 999;
+		  for (auto j : i) {
+			minx = std::min(minx, j.x);
+			miny = std::min(miny, j.y);
+		  }
+
+		  for (auto j : i) {
+			//寄せる
+			str += (" " + std::to_string((j.x - minx) / 10) + " " + std::to_string((j.y - miny) / 10));
+		  }
+		}
+
+		str += (":"+std::to_string(frame.size()));
+		int minx = 999, miny = 999;
+		for (auto i : frame) {
+		  minx = std::min(minx, i.x);
+		  miny = std::min(miny, i.y);
+		}
+		for (auto i : frame) {
+		  str += (" " + std::to_string((i.x - minx) / 10) + " " + std::to_string((i.y - miny) / 10));
+		}
+		
+		s3d::Clipboard::SetText(s3d::CharacterSet::Widen(str));
 	  }
 
 	}

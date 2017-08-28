@@ -20,7 +20,7 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, s
   if (already_put.size() == 0) {
 	return framePoint[0][0];
   }
-
+  int b;			//直線方程式 y=-x+b のb
   Point point;	//返り値
 
 				////ピースと設置情報より，未設置部の図形頂点を求める
@@ -77,16 +77,15 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, s
   printf("rc=%d\n", rc);
 
   for (int i = 0; i < rc; i++) {
-	printf("area[i]=");
+	printf("area[%d]=",i);
 	for (int j = 0; j < rp[i]; j++) {
 	  printf("{%d,%d},", rx[i][j], ry[i][j]);
 	}
 	printf("\n");
   }
-
+  
   //出した未設置部頂点のうち，最も左上の座標を取得する
   for (int i = 0; i < rc; ++i) {
-	int b;			//直線方程式 y=-x+b のb
 	for (int j = 0; j < rp[i]; ++j) {
 	  if (i == j && j == 0) {	//暫定のb最小値
 		b = rx[i][j] + ry[i][j];
@@ -417,7 +416,7 @@ void OnNot() {
 	}
 	tcnt = 0;
 	OnMerge();
-	printf("rp[rc]:%d\n", rp[rc]);
+	//printf("rp[rc]:%d\n", rp[rc]);
 
 	for (int i = 0; i < rc; ++i) {
 		/*for (int j = 0; j < rp[i]; ++j) {

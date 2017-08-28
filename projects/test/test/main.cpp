@@ -1,6 +1,7 @@
 #include"piece.hpp"
 #include"utility.hpp"
 #include"color.hpp"
+#include"geometry.hpp"
 
 #include<cstdio>
 #include<iostream>
@@ -11,91 +12,17 @@
 #include<array>
 
 
-std::vector<Point> framePoint;
+std::vector<std::vector<Point>> framePoint;
+
 
 //当たり判定
-int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putData &put) {
-  std::vector<Point> cp1(data[put.piece_num].getPoint()[put.point_num]);
-  //移動
-  for (auto &i : cp1) {
-	i.x += put.base_point.x;
-	i.y += put.base_point.y;
-  }
+int checkHit(std::vector<Piece> &, std::vector<putData> &, putData &);
 
-  for (int i = 0; i < static_cast<int>(already_put.size());++i) {
-	std::vector<Point> cp2(data[already_put[i].piece_num].getPoint()[already_put[i].point_num]);
-	for (auto &j : cp2) {
-	  j.x += already_put[i].base_point.x;
-	  j.y += already_put[i].base_point.y;
-	}
-	if (collisionPiece(cp1, cp2)) {
-	  printf("piece");
-	  return 1;
-	}
-  }
-
-  //これはずらさないとヤバそうなやつ//やっぱりこれはずらさなくてもよいやつ
-  if (collisionFrame(framePoint, cp1)){
-	printf("frame");
-	return 1;
-  }
-  
-
-  return 0;
-}
-
-Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put) {
-  Point tmp;
-  scanf_s("%d %d",&tmp.x,&tmp.y);
-  tmp.print();
-  printf_s("に設置\n");
-  return tmp;
-}
+//Point getPutPoint(std::vector<Piece> &, std::vector<putData> &);
 
 //再帰
-int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
-  //全ピース見ていこうな
-  for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
-	//今のピースがすでに置かれているかどうか
-	if ([=]() {for (int j = 0; j < static_cast<int>(already_put.size()); ++j) { if (already_put[j].piece_num == i) { return 0; } }return 1; }()){
-	  for (int j = 0; j < static_cast<int>(data[i].getPoint().size()); ++j) {//回転の組み合わせの数
-		for (int k = 0; k < static_cast<int>(data[i].getPoint()[j].size()); ++k) {//設置頂点
+int solve(std::vector<Piece> &, std::vector<putData> &);
 
-		  printf("今置きたいピース=%d\n", i);
-		  Point tmp = getPutPoint(data, already_put);
-		  putData put(i, j, k, tmp);
-		  if (!checkHit(data, already_put, put)) {
-			//もし当たり判定がokなら
-			already_put.push_back(put);
-			if (solve(data, already_put)) {
-			  //もしreturn 1なら解き終わったってこと
-			  return 1;
-			}
-		  }
-		  else {
-			setColor(F_RED | F_INTENSITY);
-			printf_s("Hit!!!!\n");
-			setColor();
-		  }
-		}
-	  }
-
-
-	}
-
-	
-  }
-
-  if (data.size() == already_put.size()) {
-	//全部置いたってこと
-	return 1;
-  }
-  already_put.pop_back();
-  return 0;
-}
-
-//文字列分割の関数
-std::vector<std::string> split(std::string, char);
 
 int main() {
   //QRコードの数
@@ -113,7 +40,7 @@ int main() {
 
 
   std::vector<std::vector<Point>> piecePoint;
- 
+  framePoint.resize(1);
 
   for (int i = 0; i < static_cast<int>(input.size()); ++i) {
 	//QRコードi番目の文字列
@@ -128,7 +55,7 @@ int main() {
 		//最後のQRの最後のデータの場合はframePointに格納する
 		for (int k = 1; k < static_cast<int>(numStr.size()); k += 2) {
 		  Point pointTemp(stoi(numStr[k]), stoi(numStr[k + 1]));
-		  framePoint.push_back(pointTemp);
+		  framePoint[0].push_back(pointTemp);
 		}
 	  }
 	  else {
@@ -156,15 +83,15 @@ int main() {
   for (int i = 0; i < static_cast<int>(piecePoint.size()); ++i) {
 	std::cout << "piece[" << i << "]" << "(頂点数:" << piecePoint[i].size() << "):";
 	for (auto j : piecePoint[i]) {
-	  std::cout << "(" << j.x << "," << j.y << ") ";
+	  j.print();
 	}
 	std::cout << std::endl;
   }
 
 
-  std::cout << "frame（頂点数:" << framePoint.size() << "):";
-  for (auto i : framePoint) {
-	std::cout << "(" << i.x << "," << i.y << ") ";
+  std::cout << "frame（頂点数:" << framePoint[0].size() << "):";
+  for (auto i : framePoint[0]) {
+	i.print();
   }
   std::cout << std::endl;
 
@@ -188,29 +115,111 @@ int main() {
   std::vector<putData> already_put;
   solve(data, already_put);
 
+  //回答表示
   for (auto i : already_put) {
-	printf("[%2d]ピース_[%2d]回転_[%2d]頂点を基準座標", i.piece_num, i.point_num, i.vertex_num);
-	i.base_point.println();
+	printf("%d %d (%d,%d)\n", i.piece_num, i.point_num,i.base_point.x,i.base_point.y);
   }
 
+  //ファイル出力
+  FILE *fp;
+  fopen_s(&fp,"out.txt","w");
+  if (fp != NULL) {
+	for (auto i : already_put) {
+	  fprintf_s(fp, "%d %d (%d,%d)\n", i.piece_num, i.point_num, i.base_point.x, i.base_point.y);
+	}
+  }
 
-  //再帰テスト用a
-  //std::array<int, NUM> array = { 0,1,2,3 };
-  //std::vector<int> vector
-  //func(array, vector);
+  getchar();
+  getchar();
 
   return 0;
 }
 
 
-std::vector<std::string> split(std::string input, char spilit_character) {
-  std::stringstream stream(input);
+int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putData &put) {
+  std::vector<Point> cp1(data[put.piece_num].getPoint()[put.point_num]);
+  //移動
+  move(cp1, put.base_point);
 
-  std::vector<std::string> result;
-  std::string temp;
-  while (std::getline(stream, temp, spilit_character)) {
-	result.push_back(temp);
+  for (int i = 0; i < static_cast<int>(already_put.size()); ++i) {
+	std::vector<Point> cp2(data[already_put[i].piece_num].getPoint()[already_put[i].point_num]);
+	//移動
+	move(cp2, already_put[i].base_point);
+
+	if (collisionPiece(cp1, cp2)) {
+	  printf("piece");
+	  return 1;
+	}
   }
 
-  return result;
+  int flag = 0;
+  for (int j = 0; j < static_cast<int>(framePoint.size()); j++) {
+	if (!collisionFrame(framePoint[j], cp1)) {
+	  flag = 1;
+	}
+  }
+
+
+  if (!flag) {
+	printf("frame");
+	return 1;
+  }
+  
+  
+
+  return 0;
+}
+
+/*
+Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put) {
+  Point tmp;
+  scanf_s("%d %d", &tmp.x, &tmp.y);
+  tmp.print();
+  printf_s("に設置\n");
+  return tmp;
+}
+*/
+
+int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
+  if (data.size() == already_put.size()) {
+	//全部置いたってこと
+	return 1;
+  }
+
+  //全ピース見ていこうな
+  for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
+														   //今のピースがすでに置かれているかどうか
+	if ([=]() {for (int j = 0; j < static_cast<int>(already_put.size()); ++j) { if (already_put[j].piece_num == i) { return 0; } }return 1; }()) {
+	  for (int j = 0; j < static_cast<int>(data[i].getPoint().size()); ++j) {//回転の組み合わせの数
+		for (int k = 0; k < static_cast<int>(data[i].getPoint()[j].size()); ++k) {//設置頂点
+
+		  printf("今置きたいやつ(%d,%d,%d)\n", i,j,k);
+		  Point tmp = getPutPoint(data, already_put,framePoint);
+		  printf("置きたい点"); tmp.println();
+		  printf("framePoint.size() %d\n", framePoint.size());
+		  putData put(i, j, k, Point(tmp.x-data[i].getPoint()[j][k].x,tmp.y-data[i].getPoint()[j][k].y));
+		  if (!checkHit(data, already_put, put)) {
+			//もし当たり判定がokなら
+			setColor(F_CYAN | F_INTENSITY);
+			printf("put\n");
+			setColor();
+			already_put.push_back(put);
+			if (solve(data, already_put)) {
+			  //もしreturn 1なら解き終わったってこと
+			  return 1;
+			}
+		  }
+		  else {
+			setColor(F_RED | F_INTENSITY);
+			printf_s("Hit!!!!\n");
+			setColor();
+		  }
+		}
+	  }
+	}
+  }
+
+  //ここまで来たってことはダメだったってことだからpopしてバック
+  if(already_put.size())already_put.pop_back();
+  return 0;
 }

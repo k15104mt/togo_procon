@@ -16,93 +16,133 @@ void Reverse(int n, int *x, int *y);
 
 
 //とりあえず頂点が一番左上の部分に設置するとする
-Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, std::vector<std::vector<Point>> &framePoint) {
-  if (already_put.size() == 0) {
-	return framePoint[0][0];
-  }
-  int b;			//直線方程式 y=-x+b のb
-  Point point;	//返り値
-
-				////ピースと設置情報より，未設置部の図形頂点を求める
-  for (int i = 0; i < already_put.size(); i++) {
-	//printf("\n--NOT処理[%d]--\n", i);	//debug
-	std::vector<std::vector<Point>> putPiece;	//フレームにNOT処理するピース情報
-
-	bp = framePoint[0].size() + 1;										//NOT入力図形頂点数(フレーム)
-	ap = data[already_put[i].piece_num].getPoint()[0].size() + 1;	//NOT入力図形頂点数(ピース)
-																	//printf("bp:%d,ap:%d\n", bp, ap);		//debug
-
-	for (int j = 0; j < bp - 1; j++) {	//NOT処理で使う変数格納
-	  bx[j] = framePoint[0][j].x;	//※要修正（フレーム情報の一つしか使ってない）
-	  by[j] = framePoint[0][j].y;
-	  //printf("b[%d](%d,%d)\n", j, bx[j], by[j]);	//debug
+Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, std::vector<std::vector<Point>> areaPoint) {
+	if (already_put.size() == 0) {
+		return areaPoint[0][0];
 	}
-	bx[bp - 1] = bx[0];
-	by[bp - 1] = by[0];
+	int b;			//直線方程式 y=-x+b のb
+	Point point;	//返り値
+	//printf("debug>alreadysize:%d\ndebug>areasize:%d\n\n", already_put.size(),areaPoint.size());
+
+	////ピースと設置情報より，未設置部の図形頂点を求める
+
+	for (int i = 0; i < already_put.size(); i++) {	//設置ピース毎
+		//printf("debug>設置ピース[%d]\n",i);
+		for (int k = 0; k < areaPoint.size(); k++) {	//分割エリア毎
+			//printf("debug>確認分割エリア[%d]\n", k);
+			//printf("\n--NOT処理[%d]--\n", i);	//debug
+			//std::vector<std::vector<Point>> putPiece;	//フレームにNOT処理するピース情報	//なにこれ
+
+			bp = areaPoint[k].size() + 1;										//NOT入力図形頂点数(フレーム)
+			ap = data[already_put[i].piece_num].getPoint()[0].size() + 1;	//NOT入力図形頂点数(ピース)
+																			//printf("bp:%d,ap:%d\n", bp, ap);		//debug
+
+			for (int j = 0; j < bp - 1; j++) {	//NOT処理で使う変数格納
+				bx[j] = areaPoint[k][j].x;	//※要修正（フレーム情報の一つしか使ってない）
+				by[j] = areaPoint[k][j].y;
+				//printf("b[%d](%d,%d)\n", j, bx[j], by[j]);	//debug
+			}
+			bx[bp - 1] = bx[0];
+			by[bp - 1] = by[0];
 
 
-	for (int j = 0; j < ap - 1; j++) {	//NoT処理で使う変数格納
-	  ax[j] = data[already_put[i].piece_num].getPoint()[already_put[i].point_num][j].x + already_put[i].base_point.x;	//きもいけど設置ピース取得してる
-	  ay[j] = data[already_put[i].piece_num].getPoint()[already_put[i].point_num][j].y + already_put[i].base_point.y;
-	  //printf("a[%d](%d,%d)\n", j, ax[j], ay[j]);	//debug
-	}
-	ax[ap - 1] = ax[0];
-	ay[ap - 1] = ay[0];
+			for (int j = 0; j < ap - 1; j++) {	//NoT処理で使う変数格納
+				ax[j] = data[already_put[i].piece_num].getPoint()[already_put[i].point_num][j].x + already_put[i].base_point.x;	//きもいけど設置ピース取得してる
+				ay[j] = data[already_put[i].piece_num].getPoint()[already_put[i].point_num][j].y + already_put[i].base_point.y;
+				//printf("a[%d](%d,%d)\n", j, ax[j], ay[j]);	//debug
+			}
+			ax[ap - 1] = ax[0];	//一周
+			ay[ap - 1] = ay[0];	//一周
 
-	OnNot();	//not処理を行う
-				/*
-				////debug
-				printf("debug>rc:%d\n", rc);
-				for (int i = 0; i < rc; ++i) {
-				printf("--i:%d--\n", i);
-				for (int j = 0; j < rp[i]; ++j) {
-				printf("(%d,%d)\n", rx[i][j], ry[i][j]);
+			OnNot();	//not処理を行う
+						/*
+						////debug
+						printf("debug>rc:%d\n", rc);
+						for (int i = 0; i < rc; ++i) {
+						printf("--i:%d--\n", i);
+						for (int j = 0; j < rp[i]; ++j) {
+						printf("(%d,%d)\n", rx[i][j], ry[i][j]);
+						}
+						}*/
+
+			areaPoint.erase(areaPoint.begin()+k);	//一旦見てるエリア削除※削減あり
+			////NOTで出した設置ピース情報とフレームを結合する
+			//未設置エリアの更新
+			for (int i = 0; i < rc; i++) {
+				std::vector<Point> Tmp;
+				for (int j = 0; j < rp[i]; j++) {
+					Point tmp;
+					tmp.x = rx[i][j]; tmp.y = ry[i][j];
+					Tmp.push_back(tmp);
 				}
-				}*/
+				areaPoint.insert(areaPoint.begin()+k,Tmp);
+			}
+			//printf("rc=%d\n", rc);
 
-				////NOTで出した設置ピース情報とフレームを結合する
-	framePoint.clear();
+			/*for (int i = 0; i < rc; i++) {
+				printf("area[%d]=", i);
+				for (int j = 0; j < rp[i]; j++) {
+					printf("{%d,%d},", rx[i][j], ry[i][j]);
+				}
+				printf("\n");
+			}
+			*/
 
-	for (int i = 0; i < rc; i++) {
-	  std::vector<Point> Tmp;
-	  for (int j = 0; j < rp[i]; j++) {
-		Point tmp;
-		tmp.x = rx[i][j]; tmp.y = ry[i][j];
-		Tmp.push_back(tmp);
-	  }
-	  framePoint.push_back(Tmp);
+			for (int i = 0; i < areaPoint.size(); i++) {
+				//printf("area[%d]:",i);
+				for (int j = 0; j < areaPoint[i].size(); j++) {
+					//printf("{%d,%d},",areaPoint[i][j].x, areaPoint[i][j].y);
+
+					if (i == j&&i == 0) {	//暫定の左上
+						b = areaPoint[i][j].x + areaPoint[i][j].y;
+						point.x = areaPoint[i][j].x; point.y=areaPoint[i][j].y;
+					}
+					else if (b>areaPoint[i][j].x + areaPoint[i][j].y) {	//最小
+						b = areaPoint[i][j].x + areaPoint[i][j].y;
+						point.x = areaPoint[i][j].x; point.y = areaPoint[i][j].y;
+					}
+					else if (b== areaPoint[i][j].x + areaPoint[i][j].y &&point.x>areaPoint[i][j].x) {	//bの値が同じならばxが小さい方を優先
+						b = areaPoint[i][j].x + areaPoint[i][j].y;
+						point.x = areaPoint[i][j].x; point.y = areaPoint[i][j].y;
+					}
+
+				}
+				//printf("\n");
+			}
+
+
+			/*	分割対応のためゴミと化した
+			//出した未設置部頂点のうち，最も左上の座標を取得する
+			for (int i = 0; i < rc;i++) {
+				for (int j = 0; j < rp[i]; j++) {
+					if (k == j &&  k == 0) {	//暫定のb最小値
+						b = rx[i][j] + ry[i][j];
+						point.x = rx[i][j]; point.y = ry[i][j];
+					}
+
+					else if (b > rx[i][j] + ry[i][j]) {	//最小
+						b = rx[i][j] + ry[i][j];
+						point.x = rx[i][j]; point.y = ry[i][j];
+					}
+
+					else if (b == rx[i][j] + ry[i][j] && point.x > rx[i][j]) {	//bの値が同じならばxが小さい方を優先
+						b = rx[i][j] + ry[i][j];
+						point.x = rx[i][j]; point.y = ry[i][j];
+					}
+				}
+			}*/
+
+			//printf("debug>左上(%d,%d),b:%d\n", point.x, point.y,b);
+			//ここまでいくと更新
+		}
+		//printf("\n--------------\n\n");
 	}
-  }
 
-  printf("rc=%d\n", rc);
 
-  for (int i = 0; i < rc; i++) {
-	printf("area[%d]=",i);
-	for (int j = 0; j < rp[i]; j++) {
-	  printf("{%d,%d},", rx[i][j], ry[i][j]);
-	}
-	printf("\n");
-  }
-  
-  //出した未設置部頂点のうち，最も左上の座標を取得する
-  for (int i = 0; i < rc; ++i) {
-	for (int j = 0; j < rp[i]; ++j) {
-	  if (i == j && j == 0) {	//暫定のb最小値
-		b = rx[i][j] + ry[i][j];
-		point.x = rx[i][j]; point.y = ry[i][j];
-	  }
-	  else if (b > rx[i][j] + ry[i][j]) {	//最小
-		b = rx[i][j] + ry[i][j];
-		point.x = rx[i][j]; point.y = ry[i][j];
-	  }
-	  else if (b == rx[i][j] + ry[i][j] && point.x < rx[i][j]) {	//bの値が同じならばxが小さい方を優先
-		b = rx[i][j] + ry[i][j];
-		point.x = rx[i][j]; point.y = ry[i][j];
-	  }
-	}
-  }
 
-  return point;
+	
+
+	return point;
 }
 
 
@@ -432,7 +472,7 @@ void OnNot() {
 }
 
 // 抽出図形ｎの外形線(x1,y)-(x2,y)に接する図形を調査する。
-void MergeObject(int n, int x1, int x2, int y){
+void MergeObject(int n, int x1, int x2, int y) {
 	int	i;
 
 	if (x1 < x2)
@@ -608,7 +648,7 @@ void OnMerge() {
 }
 
 // 冗長点削除の処理
-void OnClean(){
+void OnClean() {
 	int	i, j;
 	double	a, b, c, len;
 

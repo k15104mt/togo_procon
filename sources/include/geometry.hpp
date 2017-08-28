@@ -5,6 +5,6 @@
 #include"piece.hpp"
 #include<vector>
 
-Point getPutPoint(std::vector<Piece>&, std::vector<putData>&,std::vector<std::vector<Point>>&);
+Point getPutPoint(std::vector<Piece>&, std::vector<putData>&,std::vector<std::vector<Point>>);
 
 #endif

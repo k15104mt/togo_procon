@@ -30,7 +30,6 @@ Piece::Piece(std::vector<Point> &data){
     //printf("--回転パターン[%dπ/2]--\n", i); //debug
     for (int j = 0; j < num; j++) {
       tmp[j] = PointRotate((1.0 / 2.0)*i*PI, data[j]);
-			//printf("前%d,%d\n",tmp[j].x, tmp[j].y); //debug
 			if(min.x>tmp[j].x)min.x=tmp[j].x;
 			if(min.y>tmp[j].y)min.y=tmp[j].y;
     }
@@ -38,15 +37,18 @@ Piece::Piece(std::vector<Point> &data){
 		if(min.x<0){
 			for(int j=0;j<num;j++){
 				tmp[j].x+=std::abs(min.x);
-				//printf("後%d,%d\n",tmp[j].x, tmp[j].y); //debug
 			}
 		}
 		if(min.y<0){
 			for(int j=0;j<num;j++){
 				tmp[j].y+=std::abs(min.y);
-				//printf("後%d,%d\n",tmp[j].x, tmp[j].y); //debug
 			}
 		}
+		/*
+		//debug表示用
+		for (int j = 0; j<num; j++) {
+			printf("debug>(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
+		}*/
     point.push_back(tmp); //一つの回転パターンをpushback
 		min.x=0; min.y=0;
   }

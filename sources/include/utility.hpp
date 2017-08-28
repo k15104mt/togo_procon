@@ -29,7 +29,6 @@ public:
   int point_num;//回転
   int vertex_num;//頂点
   Point base_point;//原点がどの位置か
-
 };
 
 //ベクトルも同じ型みたいなものだし多少はね

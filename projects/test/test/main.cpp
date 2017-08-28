@@ -811,11 +811,20 @@ int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putDat
 	}
   }
 
-  //‚±‚ê‚Í‚¸‚ç‚³‚È‚¢‚Æƒ„ƒo‚»‚¤‚È‚â‚Â//‚â‚Á‚Ï‚è‚±‚ê‚Í‚¸‚ç‚³‚È‚­‚Ä‚à‚æ‚¢‚â‚Â
-  if (collisionFrame(framePoint[0], cp1)) {
+  int flag = 0;
+  for (int j = 0; j < static_cast<int>(framePoint.size()); j++) {
+	if (!collisionFrame(framePoint[j], cp1)) {
+	  flag = 1;
+	}
+  }
+
+
+  if (!flag) {
 	printf("frame");
 	return 1;
   }
+  
+  
 
   return 0;
 }

@@ -114,35 +114,7 @@ void Main() {
 	  }
 
 
-	  if (now.size() == 0 && s3d::Input::KeyEnter.clicked) {
-		printf("%d", piece.size());
-		for (auto i : piece) {
-
-		  printf(":%d", i.size());
-		  int minx = 999, miny = 999;
-		  for (auto j : i) {
-			minx = std::min(minx, j.x);
-			miny = std::min(miny, j.y);
-		  }
-
-		  for (auto j : i) {
-			//寄せる
-			printf(" %d %d", (j.x-minx)/10, (j.y-miny)/10);
-		  }
-		}
-
-
-		printf(":%d", frame.size());
-		int minx = 999, miny = 999;
-		for (auto i : frame) {
-		  minx = std::min(minx, i.x);
-		  miny = std::min(miny, i.y);
-		}
-		for (auto i : frame) {
-		  printf(" %d %d", (i.x-minx)/10,(i.y-miny)/10);
-		}
-		printf("\n");
-	  }
+	  
 
 	  if (now.size() == 0 && gui.button(L"copy").pushed) {
 		std::string str;

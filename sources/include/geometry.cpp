@@ -1,4 +1,5 @@
 #include"geometry.hpp"
+#include"color.hpp"
 #include<cstdlib>
 #include<math.h>
 #define PI 3.1415926535
@@ -25,43 +26,41 @@ Point getUpperLeft(std::vector<std::vector<Point>> &areaPoint);
 Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, std::vector<std::vector<Point>> areaPoint) {
 	Point point;	//返り値
 	Point tmp;
-	//printf("debug>alreadysize:%d\ndebug>areasize:%d\n\n", already_put.size(),areaPoint.size());
+
+	//setColor(F_CYAN|F_INTENSITY, B_BLACK); printf("設置ピース数:%d\n分割エリア数:%d\n", already_put.size(), areaPoint.size()); 
+	//printf("<初期フレーム座標>\n"); for (int i = 0; i < (int)areaPoint.size(); i++) { printf("area[%d]:", i); for (int j = 0; j < (int)areaPoint[i].size(); j++) { printf("{%d,%d},", areaPoint[i][j].x, areaPoint[i][j].y); }printf("\n"); }setColor();
 
 	if (already_put.size() == 0) {
 		point = getUpperLeft(areaPoint);
 		return point;
 	}
-	////ピースと設置情報より，未設置部の図形頂点を求める
 
-	for (int i = 0; i < (int)already_put.size(); i++) {	//設置ピース毎
-		//printf("debug>設置ピース[%d]\n",i);
+	////ピースと設置情報より，未設置部の図形頂点を求める
+	for (int i = 0; i < (int)already_put.size(); i++) {		//設置ピース毎
+		//setColor(F_BLUE|F_INTENSITY, B_BLACK);	printf("\n----[%d]番目の設置ピースでNOT処理----\n", i);	setColor();
 		for (int k = 0; k < (int)areaPoint.size(); k++) {	//分割エリア毎
-			a.clear();
+			a.clear();	//更新
 			b.clear();
 
-			//printf("debug>確認分割エリア[%d]\n", k);
-			//printf("\n--NOT処理[%d]--\n", i);	//debug
-			//std::vector<std::vector<Point>> putPiece;	//フレームにNOT処理するピース情報	//なにこれ
+			//printf("--確認分割エリア[%d]--\n", k);
 
-			bp = areaPoint[k].size() + 1;										//NOT入力図形頂点数(フレーム)
+			bp = areaPoint[k].size() + 1;									//NOT入力図形頂点数(フレーム)
 			ap = data[already_put[i].piece_num].getPoint()[0].size() + 1;	//NOT入力図形頂点数(ピース)
-			//printf("bp:%d,ap:%d\n", bp, ap);		//debug
 
 			for (int j = 0; j < bp - 1; j++) {	//NOT処理で使う変数格納
-				tmp.x = areaPoint[k][j].x;	//※要修正（フレーム情報の一つしか使ってない）
-				tmp.y = areaPoint[k][j].y;
+				tmp = areaPoint[k][j];
 				b.push_back(tmp);
-				//printf("b[%d](%d,%d)\n", j, b[j].x, b[j].y);	//debug
+				//setColor(F_ORANGE); printf("b[%d](%d,%d)\n", j, b[j].x, b[j].y); setColor();	//debug
 			}
 			tmp= b[0];
 			b.push_back(tmp);
-			//puts("--");
+			//puts("--");	//debug
 
 			for (int j = 0; j < ap - 1; j++) {	//NoT処理で使う変数格納
 				tmp.x = data[already_put[i].piece_num].getPoint()[already_put[i].point_num][j].x + already_put[i].base_point.x;	//きもいけど設置ピース取得してる
 				tmp.y = data[already_put[i].piece_num].getPoint()[already_put[i].point_num][j].y + already_put[i].base_point.y;
 				a.push_back(tmp);
-				//printf("a[%d](%d,%d)\n", j, a[j].x, a[j].y);	//debug
+				//setColor(F_ORANGE); printf("a[%d](%d,%d)\n", j, a[j].x, a[j].y); setColor();	//debug
 			}
 			tmp = a[0];	//一周
 			a.push_back(tmp);
@@ -78,20 +77,11 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, s
 				}
 				areaPoint.insert(areaPoint.begin()+k,Tmp);
 			}
-			//printf("rc=%d\n", rc);
-
-			/*for (int i = 0; i < rc; i++) {
-				printf("area[%d]=", i);
-				for (int j = 0; j < rp[i]; j++) {
-					printf("{%d,%d},", r[i][j].x, r[i][j].y);
-				}
-				printf("\n");
-			}*/			
+			//printf("ピース設置による分割:rc=%d\n", rc);
 			point = getUpperLeft(areaPoint);
 
 			//ここまでいくと更新
 		}
-		//printf("\n--------------\n\n");
 	}
 	return point;
 }
@@ -198,21 +188,15 @@ void CutVector() {
 			f = vx2[j] * vy1[j] - vy2[j] * vx1[j];
 			if (b*d - a*e != 0) {
 				y = (a*f - c*d) / (b*d - a*e);
-				
 				if ((y < 10 * 10) || (y > 310 * 10)) continue;
 				cy = (int)(y + 0.5);
-				if (ceil(y)!=floor(y)) {
-					printf("debug>yが少数です\n");
-				}
 				if ((((cy > vy1[i]) && (cy < vy2[i])) || ((cy < vy1[i]) && (cy > vy2[i]))) &&
 					(((cy > vy1[j]) && (cy < vy2[j])) || ((cy < vy1[j]) && (cy > vy2[j])))) {
 					// ベクトルiとjは交差している。
 					// 両ベクトルを交点で分割する。
 					// ベクトルi,jを変更し、分割して増えたベクトルを末尾に追加。
 					cx = (int)((c*e - b*f) / (b*d - a*e) + 0.5);
-					if (ceil(((c*e - b*f) / (b*d - a*e) )) != floor(((c*e - b*f) / (b*d - a*e) ))) {
-						printf("debug>xが少数です\n");
-					}
+
 					vx2[vn] = vx2[i];
 					vy2[vn] = vy2[i];
 					vx2[i] = vx1[vn] = cx;
@@ -665,6 +649,6 @@ Point getUpperLeft(std::vector<std::vector<Point>> &areaPoint){
 		}
 		//printf("\n");
 	}
-	//printf("debug>左上(%d,%d),tall:%d\n", point.x, point.y, tall);
+	//printf("暫定左上(%d,%d),tall:%d\n", point.x, point.y, tall);
 	return point;
 }

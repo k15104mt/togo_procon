@@ -74,12 +74,63 @@ int crossLine(std::vector<Point> &data1, std::vector<Point> &data2) {
 int inPolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
   for (int i = 0; i < static_cast<int>(data2.size()); ++i) {
 	for (int j = 0; j < static_cast<int>(data1.size()); ++j) {
+
+	  if (data1[j] == data2[i]) {
+		if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
+		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])>0) {
+
+		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0 &&
+			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
+			
+		  }
+		  else {
+			return 0;
+		  }
+
+		}
+		else if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
+		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])<0) {
+
+		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) > 0 &&
+			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) < 0) {
+			return 0;
+		  }
+
+		}
+	  }
+
+	  /*
+	  if (data1[j] == data2[i]) {
+		if (cross(data1[j] -data1[(j + data1.size() - 1) % data1.size()],
+		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])>0) {
+
+		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0 &&
+			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0) {
+			return 0;
+		  }
+
+		}
+		else if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
+		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])<0) {
+
+		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0 &&
+			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
+			printf("(%d %d)\n", cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i])
+			  , cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]));
+			
+			return 0;
+		  }
+
+		}
+	  }*/
+	  /*
 	  if (data1[j] == data2[i] &&
 		cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0 &&
 		cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] -data2[i]) <= 0) {
+		printf("%d %d\n", j, i);
 		return 0;
 	  }
-
+	  */
 	}
   
 
@@ -221,7 +272,7 @@ int collisionFrame(std::vector<Point> &data1,std::vector<Point> &data2){
 	printf("in");
     return 1;
   }
-
+  /*
   for (int i = 0; i < static_cast<int>(data2.size()); ++i) {
 	for (int j = 0; j < static_cast<int>(data1.size()); ++j) {
 	  Vector a = data1[(j + 1) % data1.size()] - data2[i];
@@ -253,7 +304,7 @@ int collisionFrame(std::vector<Point> &data1,std::vector<Point> &data2){
 		}
 	  }
 	}
-  }
+  }*/
 
   
   return 0;  

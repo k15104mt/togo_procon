@@ -23,34 +23,34 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, s
 	}
 	int b;			//直線方程式 y=-x+b のb
 	Point point;	//返り値
-	printf("debug>alreadysize:%d\ndebug>areasize:%d\n\n", already_put.size(),areaPoint.size());
+	//printf("debug>alreadysize:%d\ndebug>areasize:%d\n\n", already_put.size(),areaPoint.size());
 
 	////ピースと設置情報より，未設置部の図形頂点を求める
 
 	for (int i = 0; i < already_put.size(); i++) {	//設置ピース毎
-		printf("debug>設置ピース[%d]\n",i);
+		//printf("debug>設置ピース[%d]\n",i);
 		for (int k = 0; k < areaPoint.size(); k++) {	//分割エリア毎
-			printf("debug>確認分割エリア[%d]\n", k);
-			printf("\n--NOT処理[%d]--\n", i);	//debug
+			//printf("debug>確認分割エリア[%d]\n", k);
+			//printf("\n--NOT処理[%d]--\n", i);	//debug
 			//std::vector<std::vector<Point>> putPiece;	//フレームにNOT処理するピース情報	//なにこれ
 
 			bp = areaPoint[k].size() + 1;										//NOT入力図形頂点数(フレーム)
 			ap = data[already_put[i].piece_num].getPoint()[0].size() + 1;	//NOT入力図形頂点数(ピース)
-			printf("bp:%d,ap:%d\n", bp, ap);		//debug
+			//printf("bp:%d,ap:%d\n", bp, ap);		//debug
 
 			for (int j = 0; j < bp - 1; j++) {	//NOT処理で使う変数格納
 				bx[j] = areaPoint[k][j].x;	//※要修正（フレーム情報の一つしか使ってない）
 				by[j] = areaPoint[k][j].y;
-				printf("b[%d](%d,%d)\n", j, bx[j], by[j]);	//debug
+				//printf("b[%d](%d,%d)\n", j, bx[j], by[j]);	//debug
 			}
 			bx[bp - 1] = bx[0];
 			by[bp - 1] = by[0];
-			puts("--");
+			//puts("--");
 
 			for (int j = 0; j < ap - 1; j++) {	//NoT処理で使う変数格納
 				ax[j] = data[already_put[i].piece_num].getPoint()[already_put[i].point_num][j].x + already_put[i].base_point.x;	//きもいけど設置ピース取得してる
 				ay[j] = data[already_put[i].piece_num].getPoint()[already_put[i].point_num][j].y + already_put[i].base_point.y;
-				printf("a[%d](%d,%d)\n", j, ax[j], ay[j]);	//debug
+				//printf("a[%d](%d,%d)\n", j, ax[j], ay[j]);	//debug
 			}
 			ax[ap - 1] = ax[0];	//一周
 			ay[ap - 1] = ay[0];	//一周
@@ -78,21 +78,12 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, s
 				}
 				areaPoint.insert(areaPoint.begin()+k,Tmp);
 			}
-			//printf("rc=%d\n", rc);
-
-			for (int i = 0; i < rc; i++) {
-				printf("area[%d]=", i);
-				for (int j = 0; j < rp[i]; j++) {
-					printf("{%d,%d},", rx[i][j], ry[i][j]);
-				}
-				printf("\n");
-			}
 			
 
 			for (int i = 0; i < areaPoint.size(); i++) {
-				printf("area[%d]:",i);
+				//printf("area[%d]:",i);
 				for (int j = 0; j < areaPoint[i].size(); j++) {
-					printf("{%d,%d},",areaPoint[i][j].x, areaPoint[i][j].y);
+					//printf("{%d,%d},",areaPoint[i][j].x, areaPoint[i][j].y);
 
 					if (i == j&&i == 0) {	//暫定の左上
 						b = areaPoint[i][j].x + areaPoint[i][j].y;
@@ -108,7 +99,7 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, s
 					}
 
 				}
-				printf("\n");
+				//printf("\n");
 			}
 
 
@@ -133,10 +124,10 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, s
 				}
 			}*/
 
-			printf("debug>左上(%d,%d),b:%d\n", point.x, point.y,b);
+			//printf("debug>左上(%d,%d),b:%d\n", point.x, point.y,b);
 			//ここまでいくと更新
 		}
-		printf("\n--------------\n\n");
+		//printf("\n--------------\n\n");
 	}
 
 

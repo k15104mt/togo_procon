@@ -25,8 +25,7 @@ int solve(std::vector<Piece> &, std::vector<putData> &);
 
 
 int main() {
-
-  //QRコードの数
+ //QRコードの数
   int qrNum;
   std::cin >> qrNum;
   std::cin.ignore();
@@ -75,7 +74,7 @@ int main() {
   std::vector<Piece> data;
 
   for (int i = 0; i < static_cast<int>(piecePoint.size()); i++) {
-	data.push_back(piecePoint[i]);
+	data.push_back(piecePoint[i]); 
   }
 
   //------------------------------------------------------

@@ -1,5 +1,6 @@
 #include"geometry.hpp"
 #include<cstdlib>
+#include<math.h>
 #define PI 3.1415926535
 
 int	ap = 0, ax[256], ay[256], bp = 0, bx[256], by[256];	// 入力図形の記憶用	ap,bp:頂点数
@@ -22,34 +23,34 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, s
 	}
 	int b;			//直線方程式 y=-x+b のb
 	Point point;	//返り値
-	//printf("debug>alreadysize:%d\ndebug>areasize:%d\n\n", already_put.size(),areaPoint.size());
+	printf("debug>alreadysize:%d\ndebug>areasize:%d\n\n", already_put.size(),areaPoint.size());
 
 	////ピースと設置情報より，未設置部の図形頂点を求める
 
 	for (int i = 0; i < already_put.size(); i++) {	//設置ピース毎
-		//printf("debug>設置ピース[%d]\n",i);
+		printf("debug>設置ピース[%d]\n",i);
 		for (int k = 0; k < areaPoint.size(); k++) {	//分割エリア毎
-			//printf("debug>確認分割エリア[%d]\n", k);
-			//printf("\n--NOT処理[%d]--\n", i);	//debug
+			printf("debug>確認分割エリア[%d]\n", k);
+			printf("\n--NOT処理[%d]--\n", i);	//debug
 			//std::vector<std::vector<Point>> putPiece;	//フレームにNOT処理するピース情報	//なにこれ
 
 			bp = areaPoint[k].size() + 1;										//NOT入力図形頂点数(フレーム)
 			ap = data[already_put[i].piece_num].getPoint()[0].size() + 1;	//NOT入力図形頂点数(ピース)
-																			//printf("bp:%d,ap:%d\n", bp, ap);		//debug
+			printf("bp:%d,ap:%d\n", bp, ap);		//debug
 
 			for (int j = 0; j < bp - 1; j++) {	//NOT処理で使う変数格納
 				bx[j] = areaPoint[k][j].x;	//※要修正（フレーム情報の一つしか使ってない）
 				by[j] = areaPoint[k][j].y;
-				//printf("b[%d](%d,%d)\n", j, bx[j], by[j]);	//debug
+				printf("b[%d](%d,%d)\n", j, bx[j], by[j]);	//debug
 			}
 			bx[bp - 1] = bx[0];
 			by[bp - 1] = by[0];
-
+			puts("--");
 
 			for (int j = 0; j < ap - 1; j++) {	//NoT処理で使う変数格納
 				ax[j] = data[already_put[i].piece_num].getPoint()[already_put[i].point_num][j].x + already_put[i].base_point.x;	//きもいけど設置ピース取得してる
 				ay[j] = data[already_put[i].piece_num].getPoint()[already_put[i].point_num][j].y + already_put[i].base_point.y;
-				//printf("a[%d](%d,%d)\n", j, ax[j], ay[j]);	//debug
+				printf("a[%d](%d,%d)\n", j, ax[j], ay[j]);	//debug
 			}
 			ax[ap - 1] = ax[0];	//一周
 			ay[ap - 1] = ay[0];	//一周
@@ -79,19 +80,19 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, s
 			}
 			//printf("rc=%d\n", rc);
 
-			/*for (int i = 0; i < rc; i++) {
+			for (int i = 0; i < rc; i++) {
 				printf("area[%d]=", i);
 				for (int j = 0; j < rp[i]; j++) {
 					printf("{%d,%d},", rx[i][j], ry[i][j]);
 				}
 				printf("\n");
 			}
-			*/
+			
 
 			for (int i = 0; i < areaPoint.size(); i++) {
-				//printf("area[%d]:",i);
+				printf("area[%d]:",i);
 				for (int j = 0; j < areaPoint[i].size(); j++) {
-					//printf("{%d,%d},",areaPoint[i][j].x, areaPoint[i][j].y);
+					printf("{%d,%d},",areaPoint[i][j].x, areaPoint[i][j].y);
 
 					if (i == j&&i == 0) {	//暫定の左上
 						b = areaPoint[i][j].x + areaPoint[i][j].y;
@@ -107,7 +108,7 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, s
 					}
 
 				}
-				//printf("\n");
+				printf("\n");
 			}
 
 
@@ -132,10 +133,10 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, s
 				}
 			}*/
 
-			//printf("debug>左上(%d,%d),b:%d\n", point.x, point.y,b);
+			printf("debug>左上(%d,%d),b:%d\n", point.x, point.y,b);
 			//ここまでいくと更新
 		}
-		//printf("\n--------------\n\n");
+		printf("\n--------------\n\n");
 	}
 
 
@@ -251,14 +252,21 @@ void CutVector() {
 			f = vx2[j] * vy1[j] - vy2[j] * vx1[j];
 			if (b*d - a*e != 0) {
 				y = (a*f - c*d) / (b*d - a*e);
+				
 				if ((y < 10 * 10) || (y > 310 * 10)) continue;
 				cy = (int)(y + 0.5);
+				if (ceil(y)!=floor(y)) {
+					printf("debug>yが少数です\n");
+				}
 				if ((((cy > vy1[i]) && (cy < vy2[i])) || ((cy < vy1[i]) && (cy > vy2[i]))) &&
 					(((cy > vy1[j]) && (cy < vy2[j])) || ((cy < vy1[j]) && (cy > vy2[j])))) {
 					// ベクトルiとjは交差している。
 					// 両ベクトルを交点で分割する。
 					// ベクトルi,jを変更し、分割して増えたベクトルを末尾に追加。
 					cx = (int)((c*e - b*f) / (b*d - a*e) + 0.5);
+					if (ceil(((c*e - b*f) / (b*d - a*e) )) != floor(((c*e - b*f) / (b*d - a*e) ))) {
+						printf("debug>xが少数です\n");
+					}
 					vx2[vn] = vx2[i];
 					vy2[vn] = vy2[i];
 					vx2[i] = vx1[vn] = cx;
@@ -468,7 +476,7 @@ void OnNot() {
 		}*/
 		Reverse(rp[i], rx[i], ry[i]);
 	}
-	//OnClean();
+	OnClean();
 }
 
 // 抽出図形ｎの外形線(x1,y)-(x2,y)に接する図形を調査する。
@@ -670,7 +678,7 @@ void OnClean() {
 			b = tx[tp - 1] - rx[i][j + 1];
 			c = rx[i][j + 1] * ty[tp - 1] - ry[i][j + 1] * tx[tp - 1];
 			len = (a * rx[i][j] + b * ry[i][j] + c) / sqrt(a * a + b * b);
-			if ((len >= 5) || (len <= -5))
+			if ((len >= 0.5) || (len <= -0.5))
 			{
 				// 垂線が長いので冗長点ではない。
 				tx[tp] = rx[i][j];

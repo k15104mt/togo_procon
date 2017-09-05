@@ -25,6 +25,7 @@ int solve(std::vector<Piece> &, std::vector<putData> &);
 
 
 int main() {
+
   //QRƒR[ƒh‚Ì”
   int qrNum;
   std::cin >> qrNum;

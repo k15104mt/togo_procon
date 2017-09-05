@@ -116,9 +116,11 @@ int main() {
   solve(data, already_put);
 
   //回答表示
+  setColor(F_GREEN | F_INTENSITY);
   for (auto i : already_put) {
 	printf("%d %d (%d,%d)\n", i.piece_num, i.point_num,i.base_point.x,i.base_point.y);
   }
+  setColor();
 
   //ファイル出力
   FILE *fp;
@@ -128,6 +130,7 @@ int main() {
 	  fprintf_s(fp, "%d %d (%d,%d)\n", i.piece_num, i.point_num, i.base_point.x, i.base_point.y);
 	}
   }
+
 
   getchar();
   getchar();
@@ -193,15 +196,14 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
 	  for (int j = 0; j < static_cast<int>(data[i].getPoint().size()); ++j) {//回転の組み合わせの数
 		for (int k = 0; k < static_cast<int>(data[i].getPoint()[j].size()); ++k) {//設置頂点
 
-		  printf("今置きたいやつ(%d,%d,%d)\n", i,j,k);
+		  
 		  Point tmp = getPutPoint(data, already_put,framePoint);
-		  printf("置きたい点"); tmp.println();
-		  printf("framePoint.size() %d\n", framePoint.size());
+		  printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", i, j, k,tmp.x,tmp.y);
 		  putData put(i, j, k, Point(tmp.x-data[i].getPoint()[j][k].x,tmp.y-data[i].getPoint()[j][k].y));
 		  if (!checkHit(data, already_put, put)) {
 			//もし当たり判定がokなら
 			setColor(F_CYAN | F_INTENSITY);
-			printf("put\n");
+			printf("       put\n");
 			setColor();
 			already_put.push_back(put);
 			if (solve(data, already_put)) {
@@ -220,6 +222,20 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
   }
 
   //ここまで来たってことはダメだったってことだからpopしてバック
-  if(already_put.size())already_put.pop_back();
+  if (already_put.size()) {
+	setColor(F_ORANGE | F_INTENSITY);
+	printf("back  depth = %10d\n", already_put.size());
+	setColor();
+
+	already_put.pop_back();
+  }
+  else {
+	setColor(F_ORANGE | F_INTENSITY);
+	printf("back  depth = %10d\n",0);
+	setColor();
+  }
+
+  
+
   return 0;
 }

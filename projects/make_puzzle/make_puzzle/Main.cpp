@@ -18,6 +18,7 @@ void Main() {
   gui.addln(L"copy",s3d::GUIButton::Create(L"copy"));
   gui.setPos(1020, 0);
 
+  s3d::Font pos(30);
 
   //■■■■■■■■■■■■■■■■■■■■
   //AllocConsole();
@@ -36,7 +37,7 @@ void Main() {
 	for (int j = 0; j < 101; j++) {
 	  plot[i][j].x = j * 10;
 	  plot[i][j].y = i * 10;
-	  circle[i][j] = s3d::Circle(j * 10 + 10, i * 10 + 10, 3);
+	  circle[i][j] = s3d::Circle(j * 10 + 10, i * 10 + 10, 4);
 	}
   }
 
@@ -59,7 +60,24 @@ void Main() {
 
   while (s3d::System::Update()) {
 	//点描画
-	for (auto i : circle) { for (auto j : i) { j.draw(s3d::Color(100, 100, 100)); } }
+	for (int i = 0; i < static_cast<int>(circle.size());++i) {
+	  for (int j = 0; j < static_cast<int>(circle[i].size()); ++j) {
+		if (i % 5 == 0 || j % 5 == 0) {
+		  circle[i][j].draw(s3d::Color(200, 200, 200));
+		}
+		else {
+		  circle[i][j].draw(s3d::Color(100, 100, 100)); 
+		}
+	  }
+	}
+
+	for (int i = 0; i < static_cast<int>(circle.size()); ++i) {
+	  for (int j = 0; j < static_cast<int>(circle[i].size()); ++j) {
+		if (circle[i][j].mouseOver) {
+		  pos(L"(" + s3d::ToString((circle[i][j].x - 10) / 10) + L"," + s3d::ToString((circle[i][j].y - 10) / 10) + L")").draw(s3d::Mouse::Pos().x + 10, s3d::Mouse::Pos().y + 10, s3d::Color(0, 255, 255));
+		}
+	  }
+	}
 
 	if (s3d::Input::MouseR.clicked) {
 	  if (now.size()) {

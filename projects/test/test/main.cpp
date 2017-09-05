@@ -25,16 +25,6 @@ int solve(std::vector<Piece> &, std::vector<putData> &);
 
 
 int main() {
-
-  std::vector<Point> p1{ {0,0},{4,0},{4,4},{0,4} };
-  std::vector<Point> p2{ { 0,0 },{ 4,0 },{ 4,4 },{ 0,4 } };
-
-  move(p2,Point(4,0));
-
-  if (collisionPiece(p1, p2)) {
-	printf("Hit");
-  }
-
   //QRƒR[ƒh‚Ì”
   int qrNum;
   std::cin >> qrNum;
@@ -208,7 +198,7 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
 
 		  
 		  Point tmp = getPutPoint(data, already_put,framePoint);
-		  printf("(%2d,%2d,%2d) -->", i, j, k); tmp.print(); printf(" result -->");
+		  printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", i, j, k,tmp.x,tmp.y);
 		  putData put(i, j, k, Point(tmp.x-data[i].getPoint()[j][k].x,tmp.y-data[i].getPoint()[j][k].y));
 		  if (!checkHit(data, already_put, put)) {
 			//‚à‚µ“–‚½‚è”»’è‚ªok‚È‚ç

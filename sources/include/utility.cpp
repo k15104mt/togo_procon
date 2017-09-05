@@ -72,14 +72,18 @@ int crossLine(std::vector<Point> &data1, std::vector<Point> &data2) {
 
 //data1にdata２の頂点がすべて内包されてい
 int inPolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
-  //data2のi番目の点がdata1のポリゴン内にあるかどうか
   for (int i = 0; i < static_cast<int>(data2.size()); ++i) {
 	for (int j = 0; j < static_cast<int>(data1.size()); ++j) {
-	  if (data1[j] == data2[i] && cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) < 0) {
+	  if (data1[j] == data2[i] &&
+		cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0 &&
+		cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] -data2[i]) <= 0) {
 		return 0;
 	  }
-	}
 
+	}
+  
+
+  //data2のi番目の点がdata1のポリゴン内にあるかどうか
 	double x = 0.0;
 	int flag = 1;
 	for (int j = 0; j < static_cast<int>(data1.size()); ++j) {
@@ -139,7 +143,7 @@ int collisionPiece(std::vector<Point> &data1, std::vector<Point> &data2) {
 		  return 1;
 		}
 	  }
-	  /*
+	  /*これいるかわかんないや！！！！
 	  if (data1[i] == data2[j]) {
 		Vector a = data1[(i + 1) % data1.size()] - data1[i];
 		Vector b = data2[(j + 1) % data2.size()] - data2[j];

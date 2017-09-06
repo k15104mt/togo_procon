@@ -38,11 +38,14 @@ void Main(){
 	//qrのクリア
 	for (int i = 0; i < QRMAX; ++i) {
 	  if (gui.button(L"q" + s3d::ToString(i) + L"c").pushed) {
+		data.clear();
+		framePoint.clear();
 		gui.textField(L"q" + s3d::ToString(i)).setText(L"");
 	  }
 	}
 	//acのクリア
 	if (gui.button(L"ac").pushed) {
+	  putdata.clear();
 	  gui.textArea(L"answer").setText(L"");
 	}
 
@@ -127,7 +130,7 @@ void Main(){
 	  );
 	}
 
-	if (putdata.size()) {
+	if (putdata.size() && data.size()) {
 	  std::vector<s3d::Polygon> po;
 	  for (int i = 0; i < static_cast<int>(putdata.size()); ++i) {
 		s3d::Graphics2D::SetTransform(

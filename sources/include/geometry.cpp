@@ -48,6 +48,7 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, s
 			ap = data[already_put[i].piece_num].getPoint()[0].size() + 1;	//NOT入力図形頂点数(ピース)
 
 			for (int j = 0; j < bp - 1; j++) {	//NOT処理で使う変数格納
+				tmp = areaPoint[k][j];
 				b.push_back(tmp);
 				//setColor(F_ORANGE); printf("b[%d](%d,%d)\n", j, b[j].x, b[j].y); setColor();	//debug
 			}

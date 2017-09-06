@@ -109,13 +109,13 @@ void Main() {
 	else {
 	  //フレーム描画
 	  for (int i = 0; i < static_cast<int>(frame.size()); i++) {
-		s3d::Line(frame[i].x + 10, frame[i].y + 10, frame[(i + 1) % frame.size()].x + 10, frame[(i + 1) % frame.size()].y + 10).draw(s3d::Color(0, 0, 255));
+		s3d::Line(frame[i].x + 10, frame[i].y + 10, frame[(i + 1) % frame.size()].x + 10, frame[(i + 1) % frame.size()].y + 10).draw(3,s3d::Color(0, 0, 255));
 	  }
 	  //ピース描画
 	  if (piece.size()) {
 		for (int i = 0; i < static_cast<int>(piece.size()); i++) {
 		  for (int j = 0; j < static_cast<int>(piece[i].size()); j++) {
-			s3d::Line(piece[i][j].x + 10, piece[i][j].y + 10, piece[i][(j + 1) % piece[i].size()].x + 10, piece[i][(j + 1) % piece[i].size()].y + 10).draw(s3d::Color(0, 255, 0));
+			s3d::Line(piece[i][j].x + 10, piece[i][j].y + 10, piece[i][(j + 1) % piece[i].size()].x + 10, piece[i][(j + 1) % piece[i].size()].y + 10).draw(3,s3d::Color(0, 255, 0));
 		  }
 		}
 	  }
@@ -171,9 +171,9 @@ void Main() {
 	//現在の描画
 	if (now.size()) {
 	  for (int i = now.size() - 1; i > 0; i--) {
-		s3d::Line(now[i].x + 10, now[i].y + 10, now[i - 1].x + 10, now[i - 1].y + 10).draw(s3d::Color(255, 255, 0));
+		s3d::Line(now[i].x + 10, now[i].y + 10, now[i - 1].x + 10, now[i - 1].y + 10).draw(3,s3d::Color(255, 255, 0));
 	  }
-	  s3d::Line(now[now.size() - 1].x + 10, now[now.size() - 1].y + 10, s3d::Mouse::Pos().x, s3d::Mouse::Pos().y).draw(s3d::Color(255, 0, 0));
+	  s3d::Line(now[now.size() - 1].x + 10, now[now.size() - 1].y + 10, s3d::Mouse::Pos().x, s3d::Mouse::Pos().y).draw(3,s3d::Color(255, 0, 0));
 	}
   }
 }

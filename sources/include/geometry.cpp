@@ -3,21 +3,22 @@
 #include<cstdlib>
 #include<math.h>
 #define PI 3.1415926535
+#define MAX 256
 
 int	ap = 0, bp = 0;	// 入力図形の記憶用	ap,bp:頂点数
 std::vector<Point> a;
 std::vector<Point> b;
 
-int	rc = 0, rp[256];		// 演算後図形の記憶用
-std::vector<std::vector<Point>> r(100,std::vector<Point>(100));
+int	rc = 0, rp[MAX];		// 演算後図形の記憶用
+std::vector<std::vector<Point>> r(MAX,std::vector<Point>(MAX));
 
-int	vn = 0, vx1[256], vy1[256], vx2[256], vy2[256];	// ベクトルの記憶用
-int	tcnt = 0, tp, tx[256], ty[256], used[256];		// 一時記憶用
+int	vn = 0, vx1[MAX], vy1[MAX], vx2[MAX], vy2[MAX];	// ベクトルの記憶用
+int	tcnt = 0, tp, tx[MAX], ty[MAX], used[MAX];		// 一時記憶用
 
 void OnNot();
 void OnMerge();
 void OnClean();
-double CheckAngle(int n, int *x, int *y);
+int CheckAngle(std::vector<Point> point);
 void Reverse(int n,std::vector<Point> &point);
 Point getUpperLeft(std::vector<std::vector<Point>> &areaPoint);
 
@@ -90,24 +91,27 @@ void erase(int *ptr, int *last) {
 	while (++ptr < last)
 		*(ptr - 1) = *ptr;       //  要素をひとつ前にずらす
 }
-// 頂点の曲がり角度の合計を求める
-double CheckAngle(int n, int *x, int *y) {
-	int	i;
+// 頂点の曲がり角度の合計を求め，時計回りなら1を，反時計回りなら-1を，ねじれているなら0を返す
+int CheckAngle(std::vector<Point> point) {
+	int	i,n=point.size();
 	double	a1, a2, ang, total;
 
 	total = 0;
-	x[n] = x[1];
-	y[n] = y[1];
+	point[n].x = point[1].x;
+	point[n].y = point[1].y;
 	for (i = 1; i < n; ++i)
 	{
-		a1 = atan2(y[i] - y[i - 1], x[i] - x[i - 1]);
-		a2 = atan2(y[i + 1] - y[i], x[i + 1] - x[i]);
+		a1 = atan2(point[i].y - point[i - 1].y, point[i].x - point[i - 1].x);
+		a2 = atan2(point[i + 1].y - point[i].y, point[i + 1].x - point[i].x);
 		ang = a2 - a1;
 		while (ang > PI) ang -= (2 * PI);
 		while (ang < -PI) ang += (2 * PI);
 		total += ang;
 	}
-	return total;
+	if ((total > 2 * PI - 0.1) && (total < 2 * PI + 0.1))return -1;			//反時計回り
+	else if (!((ang > -2 * PI - 0.1) && (ang < -2 * PI + 0.1)))return 0;	//ねじれている図形
+	
+	return 1;	//正常な時計回り図形
 }
 
 // 頂点の並び順を反転する
@@ -171,7 +175,7 @@ void DeleteVectorPair() {
 
 // ベクトルを交点および頂点のｙ座標で分割
 void CutVector() {
-	int	i, j, k, cutn, cuty[256], cx, cy;
+	int	i, j, k, cutn, cuty[MAX], cx, cy;
 	double	a, b, c, d, e, f, y;
 	// 向きが逆でぴったり重なっているベクトルペアを消す
 	DeleteVectorPair();
@@ -206,7 +210,7 @@ void CutVector() {
 					vx2[j] = vx1[vn] = cx;
 					vy2[j] = vy1[vn] = cy;
 					++vn;
-					if (vn > 253) {
+					if (vn > MAX-3) {
 						printf("ベクトル数の最大を超えてしまいました\n");
 						vn = 0;
 						return;
@@ -243,7 +247,7 @@ void CutVector() {
 				vy2[j] = vy1[vn] = cuty[i];
 				++vn;
 				//printf("debug>vn=%d\n",vn);
-				if (vn > 254) {
+				if (vn > MAX-2) {
 					printf("debug>vnが最大\n");
 					vn = 0;
 					return;
@@ -624,6 +628,7 @@ void OnClean() {
 
 }
 
+// エリア内での左上座標を調べる
 Point getUpperLeft(std::vector<std::vector<Point>> &areaPoint){
 	Point point;
 	int tall;			//直線方程式 y=-x+b のb

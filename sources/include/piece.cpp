@@ -25,8 +25,22 @@ void reverse(std::vector<Point> &data) {
 }
 
 Piece::Piece(std::vector<Point> &data){
-  int num = data.size();     				//頂点数
-  std::vector<Point> tmp(num); 			//1回転パターンの一時格納配列
+  int num = data.size();     		//頂点数  
+  double sigma=0;					//面積を求める公式におけるシグマ
+  std::vector<Point> tmp(num); 		//1回転パターンの一時格納配列
+  //printf("num:%d\n", num);
+
+  //ピースの面積を求める
+  for (int i = 0; i < num; i++) {
+	  if (i == num-1 ) {
+		  sigma +=(double) (data[i].x * data[0].y - data[0].x * data[i].y);
+	  }
+	  else {
+		  sigma +=(double)( data[i].x * data[i + 1].y - data[i + 1].x * data[i].y);
+	  }
+  }
+  surface = fabs((1.0 / 2.0)*sigma);
+  //printf("debug>面積は%lf\n", surface);
   
   for (int i = 0; i<4; i++){  			//4回回転(90度ずつ)
 	Point min;	//ずらすために取得する座標最小値
@@ -62,4 +76,8 @@ std::vector<std::vector<Point>> Piece::getPoint(){
 
 int Piece::getSize() {
   return static_cast<int>(point[0].size());
+}
+
+double Piece::getSurface() {
+	return surface;
 }

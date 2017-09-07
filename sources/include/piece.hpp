@@ -6,11 +6,13 @@
 
 class Piece{
 private:
-  std::vector<std::vector<Point>> point;
+  std::vector<std::vector<Point>> point;	//頂点座標
+  double surface;							//ピース面積
 public:
   Piece(std::vector<Point> &data);
   std::vector<std::vector<Point>> getPoint();
-  int getSize();
+  int getSize();	
+  double getSurface();
 };
 
 

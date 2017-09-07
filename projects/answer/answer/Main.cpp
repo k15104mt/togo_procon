@@ -159,7 +159,7 @@ void Main(){
 	  for (int i = 0; i < static_cast<int>(po.size()); ++i) {
 		if (po[i].mouseOver) {
 		  po[i].draw(s3d::Color(0, 255, 0));
-		  pfont(i).draw(s3d::Mouse::Pos().x, s3d::Mouse::Pos().y, s3d::Color(255, 0, 0));
+		  pfont(putdata[i].piece_num).draw(s3d::Mouse::Pos().x, s3d::Mouse::Pos().y, s3d::Color(255, 0, 0));
 		}
 	  }
 	}

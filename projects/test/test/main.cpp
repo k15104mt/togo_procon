@@ -150,7 +150,7 @@ int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putDat
 	move(cp2, already_put[i].base_point);
 
 	if (collisionPiece(cp1, cp2)) {
-	  //printf("piece");
+	  printf("piece");
 	  return 1;
 	}
   }
@@ -164,7 +164,7 @@ int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putDat
 
 
   if (!flag) {
-	//printf("frame");
+	printf("frame");
 	return 1;
   }
   

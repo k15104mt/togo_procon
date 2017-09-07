@@ -31,7 +31,7 @@ int cross(Vector &a, Vector &b) {
   return a.x * b.y - a.y * b.x;
 }
 
-
+//渡されたvectorの値を直接変えるから注意
 void move(std::vector<Point> &data, Point movingDistance) {
   for (auto &i : data) {
 	i += movingDistance;
@@ -166,6 +166,62 @@ int inPolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
   return 1;
 }
 
+int inEvenOnePolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
+
+  //1つでも内包されている点があるならreturn 1;
+  for (int i = 0; i < static_cast<int>(data2.size()); ++i) {
+	double x = 0.0;
+	int flag = 1;
+	for (int j = 0; j < static_cast<int>(data1.size()); ++j) {
+	  Vector a = data1[(j + 1) % data1.size()] - data2[i];
+	  Vector b = data1[j] - data2[i];
+
+	  //頂点上にある場合
+	  if (data1[j] == data2[i]) {
+		flag = 0;
+		break;
+		if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
+		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])>0) {
+
+		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0 &&
+			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
+			//もし頂点が内包されているなら
+			return 1;
+		  }
+		}
+		else if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
+		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])<0) {
+
+		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) > 0 &&
+			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) < 0) {
+
+		  }
+		  else {
+			//もし頂点が内包されているなら
+			return 1;
+		  }
+		}
+	  }
+
+	  //直線状にある場合はbreak
+	  if (dot(a, b) <= 0 && cross(a, b) == 0) {
+		flag = 0;
+		break;
+	  }
+
+	  //角度を積極的に足していこう
+	  if (cross(a, b) < 0) x += (acos((double)(dot(a, b)) / (a.size()*b.size()))*180.0 / acos(-1.0));
+	  if (cross(a, b) > 0) x += -1.0*(acos((double)(dot(a, b)) / (a.size()*b.size()))*180.0 / acos(-1.0));
+	}
+
+	//頂点上にもなくて直線上にもないなら360のときは内包されているから終わる
+	//ここ多分誤差を考慮する感じにしたほうがいい
+	if (flag && (359.99 <= x && x <= 360.01)) {
+	  return 1;
+	}
+  }
+  return 0;
+}
 
 int collisionPiece(std::vector<Point> &data1, std::vector<Point> &data2) {
   //線が一つでも交わっていたら当たっている（それはそう）
@@ -174,11 +230,17 @@ int collisionPiece(std::vector<Point> &data1, std::vector<Point> &data2) {
 	return 1;
   }
 
+  if (inEvenOnePolygon(data1, data2) || inEvenOnePolygon(data2, data1)) {
+	return 1;
+  }
+
+  /*
   if (inPolygon(data1, data2) || inPolygon(data2, data1)) {
 	printf("in");
 	return 1;
   }
-
+  */
+  /*
   for (int i = 0; i < static_cast<int>(data1.size()); i++){
 	for (int j = 0; j < static_cast<int>(data2.size()); ++j) {
 
@@ -202,10 +264,11 @@ int collisionPiece(std::vector<Point> &data1, std::vector<Point> &data2) {
 		  printf("!?");
 		  return 1;
 		}
-	  }
-	  */
+	  }//*
+	  
 	}
   }
+  */
 
   /*
   for (int i = 0; i<static_cast<int>(data1.size()); ++i) {

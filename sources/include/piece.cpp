@@ -77,3 +77,7 @@ std::vector<std::vector<Point>> Piece::getPoint(){
 int Piece::getSize() {
   return static_cast<int>(point[0].size());
 }
+
+double Piece::getSurface() {
+	return surface;
+}

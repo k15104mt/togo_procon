@@ -10,8 +10,9 @@ private:
   double surface;							//ピース面積
 public:
   Piece(std::vector<Point> &data);
-  std::vector<std::vector<Point>> getPoint();	//頂点座標取得関数
+  std::vector<std::vector<Point>> getPoint();
   int getSize();	
+  double getSurface();
 };
 
 

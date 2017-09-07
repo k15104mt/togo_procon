@@ -11,11 +11,15 @@ struct  data {
 };
 
 void Main() {
-  s3d::Window::Resize(1200, 700);
+  s3d::Window::Resize(1250, 700);
   s3d::Window::SetTitle(L"パズル作成");
 
   s3d::GUI gui(s3d::GUIStyle::Default);
-  gui.addln(L"copy",s3d::GUIButton::Create(L"copy"));
+  gui.addln(L"copy",s3d::GUIButton::Create(L"コピー"));
+  gui.addln(L"clear", s3d::GUIButton::Create(L"クリア"));
+  gui.add(s3d::GUIHorizontalLine::Create());
+  gui.addln(L"copyraw", s3d::GUIButton::Create(L"元データのコピー"));
+  gui.addln(L"pasteraw", s3d::GUIButton::Create(L"元データから復元"));
   gui.setPos(1020, 0);
 
   s3d::Font pos(30);
@@ -60,21 +64,13 @@ void Main() {
 
   while (s3d::System::Update()) {
 	//点描画
-	for (int i = 0; i < static_cast<int>(circle.size());++i) {
+	for (int i = 0; i < static_cast<int>(circle.size()); ++i) {
 	  for (int j = 0; j < static_cast<int>(circle[i].size()); ++j) {
 		if (i % 5 == 0 || j % 5 == 0) {
 		  circle[i][j].draw(s3d::Color(200, 200, 200));
 		}
 		else {
-		  circle[i][j].draw(s3d::Color(100, 100, 100)); 
-		}
-	  }
-	}
-
-	for (int i = 0; i < static_cast<int>(circle.size()); ++i) {
-	  for (int j = 0; j < static_cast<int>(circle[i].size()); ++j) {
-		if (circle[i][j].mouseOver) {
-		  pos(L"(" + s3d::ToString((circle[i][j].x - 10) / 10) + L"," + s3d::ToString((circle[i][j].y - 10) / 10) + L")").draw(s3d::Mouse::Pos().x + 10, s3d::Mouse::Pos().y + 10, s3d::Color(0, 255, 255));
+		  circle[i][j].draw(s3d::Color(100, 100, 100));
 		}
 	  }
 	}
@@ -92,6 +88,48 @@ void Main() {
 		frame.clear();
 	  }
 	  
+	}
+
+	if (gui.button(L"clear").pushed) {
+	  frame.clear();
+	  piece.clear();
+	  now.clear();
+	}
+
+	if (gui.button(L"pasteraw").pushed) {
+	  frame.clear();
+	  piece.clear();
+	  now.clear();
+
+	  std::vector<std::string>  input;
+	  input.push_back(s3d::Clipboard::GetText().narrow());
+
+	  for (int i = 0; i < static_cast<int>(input.size()); ++i) {
+		//:でピースごとに区切る
+		auto pieceStr = split(input[i], ':');
+		for (int j = 1; j < static_cast<int>(pieceStr.size()); ++j) {
+		  // で頂点ごとに区切る
+		  auto numStr = split(pieceStr[j], ' ');
+
+		  if (i == input.size() - 1 && j == pieceStr.size() - 1) {
+			//最後のQRの最後のデータの場合はframePointに格納する
+			for (int k = 1; k < static_cast<int>(numStr.size()); k += 2) {
+			  Point pointTemp(stoi(numStr[k])*10, stoi(numStr[k + 1]) * 10);
+			  frame.push_back(pointTemp);
+			}
+		  }
+		  else {
+			//角頂点の座標をpieceTemoに数字に変換して格納して、piecePointに追加する
+			std::vector<Point> pieceTemp;
+			for (int k = 1; k < static_cast<int>(numStr.size()); k += 2) {
+			  Point pointTemp(stoi(numStr[k]) * 10, stoi(numStr[k + 1]) * 10);
+			  pieceTemp.push_back(pointTemp);
+			}
+			piece.push_back(pieceTemp);
+		  }
+
+		}
+	  }
 	}
 
 	if (frame.size() == 0) {
@@ -114,8 +152,15 @@ void Main() {
 	  //ピース描画
 	  if (piece.size()) {
 		for (int i = 0; i < static_cast<int>(piece.size()); i++) {
+		  std::vector<s3d::Vec2> tmp;
 		  for (int j = 0; j < static_cast<int>(piece[i].size()); j++) {
 			s3d::Line(piece[i][j].x + 10, piece[i][j].y + 10, piece[i][(j + 1) % piece[i].size()].x + 10, piece[i][(j + 1) % piece[i].size()].y + 10).draw(3,s3d::Color(0, 255, 0));
+			tmp.push_back(s3d::Vec2(piece[i][j].x + 10, piece[i][j].y + 10));
+		  }
+		  s3d::Polygon po(tmp);
+		  po.draw(s3d::Color(0, 128, 0));
+		  if (po.mouseOver) {
+			pos(s3d::ToString(i)).draw(s3d::Mouse::Pos().x + 20, s3d::Mouse::Pos().y - 25, s3d::Color(255, 0, 0));
 		  }
 		}
 	  }
@@ -133,7 +178,7 @@ void Main() {
 
 
 	  
-
+	  //copy
 	  if (now.size() == 0 && gui.button(L"copy").pushed) {
 		std::string str;
 		str += std::to_string(piece.size());
@@ -166,6 +211,40 @@ void Main() {
 		s3d::Clipboard::SetText(s3d::CharacterSet::Widen(str));
 	  }
 
+	  //copyRaw
+	  if (now.size() == 0 && gui.button(L"copyraw").pushed) {
+		std::string str;
+		str += std::to_string(piece.size());
+
+		for (auto i : piece) {
+
+		  str += (":" + std::to_string(i.size()));
+
+		  for (auto j : i) {
+			//寄せる
+			str += (" " + std::to_string((j.x) / 10) + " " + std::to_string((j.y) / 10));
+		  }
+		}
+
+		str += (":" + std::to_string(frame.size()));
+
+		for (auto i : frame) {
+		  str += (" " + std::to_string((i.x) / 10) + " " + std::to_string((i.y) / 10));
+		}
+
+		s3d::Clipboard::SetText(s3d::CharacterSet::Widen(str));
+	  }
+
+	}
+
+	
+
+	for (int i = 0; i < static_cast<int>(circle.size()); ++i) {
+	  for (int j = 0; j < static_cast<int>(circle[i].size()); ++j) {
+		if (circle[i][j].mouseOver) {
+		  pos(L"(" + s3d::ToString((circle[i][j].x - 10) / 10) + L"," + s3d::ToString((circle[i][j].y - 10) / 10) + L")").draw(s3d::Mouse::Pos().x + 10, s3d::Mouse::Pos().y + 15, s3d::Color(0, 255, 255));
+		}
+	  }
 	}
 
 	//現在の描画

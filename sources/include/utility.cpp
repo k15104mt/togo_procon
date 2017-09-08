@@ -181,8 +181,8 @@ int inEvenOnePolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
 		if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
 		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])>0) {
 
-		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0 &&
-			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
+		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) < 0 &&
+			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) > 0) {
 			//‚à‚µ’¸“_‚ª“à•ï‚³‚ê‚Ä‚¢‚é‚È‚ç
 			return 1;
 		  }
@@ -190,8 +190,8 @@ int inEvenOnePolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
 		else if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
 		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])<0) {
 
-		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) > 0 &&
-			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) < 0) {
+		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0 &&
+			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0) {
 
 		  }
 		  else {
@@ -202,8 +202,10 @@ int inEvenOnePolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
 		flag = 0;
 		break;
 	  }else if (dot(a, b) <= 0 && cross(a, b) == 0) {//’¼üã‚É‚ ‚éê‡
-		if (cross(a, data2[(i + 1) % data2.size()] - data2[i])>0) {
-		  //return 1;
+		if (data2[i] != data1[(j + 1) % data1.size()] &&
+		  (cross(b, data2[(i + data2.size() - 1) % data2.size()] - data2[i])<0||
+		  cross(a, data2[(i + 1) % data2.size()] - data2[i])>0)) {
+		  return 1;
 		  
 		}
 

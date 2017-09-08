@@ -20,6 +20,7 @@ public:
 	Point & operator = (Point &obj){x = obj.x; y = obj.y; return *this;};
 	Point & operator += (Point &obj) { x += obj.x; y += obj.y; return *this; };
 	bool operator == (Point &obj){return x==obj.x && y==obj.y;};
+	bool operator != (Point &obj) { return x != obj.x || y != obj.y; };
 
 	double size() { return sqrt(x*x + y*y); };
 	void print() { printf("(%d,%d)", x, y); };

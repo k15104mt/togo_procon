@@ -5,15 +5,22 @@
 #define PI 3.1415926535
 #define MAX 256
 
+struct D_Point {
+	double x;
+	double y;
+};
+
 int	ap = 0, bp = 0;	// 入力図形の記憶用	ap,bp:頂点数
 std::vector<Point> a;
 std::vector<Point> b;
 
 int	rc = 0, rp[MAX];		// 演算後図形の記憶用
-std::vector<std::vector<Point>> r(MAX,std::vector<Point>(MAX));
+std::vector<std::vector<D_Point>> r(MAX,std::vector<D_Point>(MAX));
 
-int	vn = 0, vx1[MAX], vy1[MAX], vx2[MAX], vy2[MAX];	// ベクトルの記憶用
-int	tcnt = 0, tp, tx[MAX], ty[MAX], used[MAX];		// 一時記憶用
+int	vn = 0;
+double vx1[MAX], vy1[MAX], vx2[MAX], vy2[MAX];	// ベクトルの記憶用
+int	tcnt = 0, tp;
+double tx[MAX], ty[MAX], used[MAX];		// 一時記憶用
 
 void OnNot();
 void OnMerge();
@@ -73,7 +80,8 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, s
 			for (int i = 0; i < rc; i++) {
 				std::vector<Point> Tmp;
 				for (int j = 0; j < rp[i]; j++) {
-					tmp = r[i][j];
+					tmp.x =static_cast<int>(r[i][j].x+0.5);
+					tmp.y = static_cast<int>(r[i][j].y + 0.5);
 					Tmp.push_back(tmp);
 				}
 				areaPoint.insert(areaPoint.begin()+k,Tmp);
@@ -117,6 +125,17 @@ int CheckAngle(std::vector<Point> point) {
 // 頂点の並び順を反転する
 void Reverse(int n,std::vector<Point> &point) {
 	Point tmp;
+	int	i;
+	for (i = 0; i < n / 2; ++i) {
+		tmp = point[i];
+		point[i] = point[n - i - 1];
+		point[n - i - 1] = tmp;
+	}
+}
+
+// 頂点の並び順を反転する
+void Reverse(int n, std::vector<D_Point> &point) {
+	D_Point tmp;
 	int	i;
 	for (i = 0; i < n / 2; ++i) {
 		tmp = point[i];
@@ -175,8 +194,8 @@ void DeleteVectorPair() {
 
 // ベクトルを交点および頂点のｙ座標で分割
 void CutVector() {
-	int	i, j, k, cutn, cuty[MAX], cx, cy;
-	double	a, b, c, d, e, f, y;
+	int	i, j, k, cutn;
+	double	a, b, c, d, e, f, y,cuty[MAX], cx, cy;
 	// 向きが逆でぴったり重なっているベクトルペアを消す
 	DeleteVectorPair();
 	//printf("debug>cut vn=%d\n",vn);
@@ -192,14 +211,17 @@ void CutVector() {
 			if (b*d - a*e != 0) {
 				y = (a*f - c*d) / (b*d - a*e);
 				if ((y < 10 * 10) || (y > 310 * 10)) continue;
-				cy = (int)(y + 0.5);
+				//cy = (int)(y + 0.5);
+				cy = y;
+				//printf("cy:%lf,",y);
 				if ((((cy > vy1[i]) && (cy < vy2[i])) || ((cy < vy1[i]) && (cy > vy2[i]))) &&
 					(((cy > vy1[j]) && (cy < vy2[j])) || ((cy < vy1[j]) && (cy > vy2[j])))) {
 					// ベクトルiとjは交差している。
 					// 両ベクトルを交点で分割する。
 					// ベクトルi,jを変更し、分割して増えたベクトルを末尾に追加。
-					cx = (int)((c*e - b*f) / (b*d - a*e) + 0.5);
-
+					//cx = (int)((c*e - b*f) / (b*d - a*e));
+					cx = (c*e - b*f) / (b*d - a*e);
+					//printf("cx:%lf", (c*e - b*f) / (b*d - a*e));
 					vx2[vn] = vx2[i];
 					vy2[vn] = vy2[i];
 					vx2[i] = vx1[vn] = cx;
@@ -243,7 +265,8 @@ void CutVector() {
 			if (((vy1[j] < cuty[i]) && (vy2[j] > cuty[i])) || ((vy1[j] > cuty[i]) && (vy2[j] < cuty[i]))) {
 				vx2[vn] = vx2[j];
 				vy2[vn] = vy2[j];
-				vx2[j] = vx1[vn] = (int)(0.5 + vx1[j] + (vx2[j] - vx1[j])*(cuty[i] - vy1[j]) / (vy2[j] - vy1[j]));
+				//vx2[j] = vx1[vn] = (int)(0.5 + vx1[j] + (vx2[j] - vx1[j])*(cuty[i] - vy1[j]) / (vy2[j] - vy1[j]));
+				vx2[j] = vx1[vn] = vx1[j] + (vx2[j] - vx1[j])*(cuty[i] - vy1[j]) / (vy2[j] - vy1[j]);
 				vy2[j] = vy1[vn] = cuty[i];
 				++vn;
 				//printf("debug>vn=%d\n",vn);
@@ -262,7 +285,7 @@ void CutVector() {
 }
 
 // ２つのベクトルを比較する。
-int CompareVector(int ax1, int ay1, int ax2, int ay2, int bx1, int by1, int bx2, int by2) {
+int CompareVector(double ax1, double ay1, double ax2, double ay2, double bx1, double by1, double bx2, double by2) {
 	// ｙ座標が大きいもの、ｙ座標が同じならｘ座標が小さいものが上位。
 	// Ａ＜Ｂ　なら－１を返す。
 	// Ａ＝Ｂ　なら０を返す。
@@ -281,7 +304,7 @@ int CompareVector(int ax1, int ay1, int ax2, int ay2, int bx1, int by1, int bx2,
 void SortVector() {
 	// ヒープソートを使用。
 	int	i, j, k, n;
-	int	x1, y1, x2, y2;
+	double	x1, y1, x2, y2;
 
 	n = vn;
 	for (k = n / 2; k >= 1; k--)
@@ -338,7 +361,8 @@ void SortVector() {
 // ＮＯＴ処理
 void OnNot() {
 	//double	ang;
-	int	i, j, yy;
+	int	i, j;
+	double yy;
 
 	//// 図形Ａは右回り、図形Ｂは左回りにする。
 
@@ -406,7 +430,7 @@ void OnNot() {
 }
 
 // 抽出図形ｎの外形線(x1,y)-(x2,y)に接する図形を調査する。
-void MergeObject(int n, int x1, int x2, int y) {
+void MergeObject(int n, double x1, double x2, double y) {
 	int	i;
 
 	if (x1 < x2)
@@ -597,20 +621,36 @@ void OnClean() {
 		{
 			// 直線(tx[tp-1],ty[tp-1])-(r[i][j+1].x,r[i][j+1].y)に対して
 			// 点(r[i][j].x,r[i][j].y)から垂線を下ろした時、
-			// その長さが単位長未満なら冗長点とみなす。
+			// その長さが単位長未満なら冗長点とみなす。※としていたが，座標が整数でないか，lenが0なら冗長点とみなすに変更
 
 			// 直線の方程式 ax+by+c=0，垂線の長さ len
 			a = r[i][j + 1].y - ty[tp - 1];
 			b = tx[tp - 1] - r[i][j + 1].x;
 			c = r[i][j + 1].x * ty[tp - 1] - r[i][j + 1].y * tx[tp - 1];
 			len = (a * r[i][j].x + b * r[i][j].y + c) / sqrt(a * a + b * b);
-			if ((len >= 0.5) || (len <= -0.5))
-			{
+			
+			if (fabs(len)<DBL_EPSILON || len==-0) {	//浮動小数点型におけるlen==0と同じこと
+				//setColor(F_CYAN | F_INTENSITY, B_BLACK); printf("(%2lf,%2lf) len:%lf > 冗長点\n", r[i][j].x, r[i][j].y, len); setColor();
+			}
+			else if (floor( r[i][j].x)!=ceil(r[i][j].x) || floor(r[i][j].x) != ceil(r[i][j].x)) {	//座標が整数でないとき
+				//setColor(F_RED | F_INTENSITY, B_BLACK); printf("(%2lf,%2lf) len:%lf > 冗長点\n", r[i][j].x, r[i][j].y, len); setColor();
+			}
+			else {
+				//printf("(%2lf,%2lf) len:%lf\n", r[i][j].x, r[i][j].y, len);
 				// 垂線が長いので冗長点ではない。
 				tx[tp] = r[i][j].x;
 				ty[tp] = r[i][j].y;
 				++tp;
 			}
+
+			/*
+			if ((len >= 0.5) || (len <= -0.5)){	
+				// 垂線が長いので冗長点ではない。
+				tx[tp] = r[i][j].x;
+				ty[tp] = r[i][j].y;
+				++tp;
+			}*/
+
 		}
 		// 終始点一致させる
 		tx[tp] = r[i][0].x;

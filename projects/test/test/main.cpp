@@ -8,11 +8,11 @@
 #include<string>
 #include<sstream>
 #include<vector>
-#include<stack>
 #include<array>
 
 
 std::vector<std::vector<Point>> framePoint;
+std::array<int, 100> isPut;
 
 
 //当たり判定
@@ -25,6 +25,10 @@ int solve(std::vector<Piece> &, std::vector<putData> &);
 
 
 int main() {
+  for (int i = 0; i < 100; ++i) {
+	isPut[i] = 0;
+  }
+
  //QRコードの数
   int qrNum;
   std::cin >> qrNum;
@@ -191,13 +195,13 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
 
   //全ピース見ていこうな
   for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
-														   //今のピースがすでに置かれているかどうか
-	if ([=]() {for (int j = 0; j < static_cast<int>(already_put.size()); ++j) { if (already_put[j].piece_num == i) { return 0; } }return 1; }()) {
+	//今のピースがすでに置かれているかどうか
+	//if ([=]() {for (int j = 0; j < static_cast<int>(already_put.size()); ++j) { if (already_put[j].piece_num == i) { return 0; } }return 1; }()) {
+	if(isPut[i]==0){
+	  Point tmp = getPutPoint(data, already_put,framePoint);
 	  for (int j = 0; j < static_cast<int>(data[i].getPoint().size()); ++j) {//回転の組み合わせの数
 		for (int k = 0; k < static_cast<int>(data[i].getPoint()[j].size()); ++k) {//設置頂点
 
-		  
-		  Point tmp = getPutPoint(data, already_put,framePoint);
 		  printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", i, j, k,tmp.x,tmp.y);
 		  putData put(i, j, k, Point(tmp.x-data[i].getPoint()[j][k].x,tmp.y-data[i].getPoint()[j][k].y));
 		  if (!checkHit(data, already_put, put)) {
@@ -206,12 +210,13 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
 			printf("       put\n");
 			setColor();
 			already_put.push_back(put);
+			isPut[i]=1;
+			
 			if (solve(data, already_put)) {
 			  //もしreturn 1なら解き終わったってこと
 			  return 1;
 			}
-		  }
-		  else {
+		  }else{
 			setColor(F_RED | F_INTENSITY);
 			printf_s("Hit!!!!\n");
 			setColor();
@@ -227,6 +232,7 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
 	printf("back  depth = %10d\n", already_put.size());
 	setColor();
 
+	isPut[already_put[already_put.size()-1].piece_num] = 0;
 	already_put.pop_back();
   }
   else {

@@ -178,8 +178,6 @@ int inEvenOnePolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
 
 	  //’¸“_ã‚É‚ ‚éê‡
 	  if (data1[j] == data2[i]) {
-		flag = 0;
-		break;
 		if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
 		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])>0) {
 
@@ -201,10 +199,14 @@ int inEvenOnePolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
 			return 1;
 		  }
 		}
-	  }
+		flag = 0;
+		break;
+	  }else if (dot(a, b) <= 0 && cross(a, b) == 0) {//’¼üã‚É‚ ‚éê‡
+		if (cross(a, data2[(i + 1) % data2.size()] - data2[i])>0) {
+		  //return 1;
+		  
+		}
 
-	  //’¼üó‚É‚ ‚éê‡‚Íbreak
-	  if (dot(a, b) <= 0 && cross(a, b) == 0) {
 		flag = 0;
 		break;
 	  }

@@ -1,8 +1,3 @@
-#include"piece.hpp"
-#include"utility.hpp"
-#include"color.hpp"
-#include"geometry.hpp"
-
 #include<cstdio>
 #include<iostream>
 #include<string>
@@ -10,6 +5,10 @@
 #include<vector>
 #include<array>
 
+#include"piece.hpp"
+#include"utility.hpp"
+#include"color.hpp"
+#include"geometry.hpp"
 
 std::vector<std::vector<Point>> framePoint;
 std::array<int, 100> isPut;
@@ -17,8 +16,6 @@ std::array<int, 100> isPut;
 
 //当たり判定
 int checkHit(std::vector<Piece> &, std::vector<putData> &, putData &);
-
-//Point getPutPoint(std::vector<Piece> &, std::vector<putData> &);
 
 //再帰
 int solve(std::vector<Piece> &, std::vector<putData> &);
@@ -177,16 +174,6 @@ int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putDat
   return 0;
 }
 
-/*
-Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put) {
-  Point tmp;
-  scanf_s("%d %d", &tmp.x, &tmp.y);
-  tmp.print();
-  printf_s("に設置\n");
-  return tmp;
-}
-*/
-
 int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
   if (data.size() == already_put.size()) {
 	//全部置いたってこと
@@ -196,7 +183,6 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
   //全ピース見ていこうな
   for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
 	//今のピースがすでに置かれているかどうか
-	//if ([=]() {for (int j = 0; j < static_cast<int>(already_put.size()); ++j) { if (already_put[j].piece_num == i) { return 0; } }return 1; }()) {
 	if(isPut[i]==0){
 	  Point tmp = getPutPoint(data, already_put,framePoint);
 	  for (int j = 0; j < static_cast<int>(data[i].getPoint().size()); ++j) {//回転の組み合わせの数

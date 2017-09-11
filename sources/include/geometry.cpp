@@ -3,37 +3,34 @@
 #include<cstdlib>
 #include<math.h>
 #define PI 3.1415926535
-#define MAX 256
 
-struct D_Point {
-	double x;
-	double y;
-};
-
-int	ap = 0, bp = 0;	// 入力図形の記憶用	ap,bp:頂点数
-std::vector<Point> a;
-std::vector<Point> b;
-
-int	rc = 0, rp[MAX];		// 演算後図形の記憶用
-std::vector<std::vector<D_Point>> r(MAX,std::vector<D_Point>(MAX));
-
-int	vn = 0;
-double vx1[MAX], vy1[MAX], vx2[MAX], vy2[MAX];	// ベクトルの記憶用
-int	tcnt = 0, tp;
-double tx[MAX], ty[MAX], used[MAX];		// 一時記憶用
-
-void OnNot();
-void OnMerge();
-void OnClean();
+void OnNot(int &ap,int &bp, std::vector<Point> &a, std::vector<Point> &b,int &rc,int *rp, std::vector<std::vector<D_Point>> &r);
+void OnMerge(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp);
+void OnClean(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp);
 int CheckAngle(std::vector<Point> point);
 void Reverse(int n,std::vector<Point> &point);
 Point getUpperLeft(std::vector<std::vector<Point>> &areaPoint);
 
+Geometry::Geometry(std::vector<std::vector<Point>> framePoint) {
+	areaPoint = framePoint;
+	putNum = 0;
+}
 
 //とりあえず頂点が一番左上の部分に設置するとする
-Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, std::vector<std::vector<Point>> areaPoint) {
+Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put) {
 	Point point;	//返り値
 	Point tmp;
+	int	ap=0, bp=0;	// 入力図形の記憶用	ap,bp:頂点数
+	std::vector<Point> a;
+	std::vector<Point> b;
+
+	int	rc=0, rp[MAX];		// 演算後図形の記憶用
+	std::vector<std::vector<D_Point>> r;
+
+	r.resize(MAX);
+	for (int i = 0; i < MAX; i++) {
+		r[i].resize(MAX);
+	}
 
 	//setColor(F_CYAN|F_INTENSITY, B_BLACK); printf("設置ピース数:%d\n分割エリア数:%d\n", already_put.size(), areaPoint.size()); 
 	//printf("<初期フレーム座標>\n"); for (int i = 0; i < (int)areaPoint.size(); i++) { printf("area[%d]:", i); for (int j = 0; j < (int)areaPoint[i].size(); j++) { printf("{%d,%d},", areaPoint[i][j].x, areaPoint[i][j].y); }printf("\n"); }setColor();
@@ -72,7 +69,7 @@ Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put, s
 			}
 			tmp = a[0];	//一周
 			a.push_back(tmp);
-			OnNot();
+			OnNot(ap,bp,a,b,rc,rp,r);
 
 			areaPoint.erase(areaPoint.begin()+k);	//一旦見てるエリア削除※削減あり
 			////NOTで出した設置ピース情報とフレームを結合する
@@ -145,7 +142,7 @@ void Reverse(int n, std::vector<D_Point> &point) {
 }
 
 // 図形の辺をベクトルに分解
-void AddVector(int n, std::vector<Point> &point) {
+void AddVector(int n, std::vector<Point> &point, double *vx1,double *vy1,double *vx2,double *vy2,int &vn) {
 	for (int i = 1; i < n; ++i) {
 		if (point[i - 1].y != point[i].y) {
 			// 水平ではないベクトルだけを登録
@@ -161,7 +158,7 @@ void AddVector(int n, std::vector<Point> &point) {
 }
 
 // 向きが逆でぴったり重なっているベクトルペアを消す
-void DeleteVectorPair() {
+void DeleteVectorPair(double *vx1, double *vy1, double *vx2, double *vy2, int &vn) {
 	for (int i = 0; i < vn - 1; ++i) {
 		for (int j = i + 1; j < vn; ++j) {
 			if ((vx1[i] == vx2[j]) && (vy1[i] == vy2[j]) && (vx2[i] == vx1[j]) && (vy2[i] == vy1[j])) {
@@ -193,11 +190,11 @@ void DeleteVectorPair() {
 }
 
 // ベクトルを交点および頂点のｙ座標で分割
-void CutVector() {
+void CutVector(double *vx1, double *vy1, double *vx2, double *vy2, int &vn) {
 	int	i, j, k, cutn;
 	double	a, b, c, d, e, f, y,cuty[MAX], cx, cy;
 	// 向きが逆でぴったり重なっているベクトルペアを消す
-	DeleteVectorPair();
+	DeleteVectorPair(vx1, vy1, vx2, vy2, vn);
 	//printf("debug>cut vn=%d\n",vn);
 	  // ベクトルの交点のy座標でベクトルを分断
 	for (i = 0; i < vn - 1; ++i) {
@@ -279,7 +276,7 @@ void CutVector() {
 		}
 	}
 	// 向きが逆でぴったり重なっているベクトルペアを消す
-	DeleteVectorPair();
+	DeleteVectorPair(vx1, vy1, vx2, vy2, vn);
 	//printf("debug>cutn=%d\n",cutn);
 
 }
@@ -301,7 +298,7 @@ int CompareVector(double ax1, double ay1, double ax2, double ay2, double bx1, do
 }
 
 // ベクトルをソートする。yが大きいものを優先。yが同じならxの小さいものを優先。
-void SortVector() {
+void SortVector(double *vx1, double *vy1, double *vx2, double *vy2, int &vn) {
 	// ヒープソートを使用。
 	int	i, j, k, n;
 	double	x1, y1, x2, y2;
@@ -359,7 +356,12 @@ void SortVector() {
 }
 
 // ＮＯＴ処理
-void OnNot() {
+void OnNot(int &ap, int &bp, std::vector<Point> &a, std::vector<Point> &b, int &rc, int *rp, std::vector<std::vector<D_Point>> &r) {
+	int	vn = 0;
+	double vx1[MAX], vy1[MAX], vx2[MAX], vy2[MAX];	// ベクトルの記憶用
+	int	tcnt = 0, tp;
+	double tx[MAX], ty[MAX], used[MAX];		// 一時記憶用
+
 	//double	ang;
 	int	i, j;
 	double yy;
@@ -382,12 +384,12 @@ void OnNot() {
 
 	// ベクトルに分解
 	vn = 0;
-	AddVector(ap, a);
-	AddVector(bp, b);
-	CutVector();
+	AddVector(ap, a, vx1, vy1, vx2,vy2, vn);
+	AddVector(bp, b, vx1, vy1, vx2, vy2, vn);
+	CutVector(vx1, vy1, vx2, vy2, vn);
 
 	// ベクトルをソート
-	SortVector();
+	SortVector(vx1, vy1, vx2, vy2, vn);
 
 	// 演算結果を抽出
 	rc = 0;
@@ -420,17 +422,17 @@ void OnNot() {
 		}
 	}
 	tcnt = 0;
-	OnMerge();
+	OnMerge(tcnt,tp,tx, ty,used, r, rc, rp);
 	//printf("rp[rc]:%d\n", rp[rc]);
 
 	for (int i = 0; i < rc; ++i) {
 		Reverse(rp[i], r[i]);
 	}
-	OnClean();
+	OnClean(tcnt, tp, tx, ty, used, r, rc, rp);
 }
 
 // 抽出図形ｎの外形線(x1,y)-(x2,y)に接する図形を調査する。
-void MergeObject(int n, double x1, double x2, double y) {
+void MergeObject(int n, double x1, double x2, double y,int	&tcnt,int &tp,double *tx,double *ty,double *used, std::vector<std::vector<D_Point>> &r,int &rc) {
 	int	i;
 
 	if (x1 < x2)
@@ -450,7 +452,7 @@ void MergeObject(int n, double x1, double x2, double y) {
 			++used[i];
 
 			// 左側にはみ出している場合、はみ出した部分を調査。
-			if (r[i][4].x < x1) MergeObject(i, x1, r[i][4].x, y);
+			if (r[i][4].x < x1) MergeObject(i, x1, r[i][4].x, y, tcnt,tp,tx,ty,used,r,rc);
 
 			// 左下頂点が第１座標ではない場合、マージ後図形に頂点を追加。
 			if (r[i][4].x != x1)
@@ -468,7 +470,7 @@ void MergeObject(int n, double x1, double x2, double y) {
 			// 上に尖った三角形でない場合、図形の上辺を調査し、マージ後図形に右上頂点を追加。
 			if (r[i][1].x != r[i][2].x)
 			{
-				MergeObject(i, r[i][1].x, r[i][2].x, r[i][1].y);
+				MergeObject(i, r[i][1].x, r[i][2].x, r[i][1].y, tcnt, tp, tx, ty, used, r, rc);
 				tx[tp] = r[i][2].x;
 				ty[tp] = r[i][2].y;
 				++tp;
@@ -483,7 +485,7 @@ void MergeObject(int n, double x1, double x2, double y) {
 			}
 
 			// 図形が右側にはみ出している場合、はみ出した部分を調査。
-			if (r[i][3].x > x2) MergeObject(i, r[i][3].x, x2, y);
+			if (r[i][3].x > x2) MergeObject(i, r[i][3].x, x2, y, tcnt, tp, tx, ty, used, r, rc);
 		}
 	}
 	else
@@ -503,7 +505,7 @@ void MergeObject(int n, double x1, double x2, double y) {
 			++used[i];
 
 			// 右側にはみ出している場合、はみ出した部分を調査。
-			if (r[i][2].x > x1) MergeObject(i, x1, r[i][2].x, y);
+			if (r[i][2].x > x1) MergeObject(i, x1, r[i][2].x, y, tcnt, tp, tx, ty, used, r, rc);
 
 			// 右上頂点が第１座標ではない場合、マージ後図形に頂点を追加。
 			if (r[i][2].x != x1)
@@ -521,7 +523,7 @@ void MergeObject(int n, double x1, double x2, double y) {
 			// 下に尖った三角形でない場合、図形の下辺を調査し、マージ後図形に左下頂点を追加。
 			if (r[i][3].x != r[i][4].x)
 			{
-				MergeObject(i, r[i][3].x, r[i][4].x, r[i][3].y);
+				MergeObject(i, r[i][3].x, r[i][4].x, r[i][3].y, tcnt, tp, tx, ty, used, r, rc);
 				tx[tp] = r[i][0].x;
 				ty[tp] = r[i][0].y;
 				++tp;
@@ -536,13 +538,13 @@ void MergeObject(int n, double x1, double x2, double y) {
 			}
 
 			// 図形が左側にはみ出している場合、はみ出した部分を調査。
-			if (r[i][1].x < x2) MergeObject(i, r[i][1].x, x2, y);
+			if (r[i][1].x < x2) MergeObject(i, r[i][1].x, x2, y, tcnt, tp, tx, ty, used, r, rc);
 		}
 	}
 }
 
 // マージ処理
-void OnMerge() {
+void OnMerge(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc,int *rp) {
 	int	i, j;
 
 	// 実行済みか、図形が無ければ何もしない。
@@ -570,7 +572,7 @@ void OnMerge() {
 		// 図形が下に尖った三角形で無い場合、下辺を調査し、左下頂点をマージ後図形に追加。
 		if (r[i][3].x != r[i][4].x)
 		{
-			MergeObject(i, r[i][3].x, r[i][4].x, r[i][3].y);
+			MergeObject(i, r[i][3].x, r[i][4].x, r[i][3].y,tcnt, tp, tx, ty, used, r, rc);
 			tx[tp] = r[i][4].x;
 			ty[tp] = r[i][4].y;
 			++tp;
@@ -584,7 +586,7 @@ void OnMerge() {
 		// 図形が上に尖った三角形で無い場合、上辺を調査し、右上頂点をマージ後図形に追加。
 		if (r[i][1].x != r[i][2].x)
 		{
-			MergeObject(i, r[i][1].x, r[i][2].x, r[i][1].y);
+			MergeObject(i, r[i][1].x, r[i][2].x, r[i][1].y, tcnt, tp, tx, ty, used, r, rc);
 			tx[tp] = r[i][2].x;
 			ty[tp] = r[i][2].y;
 			++tp;
@@ -606,7 +608,7 @@ void OnMerge() {
 }
 
 // 冗長点削除の処理
-void OnClean() {
+void OnClean(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp) {
 	int	i, j;
 	double	a, b, c, len;
 

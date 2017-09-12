@@ -7,11 +7,10 @@
 void OnNot(int &ap,int &bp, std::vector<Point> &a, std::vector<Point> &b,int &rc,int *rp, std::vector<std::vector<D_Point>> &r);
 void OnMerge(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp);
 void OnClean(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp);
-int CheckAngle(std::vector<Point> point);
-void Reverse(int n,std::vector<Point> &point);
 Point getUpperLeft(std::vector<std::vector<Point>> &areaPoint);
 
-Geometry::Geometry(std::vector<std::vector<Point>> framePoint) {
+//コンストラクタ
+Geometry::Geometry(std::vector<std::vector<Point>> &framePoint) {
 	areaPoint = framePoint;
 	putNum = 0;
 }
@@ -38,22 +37,21 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 	tmpAreaPoint = areaPoint;	//設置前状態を保存
 
 	if (already_put.size() == 0) {
-		point = getUpperLeft(areaPoint);
-		return point;
+		return getUpperLeft(areaPoint);
 	}
 
 	////ピースと設置情報より，未設置部の図形頂点を求める
-	for (int k = 0; k < (int)areaPoint.size(); k++) {	//分割エリア毎
+	for (int i = 0; i < (int)areaPoint.size(); i++) {	//分割エリア毎
 		a.clear();	//更新
 		b.clear();
 
-		//printf("--確認分割エリア[%d]--\n", k);
+		//printf("--確認分割エリア[%d]--\n", i);
 
-		bp = areaPoint[k].size() + 1;									//NOT入力図形頂点数(フレーム)
+		bp = areaPoint[i].size() + 1;									//NOT入力図形頂点数(フレーム)
 		ap = data[already_put[putNum].piece_num].getPoint()[0].size() + 1;	//NOT入力図形頂点数(ピース)
 
 		for (int j = 0; j < bp - 1; j++) {	//NOT処理で使う変数格納
-			tmp = areaPoint[k][j];
+			tmp = areaPoint[i][j];
 			b.push_back(tmp);
 			//setColor(F_ORANGE); printf("b[%d](%d,%d)\n", j, b[j].x, b[j].y); setColor();	//debug
 		}
@@ -61,7 +59,7 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 		b.push_back(tmp);
 		//puts("--");	//debug
 
-		for (int j = 0; j < ap - 1; j++) {	//NoT処理で使う変数格納
+		for (int j = 0; j < ap - 1; j++) {	//NOT処理で使う変数格納
 			tmp.x = data[already_put[putNum].piece_num].getPoint()[already_put[putNum].point_num][j].x + already_put[putNum].base_point.x;	//きもいけど設置ピース取得してる
 			tmp.y = data[already_put[putNum].piece_num].getPoint()[already_put[putNum].point_num][j].y + already_put[putNum].base_point.y;
 			a.push_back(tmp);
@@ -71,7 +69,7 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 		a.push_back(tmp);
 		OnNot(ap, bp, a, b, rc, rp, r);
 
-		areaPoint.erase(areaPoint.begin() + k);	//一旦見てるエリア削除※削減あり
+		areaPoint.erase(areaPoint.begin() + i);	//一旦見てるエリア削除※削減あり
 												////NOTで出した設置ピース情報とフレームを結合する
 												//未設置エリアの更新
 		for (int i = 0; i < rc; i++) {
@@ -81,7 +79,7 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 				tmp.y = static_cast<int>(r[i][j].y + 0.5);
 				Tmp.push_back(tmp);
 			}
-			areaPoint.insert(areaPoint.begin() + k, Tmp);
+			areaPoint.insert(areaPoint.begin() + i, Tmp);
 		}
 		point = getUpperLeft(areaPoint);
 
@@ -89,55 +87,6 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 	}
 
 	putNum++;
-
-	/*for (int i = 0; i < (int)already_put.size(); i++) {		//設置ピース毎
-															//setColor(F_BLUE|F_INTENSITY, B_BLACK);	printf("\n----[%d]番目の設置ピースでNOT処理----\n", i);	setColor();
-		for (int k = 0; k < (int)areaPoint.size(); k++) {	//分割エリア毎
-			a.clear();	//更新
-			b.clear();
-
-			//printf("--確認分割エリア[%d]--\n", k);
-
-			bp = areaPoint[k].size() + 1;									//NOT入力図形頂点数(フレーム)
-			ap = data[already_put[i].piece_num].getPoint()[0].size() + 1;	//NOT入力図形頂点数(ピース)
-
-			for (int j = 0; j < bp - 1; j++) {	//NOT処理で使う変数格納
-				tmp = areaPoint[k][j];
-				b.push_back(tmp);
-				//setColor(F_ORANGE); printf("b[%d](%d,%d)\n", j, b[j].x, b[j].y); setColor();	//debug
-			}
-			tmp = b[0];
-			b.push_back(tmp);
-			//puts("--");	//debug
-
-			for (int j = 0; j < ap - 1; j++) {	//NoT処理で使う変数格納
-				tmp.x = data[already_put[i].piece_num].getPoint()[already_put[i].point_num][j].x + already_put[i].base_point.x;	//きもいけど設置ピース取得してる
-				tmp.y = data[already_put[i].piece_num].getPoint()[already_put[i].point_num][j].y + already_put[i].base_point.y;
-				a.push_back(tmp);
-				//setColor(F_ORANGE); printf("a[%d](%d,%d)\n", j, a[j].x, a[j].y); setColor();	//debug
-			}
-			tmp = a[0];	//一周
-			a.push_back(tmp);
-			OnNot(ap, bp, a, b, rc, rp, r);
-
-			areaPoint.erase(areaPoint.begin() + k);	//一旦見てるエリア削除※削減あり
-													////NOTで出した設置ピース情報とフレームを結合する
-													//未設置エリアの更新
-			for (int i = 0; i < rc; i++) {
-				std::vector<Point> Tmp;
-				for (int j = 0; j < rp[i]; j++) {
-					tmp.x = static_cast<int>(r[i][j].x + 0.5);
-					tmp.y = static_cast<int>(r[i][j].y + 0.5);
-					Tmp.push_back(tmp);
-				}
-				areaPoint.insert(areaPoint.begin() + k, Tmp);
-			}
-			point = getUpperLeft(areaPoint);
-
-			//ここまでいくと更新
-		}
-	}
-	*/
 	return point;
 }
 

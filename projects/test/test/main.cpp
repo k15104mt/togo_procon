@@ -4,6 +4,8 @@
 #include<sstream>
 #include<vector>
 #include<array>
+#include<thread>
+#include<chrono>
 
 #include"piece.hpp"
 #include"utility.hpp"
@@ -11,20 +13,37 @@
 #include"geometry.hpp"
 
 std::vector<std::vector<Point>> framePoint;
-std::array<int, 100> isPut;
-
 
 //当たり判定
-int checkHit(std::vector<Piece> &, std::vector<putData> &, putData &);
+int checkHit(const std::vector<Piece> &,const std::vector<putData> &,const putData &);
 
 //再帰
-int solve(std::vector<Piece> &, std::vector<putData> &);
+int solve(int, std::vector<Piece> &, std::vector<putData> &, std::array<int, 100> &, Geometry &);
 
 
-int main() {
+class thread {
+public:
+  thread(int, std::vector<Piece> &);
+
+  std::thread t;
+  std::vector<putData> already_put;
+private:
+  std::array<int, 100> isPut;
+  Geometry geometry;
+
+};
+
+thread::thread(int start,std::vector<Piece>& data):geometry(framePoint){
+
   for (int i = 0; i < 100; ++i) {
 	isPut[i] = 0;
   }
+
+  t = std::thread(solve, start, std::ref(data), std::ref(already_put), std::ref(isPut), std::ref(geometry));
+}
+
+
+int main() {
 
  //QRコードの数
   int qrNum;
@@ -114,16 +133,40 @@ int main() {
   }
 
   std::vector<putData> already_put;
-  solve(data, already_put);
+  Geometry geo(framePoint);
+
+  //計測開始
+  auto start = std::chrono::system_clock::now();
+
+  thread t1(0, data);
+  thread t2(0, data);
+  thread t3(0, data);
+  thread t4(0, data);
+  t1.t.join();
+  t2.t.join();
+  t3.t.join();
+  t4.t.join();
+
+
+
+  //計測終了
+  auto end = std::chrono::system_clock::now();
+
+  auto dur = end - start;
+  auto hour = std::chrono::duration_cast<std::chrono::hours>(dur).count();
+  auto min = std::chrono::duration_cast<std::chrono::minutes>(dur).count() % 60;
+  auto sec = std::chrono::duration_cast<std::chrono::seconds>(dur).count() % 60;
+
+  printf("実行時間 %02d:%02d:%02lld\n", hour, min, sec);
 
   //回答表示
   setColor(F_GREEN | F_INTENSITY);
-  for (auto i : already_put) {
+  for (auto i : t1.already_put) {
 	printf("%d %d (%d,%d)\n", i.piece_num, i.point_num,i.base_point.x,i.base_point.y);
   }
   setColor();
 
-  //ファイル出力
+  /*ファイル出力
   FILE *fp;
   fopen_s(&fp,"out.txt","w");
   if (fp != NULL) {
@@ -131,7 +174,7 @@ int main() {
 	  fprintf_s(fp, "%d %d (%d,%d)\n", i.piece_num, i.point_num, i.base_point.x, i.base_point.y);
 	}
   }
-
+  */
 
   getchar();
   getchar();
@@ -140,7 +183,7 @@ int main() {
 }
 
 
-int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putData &put) {
+int checkHit(const std::vector<Piece> &data,const std::vector<putData> &already_put,const putData &put) {
   std::vector<Point> cp1(data[put.piece_num].getPoint()[put.point_num]);
   //移動
   move(cp1, put.base_point);
@@ -151,7 +194,7 @@ int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putDat
 	move(cp2, already_put[i].base_point);
 
 	if (collisionPiece(cp1, cp2)) {
-	  printf("piece");
+	  //printf("piece");
 	  return 1;
 	}
   }
@@ -163,49 +206,46 @@ int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putDat
 	}
   }
 
-
   if (!flag) {
-	printf("frame");
+	//printf("frame");
 	return 1;
   }
-  
-  
 
   return 0;
 }
 
-int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
+int solve(int start,std::vector<Piece> &data, std::vector<putData> &already_put,std::array<int,100> &isPut, Geometry &geometry) {
   if (data.size() == already_put.size()) {
 	//全部置いたってこと
 	return 1;
   }
 
   //全ピース見ていこうな
+  Point tmp = geometry.getPutPoint(data, already_put);
   for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
 	//今のピースがすでに置かれているかどうか
 	if(isPut[i]==0){
-	  Point tmp = getPutPoint(data, already_put,framePoint);
 	  for (int j = 0; j < static_cast<int>(data[i].getPoint().size()); ++j) {//回転の組み合わせの数
 		for (int k = 0; k < static_cast<int>(data[i].getPoint()[j].size()); ++k) {//設置頂点
 
-		  printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", i, j, k,tmp.x,tmp.y);
+		  //printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", i, j, k,tmp.x,tmp.y);
 		  putData put(i, j, k, Point(tmp.x-data[i].getPoint()[j][k].x,tmp.y-data[i].getPoint()[j][k].y));
 		  if (!checkHit(data, already_put, put)) {
 			//もし当たり判定がokなら
-			setColor(F_CYAN | F_INTENSITY);
-			printf("       put\n");
-			setColor();
+			//setColor(F_CYAN | F_INTENSITY);
+			//printf("       put\n");
+			//setColor();
 			already_put.push_back(put);
 			isPut[i]=1;
 			
-			if (solve(data, already_put)) {
+			if (solve(start,data, already_put,isPut,geometry)) {
 			  //もしreturn 1なら解き終わったってこと
 			  return 1;
 			}
 		  }else{
-			setColor(F_RED | F_INTENSITY);
-			printf_s("Hit!!!!\n");
-			setColor();
+			//setColor(F_RED | F_INTENSITY);
+			//printf_s("Hit!!!!\n");
+			//setColor();
 		  }
 		}
 	  }
@@ -214,20 +254,19 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
 
   //ここまで来たってことはダメだったってことだからpopしてバック
   if (already_put.size()) {
-	setColor(F_ORANGE | F_INTENSITY);
-	printf("back  depth = %10d\n", already_put.size());
-	setColor();
+	//setColor(F_ORANGE | F_INTENSITY);
+	//printf("back  depth = %10d\n", already_put.size());
+	//setColor();
 
 	isPut[already_put[already_put.size()-1].piece_num] = 0;
+	geometry.cancelPut();
 	already_put.pop_back();
   }
   else {
-	setColor(F_ORANGE | F_INTENSITY);
-	printf("back  depth = %10d\n",0);
-	setColor();
+	//setColor(F_ORANGE | F_INTENSITY);
+	//printf("back  depth = %10d\n",0);
+	//setColor();
   }
-
-  
 
   return 0;
 }

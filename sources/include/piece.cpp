@@ -70,7 +70,7 @@ Piece::Piece(std::vector<Point> &data){
   }
 }
 
-std::vector<std::vector<Point>> Piece::getPoint(){
+std::vector<std::vector<Point>> Piece::getPoint() const{
   return point;
 }
 

@@ -230,7 +230,7 @@ int inEvenOnePolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
 int collisionPiece(std::vector<Point> &data1, std::vector<Point> &data2) {
   //ü‚ªˆê‚Â‚Å‚àŒğ‚í‚Á‚Ä‚¢‚½‚ç“–‚½‚Á‚Ä‚¢‚éi‚»‚ê‚Í‚»‚¤j
   if (crossLine(data1, data2)) {
-	printf("cl");
+	//printf("cl");
 	return 1;
   }
 
@@ -331,12 +331,12 @@ int collisionPiece(std::vector<Point> &data1, std::vector<Point> &data2) {
 //data1 == frame
 int collisionFrame(std::vector<Point> &data1,std::vector<Point> &data2){
   if(crossLine(data1,data2)){
-	printf("cl");
+	//printf("cl");
     return 1;
   }
   
   if(!inPolygon(data1,data2)){
-	printf("in");
+	//printf("in");
     return 1;
   }
   /*

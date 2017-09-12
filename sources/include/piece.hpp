@@ -10,7 +10,7 @@ private:
   double surface;							//ÉsÅ[ÉXñ êœ
 public:
   Piece(std::vector<Point> &data);
-  std::vector<std::vector<Point>> getPoint();
+  std::vector<std::vector<Point>> getPoint() const;
   int getSize();	
   double getSurface();
 };

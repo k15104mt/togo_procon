@@ -1,6 +1,8 @@
 #include"piece.hpp"
 #include<algorithm>
-#include<cstdlib>	//// abs() for integer
+#include<cstdlib>	// fabs()
+#define NOMINMAX
+#include<color.hpp>
 #define PI 3.14159265358979
 
 //どれだけ回転するかと基準点の座標を送り回転後の座標を返す
@@ -24,8 +26,39 @@ void reverse(std::vector<Point> &data) {
 	}
 }
 
+//保存済み図形(point)に生成した図形(tmp)と等しいものがあるかどうか
+bool shapeEquals(std::vector<Point> &tmp , std::vector<std::vector<Point>> &point,int &num){
+	for (int j = 0; j < point.size(); j++) {
+		for (int k = 0; k < num; k++) {
+			if (tmp[0] == point[j][k]) {
+				int count = 0;
+				int k_ = k;
+				//setColor(F_ORANGE | F_INTENSITY); printf("[%d][%d](%d,%d)\n", j, k_, point[j][k_].x, point[j][k_].y); setColor();
+				while (count<num) {
+					if (k_ >= num)k_ = 0;
+					if (tmp[count] == point[j][k_]) {
+						//setColor(F_RED | F_INTENSITY); printf("tmp[%d]==point[%d][%d]\n", count, j, k_); setColor();
+						count++;
+					}
+					else {
+						//setColor(F_RED | F_INTENSITY); printf("合いませんでした\n"); setColor();
+						break;
+					}
+					k_++;
+				}
+				if (count == num) {
+					//printf("合いました！\n");
+					return 1;
+				}
+			}
+		}
+		//printf("\n");
+	}
+	return 0;
+}
+
 Piece::Piece(std::vector<Point> &data){
-  int num = data.size();     		//頂点数  
+  int num = data.size();     		//頂点数
   double sigma=0;					//面積を求める公式におけるシグマ
   std::vector<Point> tmp(num); 		//1回転パターンの一時格納配列
   //printf("num:%d\n", num);
@@ -44,29 +77,37 @@ Piece::Piece(std::vector<Point> &data){
   
   for (int i = 0; i<4; i++){  			//4回回転(90度ずつ)
 	Point min;	//ずらすために取得する座標最小値
-	//printf("--回転パターン[%dπ/2]--\n", i); //debug
+	//setColor(F_CYAN | F_INTENSITY); printf("\n--回転パターン[%dπ/2]--\n", i); setColor();//debug
 	for (int j = 0; j < num; j++) {
 	  tmp[j] = PointRotate((1.0 / 2.0)*i*PI, data[j]);
 	  if (j == 0) { min.x = tmp[j].x; min.y = tmp[j].y; }
 	  min.x = std::min(min.x, tmp[j].x);
 	  min.y = std::min(min.y, tmp[j].y);
-	  //printf("(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
 	}
 	move(tmp, Point(-min.x,-min.y));
-	point.push_back(tmp); //一つの回転パターンをpushback
+	//for(int j=0;j<num;j++) printf("(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
+	
+	if (i == 0 || !shapeEquals(tmp, point, num)) {
+		point.push_back(tmp); //一つの回転パターンをpushback
+		//printf("push_back\n");
+	}
 
-	//printf("--反転パターン[%dπ/2]--\n", i);
+	//setColor(F_GREEN | F_INTENSITY); printf("\n--反転パターン[%dπ/2]--\n", i); setColor();
 	for (int j = 0; j < num; j++) {
 		tmp[j] = tmp[j] = PointRotate((1.0 / 2.0)*i*PI, data[j]);
 		tmp[j].x *= -1;
 		if (j == 0) { min.x = tmp[j].x; min.y = tmp[j].y; }
 		min.x = std::min(min.x, tmp[j].x);
 		min.y = std::min(min.y, tmp[j].y);
-		//printf("(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
 	}
 	move(tmp, Point(-min.x, -min.y));
 	reverse(tmp);
-	point.push_back(tmp); //一つの回転パターンをpushback
+	//for (int j = 0; j<num; j++) printf("(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
+
+	if (!shapeEquals(tmp, point, num)) {
+		point.push_back(tmp); //一つの反転パターンをpushback
+		//printf("push_back\n");
+	}
   }
 }
 

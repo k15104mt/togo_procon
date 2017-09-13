@@ -81,6 +81,10 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 			}
 			areaPoint.insert(areaPoint.begin() + i, Tmp);
 		}
+		if (areaPoint.size() == 0) {
+			setColor(F_RED | F_INTENSITY); printf("エラー：エリアが全て埋まりました(getPutPoint)\n"); setColor();
+			return Point(-1,-1);
+		}
 		point = getUpperLeft(areaPoint);
 
 		//ここまでいくと更新

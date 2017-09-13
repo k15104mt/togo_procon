@@ -230,7 +230,7 @@ int inEvenOnePolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
 int collisionPiece(std::vector<Point> &data1, std::vector<Point> &data2) {
   //線が一つでも交わっていたら当たっている（それはそう）
   if (crossLine(data1, data2)) {
-	//printf("cl");
+	printf("cl");
 	return 1;
   }
 
@@ -330,49 +330,88 @@ int collisionPiece(std::vector<Point> &data1, std::vector<Point> &data2) {
 
 //data1 == frame
 int collisionFrame(std::vector<Point> &data1,std::vector<Point> &data2){
+  /*
   if(crossLine(data1,data2)){
-	//printf("cl");
+	printf("cl");
     return 1;
   }
   
+
+  
   if(!inPolygon(data1,data2)){
-	//printf("in");
+	printf("in");
     return 1;
   }
-  /*
+  */
+  
+  
+  
+  //1つでも内包されていない点があるならreturn 1;
   for (int i = 0; i < static_cast<int>(data2.size()); ++i) {
+	double x = 0.0;
+	int flag = 1;
 	for (int j = 0; j < static_cast<int>(data1.size()); ++j) {
 	  Vector a = data1[(j + 1) % data1.size()] - data2[i];
 	  Vector b = data1[j] - data2[i];
 
-	  //頂点上に頂点があるときはそのあとのベクトルより反時計回り(外積=正)ならHIT
-	  if (data2[i] == data1[j]) {
-		Vector c = data2[(i + 1) % data2.size()] - data2[i];
-		Vector d = data1[(j + 1) % data1.size()] - data1[j];
-		//下向きにyが正だから外積は反時計回りのときに負になる
-		if (cross(d, c) < 0) {
-		  printf("!?");
-		  return 1;
-		}
-	  }else if (data2[i] == data1[(j + 1) % data1.size()]) {
-		Vector c = data2[(i + 1) % data2.size()] - data2[i];
-		Vector d = data1[(j + 2) % data1.size()] - data1[(j + 1) % data1.size()];
-		if (cross(d, c) < 0) {
-		  printf("?!");
-		  return 1;
-		}
-	  }else if (cross(a, b) == 0 && dot(a, b) < 0) {
-		Vector c = data2[(i + 1) % data2.size()] - data2[i];
-		Vector d = data1[(j + 1) % data1.size()] - data1[j];
+	  //頂点上にある場合
+	  if (data1[j] == data2[i]) {
+		if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
+		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])>0) {
 
-		if (cross(d, c) < 0) {
-		  printf("??");
-		  return 1;
+		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0 &&
+			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
+			
+		  }
+		  else {
+			//もし頂点が内包されていないなら
+			printf("%d,%d aa", j, i);
+			return 1;
+		  }
 		}
+		else if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
+		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])<0) {
+
+		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) > 0 &&
+			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) < 0) {
+			//もし頂点が内包されていないなら
+			printf("%d,%d bb", j, i);
+			return 1;
+		  }
+		}
+		flag = 0;
+		break;
 	  }
-	}
-  }*/
+	  else if (dot(a, b) <= 0 && cross(a, b) == 0) {//直線上にある場合
+		if (data2[i] != data1[(j + 1) % data1.size()]) {
+		  if (cross(b, data2[(i + data2.size() - 1) % data2.size()] - data2[i]) <= 0 ||
+			cross(a, data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
 
+
+		  }
+		  else {
+			printf("%d,%d cc", j, i);
+			return 1;
+		  }
+		}
+
+		flag = 0;
+		break;
+	  }
+
+	  //角度を積極的に足していこう
+	  if (cross(a, b) < 0) x += (acos((double)(dot(a, b)) / (a.size()*b.size()))*180.0 / acos(-1.0));
+	  if (cross(a, b) > 0) x += -1.0*(acos((double)(dot(a, b)) / (a.size()*b.size()))*180.0 / acos(-1.0));
+	}
+
+	//頂点上にもなくて直線上にもないなら360のときは内包されているから終わる
+	//ここ多分誤差を考慮する感じにしたほうがいい
+	if (flag && (x < 359.99 || 360.01 < x)) {
+	  printf("%d dd", i);
+	  return 1;
+	}
+  }
+  
   
   return 0;  
 }

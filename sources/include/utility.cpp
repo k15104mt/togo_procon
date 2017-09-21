@@ -167,7 +167,6 @@ int inPolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
 }
 
 int inEvenOnePolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
-
   //1つでも内包されている点があるならreturn 1;
   for (int i = 0; i < static_cast<int>(data2.size()); ++i) {
 	double x = 0.0;
@@ -179,19 +178,46 @@ int inEvenOnePolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
 	  //頂点上にある場合
 	  if (data1[j] == data2[i]) {
 		if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
-		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])>0) {
+		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()]) > 0) {
 
 		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) < 0 &&
 			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) > 0) {
 			//もし頂点が内包されているなら
 			return 1;
 		  }
+		  else {
+
+			//それ以外の場合で平行なベクトルがある場合、そのベクトル同士の向きが同じなら内包されている
+			/*
+			if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()], data2[(i + 1) % data2.size()] - data2[i]) == 0 &&
+			dot(data1[j] - data1[(j + data1.size() - 1) % data1.size()], data2[(i + 1) % data2.size()] - data2[i]) > 0) {
+			return 1;
+			}*/
+
+			if (cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) == 0 &&
+			  dot(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i])  > 0) {
+			  return 1;
+			}
+
+		  }
 		}
 		else if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
-		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])<0) {
+		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()]) < 0) {
 
 		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0 &&
 			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0) {
+
+			//それ以外の場合で平行なベクトルがある場合、そのベクトル同士の向きが同じなら内包されている
+			/*
+			if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()], data2[(i + 1) % data2.size()] - data2[i]) == 0 &&
+			dot(data1[j] - data1[(j + data1.size() - 1) % data1.size()], data2[(i + 1) % data2.size()] - data2[i]) > 0) {
+			return 1;
+			}*/
+
+			if (cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) == 0 &&
+			  dot(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i])  > 0) {
+			  return 1;
+			}
 
 		  }
 		  else {
@@ -201,12 +227,19 @@ int inEvenOnePolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
 		}
 		flag = 0;
 		break;
-	  }else if (dot(a, b) <= 0 && cross(a, b) == 0) {//直線上にある場合
-		if (data2[i] != data1[(j + 1) % data1.size()] &&
-		  (cross(b, data2[(i + data2.size() - 1) % data2.size()] - data2[i])<0||
-		  cross(a, data2[(i + 1) % data2.size()] - data2[i])>0)) {
-		  return 1;
-		  
+	  }
+	  else if (dot(a, b) <= 0 && cross(a, b) == 0) {//直線上にある場合
+		if (data2[i] != data1[(j + 1) % data1.size()]) {
+		  if (cross(b, data2[(i + data2.size() - 1) % data2.size()] - data2[i]) < 0 ||
+			cross(a, data2[(i + 1) % data2.size()] - data2[i]) > 0) {
+			return 1;
+		  }
+		  else {
+			if (cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) == 0 &&
+			  dot(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) > 0) {
+			  return 1;
+			}
+		  }
 		}
 
 		flag = 0;
@@ -330,22 +363,18 @@ int collisionPiece(std::vector<Point> &data1, std::vector<Point> &data2) {
 
 //data1 == frame
 int collisionFrame(std::vector<Point> &data1,std::vector<Point> &data2){
-  /*
+  
   if(crossLine(data1,data2)){
 	printf("cl");
     return 1;
   }
-  
-
-  
+ 
   if(!inPolygon(data1,data2)){
 	printf("in");
     return 1;
   }
-  */
   
-  
-  
+  /*
   //1つでも内包されていない点があるならreturn 1;
   for (int i = 0; i < static_cast<int>(data2.size()); ++i) {
 	double x = 0.0;
@@ -361,11 +390,15 @@ int collisionFrame(std::vector<Point> &data1,std::vector<Point> &data2){
 
 		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0 &&
 			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
+
+			if (cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) == 0 &&
+			  (data2[(i + 1) % data2.size()] - data2[i]).size() > (data1[(j + 1) % data1.size()] - data1[j]).size()) {
+			  //printf("long");
+			  //return 1;
+			}
 			
-		  }
-		  else {
+		  }else {
 			//もし頂点が内包されていないなら
-			printf("%d,%d aa", j, i);
 			return 1;
 		  }
 		}
@@ -375,8 +408,14 @@ int collisionFrame(std::vector<Point> &data1,std::vector<Point> &data2){
 		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) > 0 &&
 			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) < 0) {
 			//もし頂点が内包されていないなら
-			printf("%d,%d bb", j, i);
 			return 1;
+		  }
+		  else{
+			if (cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) == 0 &&
+			  (data2[(i + 1) % data2.size()] - data2[i]).size() > (data1[(j + 1) % data1.size()] - data1[j]).size()) {
+			  //printf("long");
+			  //return 1;
+			}
 		  }
 		}
 		flag = 0;
@@ -384,13 +423,17 @@ int collisionFrame(std::vector<Point> &data1,std::vector<Point> &data2){
 	  }
 	  else if (dot(a, b) <= 0 && cross(a, b) == 0) {//直線上にある場合
 		if (data2[i] != data1[(j + 1) % data1.size()]) {
-		  if (cross(b, data2[(i + data2.size() - 1) % data2.size()] - data2[i]) <= 0 ||
+		  if (cross(b, data2[(i + data2.size() - 1) % data2.size()] - data2[i]) <= 0 &&
 			cross(a, data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
 
+			if (cross(a, data2[(i + 1) % data2.size()] - data2[i]) == 0 &&
+			  (data2[(i + 1) % data2.size()] - data2[i]).size() > a.size()) {
+			  //printf("long");
+			  //return 1;
+			}
 
 		  }
 		  else {
-			printf("%d,%d cc", j, i);
 			return 1;
 		  }
 		}
@@ -407,11 +450,10 @@ int collisionFrame(std::vector<Point> &data1,std::vector<Point> &data2){
 	//頂点上にもなくて直線上にもないなら360のときは内包されているから終わる
 	//ここ多分誤差を考慮する感じにしたほうがいい
 	if (flag && (x < 359.99 || 360.01 < x)) {
-	  printf("%d dd", i);
 	  return 1;
 	}
   }
-  
+  */
   
   return 0;  
 }

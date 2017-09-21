@@ -133,18 +133,6 @@ int main() {
 	p++;
   }
 
-  
-
-  /*
-  thread t1(0, data);
-  thread t2(0, data);
-  thread t3(0, data);
-  thread t4(0, data);
-  t1.t.join();
-  t2.t.join();
-  t3.t.join();
-  t4.t.join();
-  */
 
   std::vector<putData> already_put;
   std::array<int, 100> isPut = {0};
@@ -196,7 +184,7 @@ int checkHit(const std::vector<Piece> &data,const std::vector<putData> &already_
   //ˆÚ“®
   move(cp1, put.base_point);
 
-  /*
+  
   for (int i = 0; i < static_cast<int>(already_put.size()); ++i) {
 	std::vector<Point> cp2(data[already_put[i].piece_num].getPoint()[already_put[i].point_num]);
 	//ˆÚ“®
@@ -207,24 +195,25 @@ int checkHit(const std::vector<Piece> &data,const std::vector<putData> &already_
 	  return 1;
 	}
   }
-  */
   
   
+  /*
   int flag = 0;
   for (int i = 0; i < static_cast<int>(geometry.areaPoint.size()); i++) {
 	if (!collisionFrame(geometry.areaPoint[i], cp1)) {
 	  flag = 1;
 	}
   }
+  */
   
-  /*
+  
   int flag = 0;
   for (int i = 0; i < static_cast<int>(framePoint.size()); i++) {
 	if (!collisionFrame(framePoint[i], cp1)) {
 	  flag = 1;
 	}
   }
-  */
+  
 
 
   if (!flag) {

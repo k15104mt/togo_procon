@@ -4,6 +4,7 @@
 #include<sstream>
 #include<vector>
 #include<array>
+#include<chrono>
 
 #include"piece.hpp"
 #include"utility.hpp"
@@ -113,8 +114,22 @@ int main() {
 	p++;
   }
 
+  //計測開始
+  auto start = std::chrono::system_clock::now();
+
   std::vector<putData> already_put;
   solve(data, already_put);
+
+  //計測終了
+  auto end = std::chrono::system_clock::now();
+
+  auto dur = end - start;
+  auto hour = std::chrono::duration_cast<std::chrono::hours>(dur).count();
+  auto min = std::chrono::duration_cast<std::chrono::minutes>(dur).count() % 60;
+  auto sec = std::chrono::duration_cast<std::chrono::seconds>(dur).count() % 60;
+
+  printf("実行時間 %02d:%02d:%02lld\n", hour, min, sec);
+
 
   //回答表示
   setColor(F_GREEN | F_INTENSITY);
@@ -151,7 +166,7 @@ int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putDat
 	move(cp2, already_put[i].base_point);
 
 	if (collisionPiece(cp1, cp2)) {
-	  printf("piece");
+	  //printf("piece");
 	  return 1;
 	}
   }
@@ -165,7 +180,7 @@ int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putDat
 
 
   if (!flag) {
-	printf("frame");
+	//printf("frame");
 	return 1;
   }
   
@@ -188,13 +203,14 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
 	  for (int j = 0; j < static_cast<int>(data[i].getPoint().size()); ++j) {//回転の組み合わせの数
 		for (int k = 0; k < static_cast<int>(data[i].getPoint()[j].size()); ++k) {//設置頂点
 
-		  printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", i, j, k,tmp.x,tmp.y);
+		 // printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", i, j, k,tmp.x,tmp.y);
 		  putData put(i, j, k, Point(tmp.x-data[i].getPoint()[j][k].x,tmp.y-data[i].getPoint()[j][k].y));
 		  if (!checkHit(data, already_put, put)) {
 			//もし当たり判定がokなら
-			setColor(F_CYAN | F_INTENSITY);
-			printf("       put\n");
-			setColor();
+			//setColor(F_CYAN | F_INTENSITY);
+			//printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", i, j, k, tmp.x, tmp.y);
+			//printf("       put\n");
+			//setColor();
 			already_put.push_back(put);
 			isPut[i]=1;
 			
@@ -203,9 +219,9 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
 			  return 1;
 			}
 		  }else{
-			setColor(F_RED | F_INTENSITY);
-			printf_s("Hit!!!!\n");
-			setColor();
+			//setColor(F_RED | F_INTENSITY);
+			//printf_s("Hit!!!!\n");
+			//setColor();
 		  }
 		}
 	  }
@@ -214,17 +230,17 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
 
   //ここまで来たってことはダメだったってことだからpopしてバック
   if (already_put.size()) {
-	setColor(F_ORANGE | F_INTENSITY);
-	printf("back  depth = %10d\n", already_put.size());
-	setColor();
+	//setColor(F_ORANGE | F_INTENSITY);
+	//printf("back  depth = %10d\n", already_put.size());
+	//setColor();
 
 	isPut[already_put[already_put.size()-1].piece_num] = 0;
 	already_put.pop_back();
   }
   else {
-	setColor(F_ORANGE | F_INTENSITY);
-	printf("back  depth = %10d\n",0);
-	setColor();
+	//setColor(F_ORANGE | F_INTENSITY);
+	//printf("back  depth = %10d\n",0);
+	//setColor();
   }
 
   

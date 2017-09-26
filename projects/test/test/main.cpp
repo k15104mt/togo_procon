@@ -19,7 +19,7 @@ std::array<int, 100> isPut;
 int checkHit(std::vector<Piece> &, std::vector<putData> &, putData &);
 
 //再帰
-int solve(std::vector<Piece> &, std::vector<putData> &);
+int solve(int,std::vector<Piece> &, std::vector<putData> &);
 
 
 int main() {
@@ -118,7 +118,7 @@ int main() {
   auto start = std::chrono::system_clock::now();
 
   std::vector<putData> already_put;
-  solve(data, already_put);
+  solve(0,data, already_put);
 
   //計測終了
   auto end = std::chrono::system_clock::now();
@@ -189,7 +189,7 @@ int checkHit(std::vector<Piece> &data, std::vector<putData> &already_put, putDat
   return 0;
 }
 
-int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
+int solve(int start, std::vector<Piece> &data, std::vector<putData> &already_put) {
   if (data.size() == already_put.size()) {
 	//全部置いたってこと
 	return 1;
@@ -197,24 +197,32 @@ int solve(std::vector<Piece> &data, std::vector<putData> &already_put) {
 
   //全ピース見ていこうな
   for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
+	int ii;
+	if (already_put.size() == 0) {
+	  ii = (i + start) % data.size();
+	}
+	else {
+	  ii = i;
+	}
+
 	//今のピースがすでに置かれているかどうか
-	if(isPut[i]==0){
+	if(isPut[ii]==0){
 	  Point tmp = getPutPoint(data, already_put,framePoint);
-	  for (int j = 0; j < static_cast<int>(data[i].getPoint().size()); ++j) {//回転の組み合わせの数
-		for (int k = 0; k < static_cast<int>(data[i].getPoint()[j].size()); ++k) {//設置頂点
+	  for (int j = 0; j < static_cast<int>(data[ii].getPoint().size()); ++j) {//回転の組み合わせの数
+		for (int k = 0; k < static_cast<int>(data[ii].getPoint()[j].size()); ++k) {//設置頂点
 
 		 // printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", i, j, k,tmp.x,tmp.y);
-		  putData put(i, j, k, Point(tmp.x-data[i].getPoint()[j][k].x,tmp.y-data[i].getPoint()[j][k].y));
+		  putData put(ii, j, k, Point(tmp.x-data[ii].getPoint()[j][k].x,tmp.y-data[ii].getPoint()[j][k].y));
 		  if (!checkHit(data, already_put, put)) {
 			//もし当たり判定がokなら
 			//setColor(F_CYAN | F_INTENSITY);
-			//printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", i, j, k, tmp.x, tmp.y);
+			//printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", ii, j, k, tmp.x, tmp.y);
 			//printf("       put\n");
 			//setColor();
 			already_put.push_back(put);
-			isPut[i]=1;
+			isPut[ii]=1;
 			
-			if (solve(data, already_put)) {
+			if (solve(start,data, already_put)) {
 			  //もしreturn 1なら解き終わったってこと
 			  return 1;
 			}

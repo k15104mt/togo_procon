@@ -191,7 +191,7 @@ int checkHit(const std::vector<Piece> &data,const std::vector<putData> &already_
 	move(cp2, already_put[i].base_point);
 
 	if (collisionPiece(cp1, cp2)) {
-	  printf("piece");
+	  //printf("piece");
 	  return 1;
 	}
   }
@@ -217,7 +217,7 @@ int checkHit(const std::vector<Piece> &data,const std::vector<putData> &already_
 
 
   if (!flag) {
-	printf("frame");
+	//printf("frame");
 	return 1;
   }
 
@@ -233,29 +233,40 @@ int solve(int start,std::vector<Piece> &data, std::vector<putData> &already_put,
   //全ピース見ていこうな
   Point tmp = geometry.getPutPoint(data, already_put);
   for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
-	//今のピースがすでに置かれているかどうか
-	if(isPut[i]==0){
-	  for (int j = 0; j < static_cast<int>(data[i].getPoint().size()); ++j) {//回転の組み合わせの数
-		for (int k = 0; k < static_cast<int>(data[i].getPoint()[j].size()); ++k) {//設置頂点
+	int ii;
+	if (already_put.size() == 0) {
 
-		  printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", i, j, k,tmp.x,tmp.y);
-		  putData put(i, j, k, Point(tmp.x-data[i].getPoint()[j][k].x,tmp.y-data[i].getPoint()[j][k].y));
+	  ii = (i + start) % data.size();
+
+	}else {
+
+	  ii = i;
+
+	}
+
+	//今のピースがすでに置かれているかどうか
+	if(isPut[ii]==0){
+	  for (int j = 0; j < static_cast<int>(data[ii].getPoint().size()); ++j) {//回転の組み合わせの数
+		for (int k = 0; k < static_cast<int>(data[ii].getPoint()[j].size()); ++k) {//設置頂点
+
+		 // printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", ii, j, k,tmp.x,tmp.y);
+		  putData put(ii, j, k, Point(tmp.x-data[ii].getPoint()[j][k].x,tmp.y-data[ii].getPoint()[j][k].y));
 		  if (!checkHit(data, already_put, put,geometry)) {
 			//もし当たり判定がokなら
-			setColor(F_CYAN | F_INTENSITY);
-			printf("       put\n");
-			setColor();
+			//setColor(F_CYAN | F_INTENSITY);
+			//printf("       put\n");
+			//setColor();
 			already_put.push_back(put);
-			isPut[i]=1;
+			isPut[ii]=1;
 			
 			if (solve(start,data, already_put,isPut,geometry)) {
 			  //もしreturn 1なら解き終わったってこと
 			  return 1;
 			}
 		  }else{
-			setColor(F_RED | F_INTENSITY);
-			printf_s("Hit!!!!\n");
-			setColor();
+			//setColor(F_RED | F_INTENSITY);
+			//printf_s("Hit!!!!\n");
+			//setColor();
 		  }
 		}
 	  }
@@ -264,18 +275,18 @@ int solve(int start,std::vector<Piece> &data, std::vector<putData> &already_put,
 
   //ここまで来たってことはダメだったってことだからpopしてバック
   if (already_put.size()) {
-	setColor(F_ORANGE | F_INTENSITY);
-	printf("back  depth = %10d\n", already_put.size());
-	setColor();
+	//setColor(F_ORANGE | F_INTENSITY);
+	//printf("back  depth = %10d\n", already_put.size());
+	//setColor();
 
 	isPut[already_put[already_put.size()-1].piece_num] = 0;
 	geometry.cancelPut();
 	already_put.pop_back();
   }
   else {
-	setColor(F_ORANGE | F_INTENSITY);
-	printf("back  depth = %10d\n",0);
-	setColor();
+	//setColor(F_ORANGE | F_INTENSITY);
+	//printf("back  depth = %10d\n",0);
+	//setColor();
   }
 
   return 0;

@@ -22,7 +22,7 @@ putData::putData(int piece_num, int point_num, int vertex_num, Point &base_point
 
 
 //内積ィ！！
-int dot(Vector &a,Vector &b){
+int dot(Vector &a, Vector &b) {
   return a.x * b.x + a.y * b.y;
 }
 
@@ -77,11 +77,11 @@ int inPolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
 
 	  if (data1[j] == data2[i]) {
 		if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
-		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])>0) {
+		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()]) > 0) {
 
 		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0 &&
 			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
-			
+
 		  }
 		  else {
 			return 0;
@@ -89,7 +89,7 @@ int inPolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
 
 		}
 		else if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
-		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])<0) {
+		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()]) < 0) {
 
 		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) > 0 &&
 			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) < 0) {
@@ -101,40 +101,40 @@ int inPolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
 
 	  /*
 	  if (data1[j] == data2[i]) {
-		if (cross(data1[j] -data1[(j + data1.size() - 1) % data1.size()],
-		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])>0) {
+	  if (cross(data1[j] -data1[(j + data1.size() - 1) % data1.size()],
+	  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])>0) {
 
-		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0 &&
-			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0) {
-			return 0;
-		  }
+	  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0 &&
+	  cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0) {
+	  return 0;
+	  }
 
-		}
-		else if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
-		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])<0) {
+	  }
+	  else if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
+	  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])<0) {
 
-		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0 &&
-			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
-			printf("(%d %d)\n", cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i])
-			  , cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]));
-			
-			return 0;
-		  }
+	  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0 &&
+	  cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
+	  printf("(%d %d)\n", cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i])
+	  , cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]));
 
-		}
+	  return 0;
+	  }
+
+	  }
 	  }*/
 	  /*
 	  if (data1[j] == data2[i] &&
-		cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0 &&
-		cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] -data2[i]) <= 0) {
-		printf("%d %d\n", j, i);
-		return 0;
+	  cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0 &&
+	  cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] -data2[i]) <= 0) {
+	  printf("%d %d\n", j, i);
+	  return 0;
 	  }
 	  */
 	}
-  
 
-  //data2のi番目の点がdata1のポリゴン内にあるかどうか
+
+	//data2のi番目の点がdata1のポリゴン内にあるかどうか
 	double x = 0.0;
 	int flag = 1;
 	for (int j = 0; j < static_cast<int>(data1.size()); ++j) {
@@ -263,7 +263,7 @@ int inEvenOnePolygon(std::vector<Point> &data1, std::vector<Point> &data2) {
 int collisionPiece(std::vector<Point> &data1, std::vector<Point> &data2) {
   //線が一つでも交わっていたら当たっている（それはそう）
   if (crossLine(data1, data2)) {
-	printf("cl");
+	//printf("cl");
 	return 1;
   }
 
@@ -271,190 +271,104 @@ int collisionPiece(std::vector<Point> &data1, std::vector<Point> &data2) {
 	return 1;
   }
 
-  /*
-  if (inPolygon(data1, data2) || inPolygon(data2, data1)) {
-	printf("in");
-	return 1;
-  }
-  */
-  /*
-  for (int i = 0; i < static_cast<int>(data1.size()); i++){
-	for (int j = 0; j < static_cast<int>(data2.size()); ++j) {
-
-
-	  //両方が頂点上にある場合のみのやつ作る
-
-	  if (!(data1[i] == data2[j]) && !(data1[i] == data2[(j + 1) % data2.size()])) {
-		Vector a = data2[j] - data1[i];
-		Vector b = data2[(j + 1) % data2.size()] - data1[i];
-		Vector c = data1[(i + 1) % data1.size()] - data1[i];
-		if (cross(a,b)==0 && dot(a,b)<0 && cross(b,c)>0) {//線分上に頂点があるとき
-		  printf("??");
-		  return 1;
-		}
-	  }
-	  /*これいるかわかんないや！！！！
-	  if (data1[i] == data2[j]) {
-		Vector a = data1[(i + 1) % data1.size()] - data1[i];
-		Vector b = data2[(j + 1) % data2.size()] - data2[j];
-		if (cross(a, b) > 0) {
-		  printf("!?");
-		  return 1;
-		}
-	  }//*
-	  
-	}
-  }
-  */
-
-  /*
-  for (int i = 0; i<static_cast<int>(data1.size()); ++i) {
-	for (int j = 0; j<static_cast<int>(data2.size()); ++j) {
-	  Vector a = data2[(j + 1) % data2.size()] - data1[i];
-	  Vector b = data2[j] - data1[i];
-	  if (cross(a, b) == 0 && dot(a, b) < 0) {
-		Vector c = data1[(i + 1) % data1.size()] - data1[i];
-		Vector d = data2[(j + 1) % data2.size()] - data2[j];
-
-		if (cross(d, c) < 0) {
-		  //return 1;
-		}
-	  }
-
-	  /*
-	  Vector a = data1[(i + 1) % data1.size()] - data1[i];
-	  Vector b = data2[(j + 1) % data2.size()] - data2[j];
-	  //外積が平行なとき→ベクトルが平行
-	  if (cross(a, b) == 0) {
-		
-		//どちらかの頂点がのみが片方の辺の中に存在しているとき
-		Vector c = data2[(j + 1) % data2.size()] - data1[i];
-		Vector d = data2[j]                      - data1[i];
-		Vector e = data2[(j + 1) % data2.size()] - data1[(i + 1) % data1.size()];
-		Vector f = data2[j]                      - data1[(i + 1) % data1.size()];
-
-		if (cross(c, d) == 0 && cross(e, f) == 0) {
-		  if ((dot(c, d) < 0 && dot(e, f) > 0) || (dot(c, d) > 0 && dot(e, f) < 0)) {
-			return 1;
-		  }
-		}
-
-		if (cross(e, f) == 0) {
-		  if (c.size()==0.0 || d.size() == 0.0) {
-			if (dot(e, f) < 0) {
-			  return 1;
-			}
-		  }
-		}
-
-		if (cross(c, d) == 0) {
-		  if (e.size() == 0.0 || f.size() == 0.0) {
-			if (dot(c, d) < 0) {
-			  return 1;
-			}
-		  }
-		}
-	  }
-	}
-  }
-  */
-  return 0;  
+  return 0;
 }
 
 //data1 == frame
-int collisionFrame(std::vector<Point> &data1,std::vector<Point> &data2){
-  
-  if(crossLine(data1,data2)){
-	printf("cl");
-    return 1;
+int collisionFrame(std::vector<Point> &data1, std::vector<Point> &data2) {
+
+  if (crossLine(data1, data2)) {
+	//printf("cl");
+	return 1;
   }
- 
-  if(!inPolygon(data1,data2)){
-	printf("in");
-    return 1;
+
+  if (!inPolygon(data1, data2)) {
+	//printf("in");
+	return 1;
   }
-  
+
   /*
   //1つでも内包されていない点があるならreturn 1;
   for (int i = 0; i < static_cast<int>(data2.size()); ++i) {
-	double x = 0.0;
-	int flag = 1;
-	for (int j = 0; j < static_cast<int>(data1.size()); ++j) {
-	  Vector a = data1[(j + 1) % data1.size()] - data2[i];
-	  Vector b = data1[j] - data2[i];
+  double x = 0.0;
+  int flag = 1;
+  for (int j = 0; j < static_cast<int>(data1.size()); ++j) {
+  Vector a = data1[(j + 1) % data1.size()] - data2[i];
+  Vector b = data1[j] - data2[i];
 
-	  //頂点上にある場合
-	  if (data1[j] == data2[i]) {
-		if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
-		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])>0) {
+  //頂点上にある場合
+  if (data1[j] == data2[i]) {
+  if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
+  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()]) > 0) {
 
-		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0 &&
-			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
+  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) <= 0 &&
+  cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
 
-			if (cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) == 0 &&
-			  (data2[(i + 1) % data2.size()] - data2[i]).size() > (data1[(j + 1) % data1.size()] - data1[j]).size()) {
-			  //printf("long");
-			  //return 1;
-			}
-			
-		  }else {
-			//もし頂点が内包されていないなら
-			return 1;
-		  }
-		}
-		else if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
-		  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()])<0) {
+  if (cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) == 0 &&
+  (data2[(i + 1) % data2.size()] - data2[i]).size() > (data1[(j + 1) % data1.size()] - data1[j]).size()) {
+  //printf("long");
+  //return 1;
+  }
 
-		  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) > 0 &&
-			cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) < 0) {
-			//もし頂点が内包されていないなら
-			return 1;
-		  }
-		  else{
-			if (cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) == 0 &&
-			  (data2[(i + 1) % data2.size()] - data2[i]).size() > (data1[(j + 1) % data1.size()] - data1[j]).size()) {
-			  //printf("long");
-			  //return 1;
-			}
-		  }
-		}
-		flag = 0;
-		break;
-	  }
-	  else if (dot(a, b) <= 0 && cross(a, b) == 0) {//直線上にある場合
-		if (data2[i] != data1[(j + 1) % data1.size()]) {
-		  if (cross(b, data2[(i + data2.size() - 1) % data2.size()] - data2[i]) <= 0 &&
-			cross(a, data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
+  }
+  else {
+  //もし頂点が内包されていないなら
+  return 1;
+  }
+  }
+  else if (cross(data1[j] - data1[(j + data1.size() - 1) % data1.size()],
+  data1[(j + 1) % data1.size()] - data1[(j + data1.size() - 1) % data1.size()]) < 0) {
 
-			if (cross(a, data2[(i + 1) % data2.size()] - data2[i]) == 0 &&
-			  (data2[(i + 1) % data2.size()] - data2[i]).size() > a.size()) {
-			  //printf("long");
-			  //return 1;
-			}
+  if (cross(data1[(j + data1.size() - 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) > 0 &&
+  cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) < 0) {
+  //もし頂点が内包されていないなら
+  return 1;
+  }
+  else {
+  if (cross(data1[(j + 1) % data1.size()] - data1[j], data2[(i + 1) % data2.size()] - data2[i]) == 0 &&
+  (data2[(i + 1) % data2.size()] - data2[i]).size() > (data1[(j + 1) % data1.size()] - data1[j]).size()) {
+  //printf("long");
+  //return 1;
+  }
+  }
+  }
+  flag = 0;
+  break;
+  }
+  else if (dot(a, b) <= 0 && cross(a, b) == 0) {//直線上にある場合
+  if (data2[i] != data1[(j + 1) % data1.size()]) {
+  if (cross(b, data2[(i + data2.size() - 1) % data2.size()] - data2[i]) <= 0 &&
+  cross(a, data2[(i + 1) % data2.size()] - data2[i]) >= 0) {
 
-		  }
-		  else {
-			return 1;
-		  }
-		}
+  if (cross(a, data2[(i + 1) % data2.size()] - data2[i]) == 0 &&
+  (data2[(i + 1) % data2.size()] - data2[i]).size() > a.size()) {
+  //printf("long");
+  //return 1;
+  }
 
-		flag = 0;
-		break;
-	  }
+  }
+  else {
+  return 1;
+  }
+  }
 
-	  //角度を積極的に足していこう
-	  if (cross(a, b) < 0) x += (acos((double)(dot(a, b)) / (a.size()*b.size()))*180.0 / acos(-1.0));
-	  if (cross(a, b) > 0) x += -1.0*(acos((double)(dot(a, b)) / (a.size()*b.size()))*180.0 / acos(-1.0));
-	}
+  flag = 0;
+  break;
+  }
 
-	//頂点上にもなくて直線上にもないなら360のときは内包されているから終わる
-	//ここ多分誤差を考慮する感じにしたほうがいい
-	if (flag && (x < 359.99 || 360.01 < x)) {
-	  return 1;
-	}
+  //角度を積極的に足していこう
+  if (cross(a, b) < 0) x += (acos((double)(dot(a, b)) / (a.size()*b.size()))*180.0 / acos(-1.0));
+  if (cross(a, b) > 0) x += -1.0*(acos((double)(dot(a, b)) / (a.size()*b.size()))*180.0 / acos(-1.0));
+  }
+
+  //頂点上にもなくて直線上にもないなら360のときは内包されているから終わる
+  //ここ多分誤差を考慮する感じにしたほうがいい
+  if (flag && (x < 359.99 || 360.01 < x)) {
+  return 1;
+  }
   }
   */
-  
-  return 0;  
+
+  return 0;
 }
 

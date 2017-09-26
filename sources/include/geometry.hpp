@@ -18,7 +18,7 @@ public:
 	std::vector<std::vector<Point>> areaPoint;										//未設置部エリアの情報
 	Geometry(std::vector<std::vector<Point>> &framePoint);							//コンストラクタ
 private:
-	std::vector<std::vector<Point>> tmpAreaPoint;		//cancel用の設置前エリア保持
+	std::vector<std::vector<std::vector<Point>>> tmpAreaPoint;		//cancel用の設置前エリア保持
 	int putNum;
 };
 

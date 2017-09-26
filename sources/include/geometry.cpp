@@ -25,16 +25,17 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 
 	int	rc=0, rp[MAX];		// 演算後図形の記憶用
 	std::vector<std::vector<D_Point>> r;
+	std::vector<std::vector<Point>> tmpArea;
 
 	r.resize(MAX);
 	for (int i = 0; i < MAX; i++) {
 		r[i].resize(MAX);
 	}
 
-	//setColor(F_CYAN|F_INTENSITY, B_BLACK); printf("設置ピース番号:%d\n分割エリア数:%d\n", already_put.size()-1, areaPoint.size()); 
-	//printf("<初期フレーム座標>\n"); for (int i = 0; i < (int)areaPoint.size(); i++) { printf("area[%d]:", i); for (int j = 0; j < (int)areaPoint[i].size(); j++) { printf("{%d,%d},", areaPoint[i][j].x, areaPoint[i][j].y); }printf("\n"); }setColor();
+	//setColor(F_CYAN|F_INTENSITY, B_BLACK); printf("\n設置ピース番号:%d\n分割エリア数:%d\n", already_put.size()-1, areaPoint.size()); 
+	//printf("<初期フレーム座標>\n"); for (int i = 0; i < (int)areaPoint.size(); i++) { printf("area[%d]:", i); for (int j = 0; j < (int)areaPoint[i].size(); j++) { printf("{%d,%d} ", areaPoint[i][j].x, areaPoint[i][j].y); }printf("\n"); }setColor();
 
-	tmpAreaPoint = areaPoint;	//設置前状態を保存
+	tmpAreaPoint.push_back(areaPoint);	//設置前状態を保存
 
 	if (already_put.size() == 0) {
 		return getUpperLeft(areaPoint);
@@ -53,23 +54,24 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 		for (int j = 0; j < bp - 1; j++) {	//NOT処理で使う変数格納
 			tmp = areaPoint[i][j];
 			b.push_back(tmp);
-			//setColor(F_ORANGE); printf("b[%d](%d,%d)\n", j, b[j].x, b[j].y); setColor();	//debug
+			//setColor(F_ORANGE); printf("{%d,%d}", b[j].x, b[j].y); setColor();	//debug
 		}
 		tmp = b[0];
 		b.push_back(tmp);
-		//puts("--");	//debug
+		//printf("\n--\n");	//debug
 
 		for (int j = 0; j < ap - 1; j++) {	//NOT処理で使う変数格納
 			tmp.x = data[already_put[putNum].piece_num].getPoint()[already_put[putNum].point_num][j].x + already_put[putNum].base_point.x;	//きもいけど設置ピース取得してる
 			tmp.y = data[already_put[putNum].piece_num].getPoint()[already_put[putNum].point_num][j].y + already_put[putNum].base_point.y;
 			a.push_back(tmp);
-			//setColor(F_ORANGE); printf("a[%d](%d,%d)\n", j, a[j].x, a[j].y); setColor();	//debug
+			//setColor(F_ORANGE); printf("{%d,%d} ",  a[j].x, a[j].y); setColor();	//debug
 		}
+		//printf("\n");
 		tmp = a[0];	//一周
 		a.push_back(tmp);
 		OnNot(ap, bp, a, b, rc, rp, r);
 
-		areaPoint.erase(areaPoint.begin() + i);	//一旦見てるエリア削除※削減あり
+		//areaPoint.erase(areaPoint.begin() + i);	//一旦見てるエリア削除※削減あり
 												////NOTで出した設置ピース情報とフレームを結合する
 												//未設置エリアの更新
 		for (int i = 0; i < rc; i++) {
@@ -79,15 +81,17 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 				tmp.y = static_cast<int>(r[i][j].y + 0.5);
 				Tmp.push_back(tmp);
 			}
-			areaPoint.insert(areaPoint.begin() + i, Tmp);
+			//areaPoint.insert(areaPoint.begin() + i, Tmp);
+			tmpArea.push_back(Tmp);
 		}
-		if (areaPoint.size() == 0) {
-			setColor(F_RED | F_INTENSITY); printf("エラー：エリアが全て埋まりました(getPutPoint)\n"); setColor();
-			return Point(-1,-1);
-		}
-		point = getUpperLeft(areaPoint);
 
 		//ここまでいくと更新
+	}
+	areaPoint = tmpArea;
+	point = getUpperLeft(areaPoint);
+	if (areaPoint.size() == 0) {
+		setColor(F_RED | F_INTENSITY); printf("エラー：エリアが全て埋まりました(getPutPoint)\n"); setColor();
+		return Point(-1, -1);
 	}
 
 	putNum++;
@@ -96,7 +100,8 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 
 //設置した後外す
 void Geometry::cancelPut() {
-	areaPoint = tmpAreaPoint;
+	areaPoint = tmpAreaPoint[tmpAreaPoint.size()-1];
+	tmpAreaPoint.pop_back();
 	putNum--;
 }
 
@@ -686,7 +691,7 @@ Point getUpperLeft(std::vector<std::vector<Point>> &areaPoint){
 	for (int i = 0; i < (int)areaPoint.size(); i++) {
 		//printf("area[%d]:", i);
 		for (int j = 0; j < (int)areaPoint[i].size(); j++) {
-			//printf("{%d,%d},", areaPoint[i][j].x, areaPoint[i][j].y);
+		//	printf("{%d,%d} ", areaPoint[i][j].x, areaPoint[i][j].y);
 
 			if (i == j&&i == 0) {	//暫定の左上
 				tall = areaPoint[i][j].x + areaPoint[i][j].y;

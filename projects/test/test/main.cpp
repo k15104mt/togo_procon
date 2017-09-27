@@ -247,10 +247,9 @@ int solve(int start,std::vector<Piece> &data, std::vector<putData> &already_put,
 	//今のピースがすでに置かれているかどうか
 	if(isPut[ii]==0){
 	  for (int j = 0; j < static_cast<int>(data[ii].getPoint().size()); ++j) {//回転の組み合わせの数
-		for (int k = 0; k < static_cast<int>(data[ii].getPoint()[j].size()); ++k) {//設置頂点
 
 		 // printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", ii, j, k,tmp.x,tmp.y);
-		  putData put(ii, j, k, Point(tmp.x-data[ii].getPoint()[j][k].x,tmp.y-data[ii].getPoint()[j][k].y));
+		  putData put(ii, j, 0, Point(tmp.x-data[ii].getUpperLeft(j).x,tmp.y-data[ii].getUpperLeft(j).y));
 		  if (!checkHit(data, already_put, put,geometry)) {
 			//もし当たり判定がokなら
 			//setColor(F_CYAN | F_INTENSITY);
@@ -268,7 +267,6 @@ int solve(int start,std::vector<Piece> &data, std::vector<putData> &already_put,
 			//printf_s("Hit!!!!\n");
 			//setColor();
 		  }
-		}
 	  }
 	}
   }

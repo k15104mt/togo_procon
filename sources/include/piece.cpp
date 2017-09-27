@@ -132,7 +132,7 @@ Point UpperLeft(std::vector<Point> &areaPoint) {
   Point point;
   int tall;			//’¼ü•û’ö® y=-x+b ‚Ìb
   for (int i = 0; i < (int)areaPoint.size(); i++) {
-	printf("{%d,%d} ", areaPoint[i].x, areaPoint[i].y);
+	//printf("{%d,%d} ", areaPoint[i].x, areaPoint[i].y);
 
 	if (i == 0) {	//b’è‚Ì¶ã
 	  tall = areaPoint[i].x + areaPoint[i].y;
@@ -147,7 +147,7 @@ Point UpperLeft(std::vector<Point> &areaPoint) {
 	  point.x = areaPoint[i].x; point.y = areaPoint[i].y;
 	}
   }
-  printf("b’è¶ã(%d,%d),tall:%d\n", point.x, point.y, tall);
+  //printf("b’è¶ã(%d,%d),tall:%d\n", point.x, point.y, tall);
   return point;
 }
 

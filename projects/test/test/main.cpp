@@ -43,6 +43,7 @@ thread::thread(int start,std::vector<Piece>& data):geometry(framePoint){
   t = std::thread(solve, start, std::ref(data), std::ref(already_put), std::ref(isPut), std::ref(geometry));
 }
 
+int count=0;
 
 int main() {
 
@@ -141,10 +142,10 @@ int main() {
   //計測開始
   auto start = std::chrono::system_clock::now();
 
-  solve(0, data, already_put, isPut, geometry);
+  solve(14, data, already_put, isPut, geometry);
   
 
-
+  printf("%d\n", count);
   //計測終了
   auto end = std::chrono::system_clock::now();
 
@@ -180,6 +181,8 @@ int main() {
 
 
 int checkHit(const std::vector<Piece> &data,const std::vector<putData> &already_put,const putData &put,Geometry &geometry) {
+  count++;
+
   std::vector<Point> cp1(data[put.piece_num].getPoint()[put.point_num]);
   //移動
   move(cp1, put.base_point);
@@ -234,6 +237,9 @@ int solve(int start,std::vector<Piece> &data, std::vector<putData> &already_put,
   Point tmp = geometry.getPutPoint(data, already_put);
   for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
 	int ii;
+	ii = (i + start) % data.size();
+
+	/*
 	if (already_put.size() == 0) {
 
 	  ii = (i + start) % data.size();
@@ -242,7 +248,7 @@ int solve(int start,std::vector<Piece> &data, std::vector<putData> &already_put,
 
 	  ii = i;
 
-	}
+	}*/
 
 	//今のピースがすでに置かれているかどうか
 	if(isPut[ii]==0){

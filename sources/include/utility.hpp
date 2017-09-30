@@ -60,4 +60,6 @@ int collisionPiece(std::vector<Point>&,std::vector<Point>&);
 
 int collisionFrame(std::vector<Point>&,std::vector<Point>&);
 
+int collisionNotPutArea(std::vector<std::vector<Point>>&, std::vector<Point>&);
+
 #endif

@@ -142,7 +142,7 @@ int main() {
   //Œv‘ªŠJŽn
   auto start = std::chrono::system_clock::now();
 
-  solve(14, data, already_put, isPut, geometry);
+  solve(0, data, already_put, isPut, geometry);
   
 
   printf("%d\n", count);

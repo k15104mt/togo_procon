@@ -1,5 +1,6 @@
 #include"geometry.hpp"
 #include"color.hpp"
+#include<array>
 #include<cstdlib>
 #include<math.h>
 #define PI 3.1415926535
@@ -7,7 +8,8 @@
 void OnNot(int &ap,int &bp, std::vector<Point> &a, std::vector<Point> &b,int &rc,int *rp, std::vector<std::vector<D_Point>> &r);
 void OnMerge(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp);
 void OnClean(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp);
-Point getUpperLeft(std::vector<std::vector<Point>> &areaPoint);
+Point getUpperLeft(std::vector<std::vector<Point>> &areaPoint);				//エリア内の左上座標を取得
+double getSurface(std::vector<Point> &data);				//面積を取得
 
 //コンストラクタ
 Geometry::Geometry(std::vector<std::vector<Point>> &framePoint) {
@@ -54,7 +56,7 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 		for (int j = 0; j < bp - 1; j++) {	//NOT処理で使う変数格納
 			tmp = areaPoint[i][j];
 			b.push_back(tmp);
-			//setColor(F_ORANGE); printf("{%d,%d}", b[j].x, b[j].y); setColor();	//debug
+			//setColor(F_ORANGE); printf("{%d,%d} ", b[j].x, b[j].y); setColor();	//debug
 		}
 		tmp = b[0];
 		b.push_back(tmp);
@@ -66,12 +68,12 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 			a.push_back(tmp);
 			//setColor(F_ORANGE); printf("{%d,%d} ",  a[j].x, a[j].y); setColor();	//debug
 		}
-		//printf("\n");
+	//	printf("\n");
 		tmp = a[0];	//一周
 		a.push_back(tmp);
 		OnNot(ap, bp, a, b, rc, rp, r);
 
-		//areaPoint.erase(areaPoint.begin() + i);	//一旦見てるエリア削除※削減あり
+		areaPoint.erase(areaPoint.begin() + i);	//一旦見てるエリア削除※削減あり
 												////NOTで出した設置ピース情報とフレームを結合する
 												//未設置エリアの更新
 		for (int i = 0; i < rc; i++) {
@@ -81,7 +83,7 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 				tmp.y = static_cast<int>(r[i][j].y + 0.5);
 				Tmp.push_back(tmp);
 			}
-			//areaPoint.insert(areaPoint.begin() + i, Tmp);
+			areaPoint.insert(areaPoint.begin() + i, Tmp);
 			tmpArea.push_back(Tmp);
 		}
 
@@ -93,6 +95,14 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 		setColor(F_RED | F_INTENSITY); printf("エラー：エリアが全て埋まりました(getPutPoint)\n"); setColor();
 		return Point(-1, -1);
 	}
+
+	//発生エリアの最小面積を格納
+	for (int i = 0; i < areaPoint.size(); i++) {
+		double surface = getSurface(areaPoint[i]);
+		if (i == 0)minSurface = surface;
+		else if (minSurface > surface)minSurface = surface;
+	}	
+
 
 	putNum++;
 	return point;
@@ -691,7 +701,7 @@ Point getUpperLeft(std::vector<std::vector<Point>> &areaPoint){
 	for (int i = 0; i < (int)areaPoint.size(); i++) {
 		//printf("area[%d]:", i);
 		for (int j = 0; j < (int)areaPoint[i].size(); j++) {
-		//	printf("{%d,%d} ", areaPoint[i][j].x, areaPoint[i][j].y);
+			//printf("{%d,%d} ", areaPoint[i][j].x, areaPoint[i][j].y);
 
 			if (i == j&&i == 0) {	//暫定の左上
 				tall = areaPoint[i][j].x + areaPoint[i][j].y;
@@ -711,4 +721,34 @@ Point getUpperLeft(std::vector<std::vector<Point>> &areaPoint){
 	}
 	//printf("暫定左上(%d,%d),tall:%d\n", point.x, point.y, tall);
 	return point;
+}
+
+//面積を取得
+double getSurface(std::vector<Point> &data) {
+	int num = data.size();     		//頂点数
+	double sigma = 0;					//面積を求める公式におけるシグマ
+	
+	//面積を求める
+	for (int i = 0; i < num; i++) {
+		if (i == num - 1) {
+			sigma += (double)(data[i].x * data[0].y - data[0].x * data[i].y);
+		}
+		else {
+			sigma += (double)(data[i].x * data[i + 1].y - data[i + 1].x * data[i].y);
+		}
+	}
+
+	return fabs((1.0 / 2.0)*sigma);
+}
+
+//エリア面積<未設置ピース面積の場合0を，逆なら1を返す
+bool Geometry::isMinSurface(std::vector<Piece> &data,std::array<int,100> &isPut) {
+	for (int i = 0; i < data.size(); i++) {
+		if (isPut[i]==0) {
+			double surface = getSurface(data[i].getPoint()[0]);
+			if (surface > minSurface)return 0;	//この時点でもう設置できない
+		}
+	}
+
+	return 1;	//一通り見て面積としては大丈夫
 }

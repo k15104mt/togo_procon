@@ -36,6 +36,8 @@ public:
   int point_num;//回転
   int vertex_num;//頂点
   Point base_point;//原点がどの位置か
+  
+  putData & operator = (putData &obj) { piece_num = obj.piece_num; point_num = obj.point_num; vertex_num = obj.vertex_num; base_point = obj.base_point; return *this; };
 };
 
 //ベクトルも同じ型みたいなものだし多少はね

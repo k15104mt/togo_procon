@@ -6,6 +6,7 @@
 #define PI 3.14159265358979
 
 Point UpperLeft(std::vector<Point> &areaPoint);
+double calculateAngle(std::vector<Point> &point);
 
 //どれだけ回転するかと基準点の座標を送り回転後の座標を返す
 Point PointRotate(double angle, Point zeroPoint) {
@@ -58,6 +59,7 @@ bool shapeEquals(std::vector<Point> &tmp, std::vector<std::vector<Point>> &point
   }
   return 0;
 }
+
 
 Piece::Piece(std::vector<Point> &data) {
   int num = data.size();     		//頂点数
@@ -112,6 +114,8 @@ Piece::Piece(std::vector<Point> &data) {
 	  upperLeft.push_back(UpperLeft(tmp));		//左上座標を格納
 	}
   }
+  double re= calculateAngle(point[0]);
+
 }
 
 std::vector<std::vector<Point>> Piece::getPoint() const {
@@ -153,4 +157,56 @@ Point UpperLeft(std::vector<Point> &areaPoint) {
 
 Point Piece::getUpperLeft(int num) {
   return upperLeft[num];
+}
+
+//ベクトルの長さを計算する
+double get_vector_length(Point v) {
+	return pow((v.x * v.x) + (v.y * v.y), 0.5);
+}
+
+double calculateAngle(std::vector<Point> &point) {
+	Point a, b,aux;	//aux:補助線のベクトル
+	double angle;
+	for (int i = 0; i < point.size(); i++) {
+		//ベクトルにしてる
+		if (i == 0) {
+			a = point[0] - point[point.size() - 1];
+		}
+		else {
+			a = point[i] - point[i - 1];
+		}
+
+		if (i == point.size() - 1) {
+			b = point[0] - point[i];
+		}
+		else {
+			b = point[i + 1] - point[i];
+		}
+
+		if (i == 0) {
+			aux = point[i + 1] - point[point.size() - 1];
+		}
+		else if (i == point.size() - 1) {
+			aux = point[0] - point[i-1];
+		}
+		else {
+			aux = point[i + 1] - point[i - 1];
+		}
+
+
+		//ベクトルAとBの長さを計算する
+		double length_A = get_vector_length(a);
+		double length_B = get_vector_length(b);
+		//内積とベクトル長さを使って角度を求める
+		angle =acos( dot(a, b) / (length_A*length_B));
+		angle = angle*180.0 / PI;
+
+		//if (cross(a, b) < 0) angle = (acos((double)(dot(a, b)) / (a.size()*b.size()))*180.0 / acos(-1.0));
+		//if (cross(a, b) > 0) angle = -1.0*(acos((double)(dot(a, b)) / (a.size()*b.size()))*180.0 / acos(-1.0));
+		printf("ベクトル(%d,%d)と(%d,%d)の角度は%lf ",a.x,a.y,b.x,b.y,  angle);
+		printf("(%lf)",180-angle);
+		printf("\n");
+		printf("補助線ベクトル(%d,%d)\n",aux.x,aux.y);
+	}
+	return 0;
 }

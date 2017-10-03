@@ -6,10 +6,7 @@
 #include"piece.hpp"
 #include<vector>
 
-struct D_Point {
-	double x;
-	double y;
-};
+
 
 class Geometry {
 public:

@@ -8,7 +8,7 @@
 void OnNot(int &ap,int &bp, std::vector<Point> &a, std::vector<Point> &b,int &rc,int *rp, std::vector<std::vector<D_Point>> &r);
 void OnMerge(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp);
 void OnClean(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp);
-Point getUpperLeft(std::vector<std::vector<Point>> &areaPoint);				//エリア内の左上座標を取得
+Point getPoint(std::vector<std::vector<Point>> &areaPoint,int putMode);				//エリア内の左上座標を取得
 double getSurface(std::vector<Point> &data);				//面積を取得
 
 //コンストラクタ
@@ -18,7 +18,7 @@ Geometry::Geometry(std::vector<std::vector<Point>> &framePoint) {
 }
 
 //とりあえず頂点が一番左上の部分に設置するとする
-Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put){
+Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put,int putMode){
 	Point point;	//返り値
 	Point tmp;
 	int	ap=0, bp=0;	// 入力図形の記憶用	ap,bp:頂点数
@@ -40,7 +40,7 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 	tmpAreaPoint.push_back(areaPoint);	//設置前状態を保存
 
 	if (already_put.size() == 0) {
-		return getUpperLeft(areaPoint);
+		return getPoint(areaPoint,putMode);
 	}
 
 	////ピースと設置情報より，未設置部の図形頂点を求める
@@ -68,7 +68,7 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 			a.push_back(tmp);
 			//setColor(F_ORANGE); printf("{%d,%d} ",  a[j].x, a[j].y); setColor();	//debug
 		}
-	//	printf("\n");
+		//printf("\n");
 		tmp = a[0];	//一周
 		a.push_back(tmp);
 		OnNot(ap, bp, a, b, rc, rp, r);
@@ -90,7 +90,7 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 		//ここまでいくと更新
 	}
 	areaPoint = tmpArea;
-	point = getUpperLeft(areaPoint);
+	point = getPoint(areaPoint,putMode);
 	if (areaPoint.size() == 0) {
 		setColor(F_RED | F_INTENSITY); printf("エラー：エリアが全て埋まりました(getPutPoint)\n"); setColor();
 		return Point(-1, -1);
@@ -694,32 +694,43 @@ void OnClean(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vect
 
 }
 
-// エリア内での左上座標を調べる
-Point getUpperLeft(std::vector<std::vector<Point>> &areaPoint){
+// エリア内での左上座標を調べる1UP,2RIGHT,3LEFT,4DOWN,5UP_LEFT
+Point getPoint(std::vector<std::vector<Point>> &areaPoint,int putMode){
 	Point point;
 	int tall;			//直線方程式 y=-x+b のb
+	//setColor(F_RED | F_INTENSITY, B_BLACK); printf("%dで埋めます\n", putMode); setColor();
 	for (int i = 0; i < (int)areaPoint.size(); i++) {
 		//printf("area[%d]:", i);
 		for (int j = 0; j < (int)areaPoint[i].size(); j++) {
 			//printf("{%d,%d} ", areaPoint[i][j].x, areaPoint[i][j].y);
 
 			if (i == j&&i == 0) {	//暫定の左上
-				tall = areaPoint[i][j].x + areaPoint[i][j].y;
-				point.x = areaPoint[i][j].x; point.y = areaPoint[i][j].y;
+				if(putMode==5)tall = areaPoint[i][j].x + areaPoint[i][j].y;
+				point = areaPoint[i][j];
 			}
-			else if (tall>areaPoint[i][j].x + areaPoint[i][j].y) {	//最小
-				tall = areaPoint[i][j].x + areaPoint[i][j].y;
-				point.x = areaPoint[i][j].x; point.y = areaPoint[i][j].y;
+			//各条件ごとで最もそこ寄りの頂点を格納
+			else if ((putMode == 5 && tall > areaPoint[i][j].x + areaPoint[i][j].y) ||
+			(putMode == 1 && areaPoint[i][j].y < point.y) ||
+			(putMode == 2 && areaPoint[i][j].x > point.x) ||
+			(putMode == 3 && areaPoint[i][j].x < point.x) ||
+			(putMode == 4 && areaPoint[i][j].y > point.y)) 
+			{
+				if (putMode == 5)tall = areaPoint[i][j].x + areaPoint[i][j].y;
+				point= areaPoint[i][j]; 
 			}
-			else if (tall == areaPoint[i][j].x + areaPoint[i][j].y &&point.x>areaPoint[i][j].x) {	//tallの値が同じならばxが小さい方を優先
-				tall = areaPoint[i][j].x + areaPoint[i][j].y;
-				point.x = areaPoint[i][j].x; point.y = areaPoint[i][j].y;
+			//等しい場合左や上に寄せる,tallの値が同じならばxが小さい方を優先(5)
+			else if ((putMode==5 && tall == areaPoint[i][j].x + areaPoint[i][j].y &&point.x>areaPoint[i][j].x)||
+				((putMode == 1||putMode==4) && areaPoint[i][j].y == point.y && areaPoint[i][j].x < point.x)||
+				((putMode == 2||putMode==3) && areaPoint[i][j].x == point.x && areaPoint[i][j].y < point.y)
+				) {	
+				if (putMode == 5)tall = areaPoint[i][j].x + areaPoint[i][j].y;
+				point= areaPoint[i][j]; 
 			}
 
 		}
 		//printf("\n");
 	}
-	//printf("暫定左上(%d,%d),tall:%d\n", point.x, point.y, tall);
+	//printf("座標(%d,%d)\n", point.x, point.y);
 	return point;
 }
 

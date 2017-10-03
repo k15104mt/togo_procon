@@ -114,7 +114,7 @@ Piece::Piece(std::vector<Point> &data) {
 	  upperLeft.push_back(UpperLeft(tmp));		//ç∂è„ç¿ïWÇäiî[
 	}
   }
-  double re= calculateAngle(point[0]);
+  //double re= calculateAngle(point[0]);
 
 }
 

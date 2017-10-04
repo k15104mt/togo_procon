@@ -5,7 +5,7 @@
 #include<color.hpp>
 #define PI 3.14159265358979
 
-Point UpperLeft(std::vector<Point> &areaPoint);
+std::vector<Point> calculateEdge(std::vector<Point> &areaPoint);
 double calculateAngle(std::vector<Point> &point);
 double calculateSide(std::vector<Point> &point);
 
@@ -95,7 +95,7 @@ Piece::Piece(std::vector<Point> &data) {
 
 	if (i == 0 || !shapeEquals(tmp, point, num)) {
 	  point.push_back(tmp); //ˆê‚Â‚Ì‰ñ“]ƒpƒ^[ƒ“‚ğpushback
-	  upperLeft.push_back(UpperLeft(tmp));		//¶ãÀ•W‚ğŠi”[
+	  shapeEdge.push_back(calculateEdge(tmp));		//’[‚ÌÀ•W‚ğŠi”[
 	}
 
 	//setColor(F_GREEN | F_INTENSITY); printf("\n--”½“]ƒpƒ^[ƒ“[%dƒÎ/2]--\n", i); setColor();
@@ -112,7 +112,7 @@ Piece::Piece(std::vector<Point> &data) {
 
 	if (!shapeEquals(tmp, point, num)) {
 	  point.push_back(tmp); //ˆê‚Â‚Ì”½“]ƒpƒ^[ƒ“‚ğpushback
-	  upperLeft.push_back(UpperLeft(tmp));		//¶ãÀ•W‚ğŠi”[
+	  shapeEdge.push_back(calculateEdge(tmp));		//’[‚ÌÀ•W‚ğŠi”[
 	}
   }
   minAngle= calculateAngle(point[0]);
@@ -127,7 +127,7 @@ int Piece::getSize() {
   return static_cast<int>(point[0].size());
 }
 
-double Piece::getSurface() {
+double Piece::getMinSurface() {
   return surface;
 }
 
@@ -140,32 +140,57 @@ double Piece::getMinAngle() {
 }
 
 
-// ƒGƒŠƒA“à‚Å‚Ì¶ãÀ•W‚ğ’²‚×‚é
-Point UpperLeft(std::vector<Point> &areaPoint) {
-  Point point;
+// }Œ`‚Ìã‰º¶‰E’¸“_‚ğŠi”[
+std::vector<Point> calculateEdge(std::vector<Point> &areaPoint) {
   int tall;			//’¼ü•û’ö® y=-x+b ‚Ìb
+  Point up, left, right, down,upperLeft;
+  std::vector<Point> tmp;
   for (int i = 0; i < (int)areaPoint.size(); i++) {
 	//printf("{%d,%d} ", areaPoint[i].x, areaPoint[i].y);
 
-	if (i == 0) {	//b’è‚Ì¶ã
+	if (i == 0) {	//b’è
 	  tall = areaPoint[i].x + areaPoint[i].y;
-	  point.x = areaPoint[i].x; point.y = areaPoint[i].y;
+	  upperLeft.x = areaPoint[i].x; upperLeft.y = areaPoint[i].y;
+	  up = left = right = down = upperLeft=areaPoint[i];
 	}
 	else if (tall > areaPoint[i].x + areaPoint[i].y) {	//Å¬
 	  tall = areaPoint[i].x + areaPoint[i].y;
-	  point.x = areaPoint[i].x; point.y = areaPoint[i].y;
+	  upperLeft.x = areaPoint[i].x; upperLeft.y = areaPoint[i].y;
 	}
-	else if (tall == areaPoint[i].x + areaPoint[i].y &&point.x > areaPoint[i].x) {	//tall‚Ì’l‚ª“¯‚¶‚È‚ç‚Îx‚ª¬‚³‚¢•û‚ğ—Dæ
+	else if (tall == areaPoint[i].x + areaPoint[i].y &&upperLeft.x > areaPoint[i].x) {	//tall‚Ì’l‚ª“¯‚¶‚È‚ç‚Îx‚ª¬‚³‚¢•û‚ğ—Dæ
 	  tall = areaPoint[i].x + areaPoint[i].y;
-	  point.x = areaPoint[i].x; point.y = areaPoint[i].y;
+	  upperLeft.x = areaPoint[i].x; upperLeft.y = areaPoint[i].y;
+	}
+	//ã
+	if (up.y > areaPoint[i].y || (up.y==areaPoint[i].y&&up.x>areaPoint[i].x )) {
+		up = areaPoint[i];
+	}
+	//‰º
+	if (down.y < areaPoint[i].y || (down.y == areaPoint[i].y&&down.x > areaPoint[i].x)) {
+		down = areaPoint[i];
+	}
+	//¶
+	if (left.x > areaPoint[i].x || (left.x == areaPoint[i].x&&left.y > areaPoint[i].y)) {
+		left = areaPoint[i];
+	}
+	//‰E
+	if (right.x < areaPoint[i].x || (right.x == areaPoint[i].x&&right.y > areaPoint[i].y)) {
+		right = areaPoint[i];
 	}
   }
+
+  tmp.push_back(up);
+  tmp.push_back(right);
+  tmp.push_back(left);
+  tmp.push_back(down);
+  tmp.push_back(upperLeft);
+  printf("ã(%d,%d) ‰E(%d,%d) ¶(%d,%d) ‰º(%d,%d)\n",up.x,up.y,right.x, right.y, left.x, left.y ,down.x, down.y);
   //printf("b’è¶ã(%d,%d),tall:%d\n", point.x, point.y, tall);
-  return point;
+  return tmp;
 }
 
-Point Piece::getUpperLeft(int num) {
-  return upperLeft[num];
+Point Piece::getShapeEdge(int eleNum, int putMode) {
+  return shapeEdge[eleNum][putMode-1];
 }
 
 //ƒxƒNƒgƒ‹‚Ì’·‚³‚ğŒvZ‚·‚é

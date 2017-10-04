@@ -1,11 +1,7 @@
 #ifndef _GEOMETRY_HPP_
 #define _GEOMETRY_HPP_
-#define MAX 256
-#define UP 1
-#define RIGHT 2
-#define LEFT 3
-#define DOWN 4
-#define UP_LEFT 5
+#define MAX 256	//NOT処理とかで使う固定長配列の要素数(分割ベクトルや頂点数)
+
 
 #include"utility.hpp"
 #include"piece.hpp"

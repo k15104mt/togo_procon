@@ -9,7 +9,7 @@ void OnNot(int &ap,int &bp, std::vector<Point> &a, std::vector<Point> &b,int &rc
 void OnMerge(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp);
 void OnClean(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp);
 Point getPoint(std::vector<std::vector<Point>> &areaPoint,int putMode);				//エリア内の左上座標を取得
-double getSurface(std::vector<Point> &data);				//面積を取得
+double calculateSurface(std::vector<Point> &data);				//面積を取得
 
 //コンストラクタ
 Geometry::Geometry(std::vector<std::vector<Point>> &framePoint) {
@@ -98,7 +98,7 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 
 	//発生エリアの最小面積を格納
 	for (int i = 0; i < areaPoint.size(); i++) {
-		double surface = getSurface(areaPoint[i]);
+		double surface = calculateSurface(areaPoint[i]);
 		if (i == 0)minSurface = surface;
 		else if (minSurface > surface)minSurface = surface;
 	}	
@@ -735,7 +735,7 @@ Point getPoint(std::vector<std::vector<Point>> &areaPoint,int putMode){
 }
 
 //面積を取得
-double getSurface(std::vector<Point> &data) {
+double calculateSurface(std::vector<Point> &data) {
 	int num = data.size();     		//頂点数
 	double sigma = 0;					//面積を求める公式におけるシグマ
 	
@@ -756,7 +756,7 @@ double getSurface(std::vector<Point> &data) {
 bool Geometry::isMinSurface(std::vector<Piece> &data,std::array<int,100> &isPut) {
 	for (int i = 0; i < data.size(); i++) {
 		if (isPut[i]==0) {
-			double surface = getSurface(data[i].getPoint()[0]);
+			double surface = calculateSurface(data[i].getPoint()[0]);
 			if (surface > minSurface)return 0;	//この時点でもう設置できない
 		}
 	}

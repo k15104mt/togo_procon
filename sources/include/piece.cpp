@@ -7,6 +7,7 @@
 
 Point UpperLeft(std::vector<Point> &areaPoint);
 double calculateAngle(std::vector<Point> &point);
+double calculateSide(std::vector<Point> &point);
 
 //‚Ç‚ê‚¾‚¯‰ñ“]‚·‚é‚©‚ÆŠî€“_‚ÌÀ•W‚ğ‘—‚è‰ñ“]Œã‚ÌÀ•W‚ğ•Ô‚·
 Point PointRotate(double angle, Point zeroPoint) {
@@ -115,7 +116,7 @@ Piece::Piece(std::vector<Point> &data) {
 	}
   }
   minAngle= calculateAngle(point[0]);
-
+  minSide = calculateSide(point[0]);
 }
 
 std::vector<std::vector<Point>> Piece::getPoint() const {
@@ -128,6 +129,10 @@ int Piece::getSize() {
 
 double Piece::getSurface() {
   return surface;
+}
+
+double Piece::getMinSide() {
+	return minSide;
 }
 
 double Piece::getMinAngle() {
@@ -208,5 +213,20 @@ double calculateAngle(std::vector<Point> &point) {
 		
 	}
 	
+	return min;
+}
+
+double calculateSide(std::vector<Point> &point) {
+	Point a, b;
+	double len,min;
+
+	for (int i = 0; i < point.size(); i++) {
+		a = point[i];
+		if (i == point.size()-1)b = point[0];
+		else b = point[i + 1];
+
+		len = sqrt((double)(b.x-a.x)*(b.x - a.x)+(b.y-a.y)*(b.y - a.y));
+		if (i == 0 || len<min)min = len;
+	}
 	return min;
 }

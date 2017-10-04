@@ -511,7 +511,7 @@ int solve(int num) {
   }
 
   //全ピース見ていこうな
-  Point tmp = solver[num].geometry.getPutPoint(data, solver[num].already_put);
+  Point tmp = solver[num].geometry.getPutPoint(data, solver[num].already_put,UP_LEFT);
   for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
 	int ii;
 	ii = (i + solver[num].start) % data.size();

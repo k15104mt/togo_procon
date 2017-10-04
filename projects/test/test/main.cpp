@@ -187,7 +187,7 @@ int checkHit(const std::vector<Piece> &data,const std::vector<putData> &already_
   //ˆÚ“®
   move(cp1, put.base_point);
   
-  /*
+  
   for (int i = 0; i < static_cast<int>(already_put.size()); ++i) {
 	std::vector<Point> cp2(data[already_put[i].piece_num].getPoint()[already_put[i].point_num]);
 	//ˆÚ“®
@@ -208,12 +208,12 @@ int checkHit(const std::vector<Piece> &data,const std::vector<putData> &already_
   if (!flag) {
 	//printf("frame");
 	return 1;
-  }*/
+  }
 
-  
+  /*
   if (collisionNotPutArea(geometry.areaPoint, cp1)) {
 	return 1;
-  }
+  }*/
   
 
   return 0;

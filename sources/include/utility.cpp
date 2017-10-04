@@ -375,18 +375,26 @@ int collisionFrame(std::vector<Point> &data1, std::vector<Point> &data2) {
 
 int collisionNotPutArea(std::vector<std::vector<Point>>& notPut, std::vector<Point>& piece){
   //線が交わっているならここではじく
+  int count = 0;
   for (int i = 0; i < static_cast<int>(notPut.size()); ++i) {
 	if (crossLine(notPut[i], piece)) {
-	  return 1;
+	  count++;
 	}
   }
   
+  //線が交わっている領域の数 == 領域の数ならアウト
+  if (count == notPut.size()) {
+	return 1;
+  }
+
+  count = 0;
   //未設置領域の数だけ繰り返す
   for (int i = 0; i < static_cast<int>(notPut.size()); ++i) {
+	int hitflag = 0;
 	//ピースの頂点を順番に見ていく
 	for (int j = 0; j < static_cast<int>(piece.size()); ++j) {
 	  double x = 0.0;
-	  int flag = 1;
+	  int xflag = 1;
 
 	  //未設置領域の辺の数だけ繰り返す
 	  for (int k = 0; k < static_cast<int>(notPut[i].size()); ++k) {
@@ -408,46 +416,46 @@ int collisionNotPutArea(std::vector<std::vector<Point>>& notPut, std::vector<Poi
 			if (cross(nb, pf) <= 0 && cross(nf, pf) >= 0) {//内包されているまたは平行
 
 			  //もし平行のとき、ベクトルの向きが逆なら外延
-			 // if (cross(nbr, pf) == 0 && dot(nbr, pf) < 0) { return 1; }
-			  if (cross(nf, pf) == 0 && dot(nf, pf) < 0) { return 1; }
+			  if (cross(nbr, pf) == 0 && dot(nbr, pf) < 0) { hitflag = 1; break; }
+			  if (cross(nf, pf) == 0 && dot(nf, pf) < 0) { hitflag = 1; break; }
 
 			  // もし平行のとき、ピースのベクトルが未設置より長いなら外延
-			  if (cross(nf, pf) == 0 && nf.size() < pf.size()) {return 1;}
+			  if (cross(nf, pf) == 0 && nf.size() < pf.size()) {hitflag = 1; break;}
 			}else {//外延
-			  return 1;
+			  hitflag = 1; break;
 			}
 		  }else if(cross(c1,c2) < 0){
 			//鈍角の場合
 
 			if (cross(nb, pf) > 0 && cross(nf, pf) < 0) {//外延
-			  return 1;
+			  hitflag = 1; break;
 			}else {//内包されているまたは平行
 
 			  //もし平行のとき、ベクトルの向きが逆なら外延
-			 // if (cross(nbr, pf) == 0 && dot(nbr, pf) < 0) { return 1; }
-			  if (cross(nf, pf) == 0 && dot(nf, pf) < 0) { return 1; }
+			  if (cross(nbr, pf) == 0 && dot(nbr, pf) < 0) { hitflag = 1; break; }
+			  if (cross(nf, pf) == 0 && dot(nf, pf) < 0) { hitflag = 1; break; }
 
 			  //もし平行のとき、ピースのベクトルが未設置より長いなら外延
-			  if (cross(nf, pf) == 0 && nf.size() < pf.size()) {return 1; }
+			  if (cross(nf, pf) == 0 && nf.size() < pf.size()) {hitflag = 1; break; }
 			}
 		  }
 
-		  flag = 0;
+		  xflag = 0;
 		  break;
 		}else if (dot(npf,npn)<=0 && cross(npf,npn)==0) {//直線上にある場合
 		  //未設置領域の次の頂点上にあるなら次に判定を持ち越す
 		  if (notPut[i][(k + 1) % notPut[i].size()] != piece[j]) {
 			if (cross(npn, pf) > 0 && cross(npf, pf) < 0) {//外延
-			  return 1;
+			  hitflag = 1; break;
 			}else {//平行で違う向きなら外延
 			  Vector nf = notPut[i][(k + 1) % notPut[i].size()] - notPut[i][k];
-			  if (cross(nf, pf) == 0 && dot(nf,pf)<0) {return 1;}
+			  if (cross(nf, pf) == 0 && dot(nf,pf)<0) {hitflag = 1; break;}
 
 			  //もし平行のとき、ピースのベクトルが未設置より長いなら外延
-			  if (cross(npf, pf) == 0 && npf.size() < pf.size()) { return 1; }
+			  if (cross(npf, pf) == 0 && npf.size() < pf.size()) { hitflag = 1; break; }
 			}
 
-			flag = 0;
+			xflag = 0;
 			break;
 		  }
 
@@ -458,12 +466,21 @@ int collisionNotPutArea(std::vector<std::vector<Point>>& notPut, std::vector<Poi
 		if (cross(npf, npn) < 0) x += (acos((double)(dot(npf, npn)) / (npf.size()*npn.size()))*180.0 / acos(-1.0));
 		if (cross(npf, npn) > 0) x += -1.0*(acos((double)(dot(npf, npn)) / (npf.size()*npn.size()))*180.0 / acos(-1.0));
 	  }
-
 	  //頂点上にもなくて直線上にもないなら360じゃないときは外延されているから終わる
-	  if (flag && (x <= 359.99 ||360.01 <= x)) {
-		return 1;
+	  if (xflag && (x <= 359.99 ||360.01 <= x)) {
+		hitflag = 1;
+	  }
+
+	  if (hitflag) {
+		count++;
+		break;
 	  }
 	}
+  }
+
+  //当たり判定がアウトだった領域の数 == 領域の数ならアウト
+  if (count == notPut.size()) {
+	return 1;
   }
 
   return 0;

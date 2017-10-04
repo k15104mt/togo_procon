@@ -81,16 +81,16 @@
     <ClCompile Include="Main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\procon28\git_repository\procon\sources\include\color.cpp">
+    <ClCompile Include="..\..\..\sources\include\color.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\procon28\git_repository\procon\sources\include\geometry.cpp">
+    <ClCompile Include="..\..\..\sources\include\geometry.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\procon28\git_repository\procon\sources\include\piece.cpp">
+    <ClCompile Include="..\..\..\sources\include\piece.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\procon28\git_repository\procon\sources\include\utility.cpp">
+    <ClCompile Include="..\..\..\sources\include\utility.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -407,16 +407,16 @@
     </Font>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\procon28\git_repository\procon\sources\include\color.hpp">
+    <ClInclude Include="..\..\..\sources\include\color.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\procon28\git_repository\procon\sources\include\geometry.hpp">
+    <ClInclude Include="..\..\..\sources\include\geometry.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\procon28\git_repository\procon\sources\include\piece.hpp">
+    <ClInclude Include="..\..\..\sources\include\piece.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\procon28\git_repository\procon\sources\include\utility.hpp">
+    <ClInclude Include="..\..\..\sources\include\utility.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

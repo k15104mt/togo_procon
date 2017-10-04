@@ -99,7 +99,7 @@
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\..\procon28\git_repository\procon\sources\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\sources\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -119,7 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\..\procon28\git_repository\procon\sources\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\sources\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -138,7 +138,7 @@
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\..\procon28\git_repository\procon\sources\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\sources\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
@@ -161,7 +161,7 @@
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\..\procon28\git_repository\procon\sources\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\sources\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -171,10 +171,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\procon28\git_repository\procon\sources\include\color.cpp" />
-    <ClCompile Include="..\..\..\procon28\git_repository\procon\sources\include\geometry.cpp" />
-    <ClCompile Include="..\..\..\procon28\git_repository\procon\sources\include\piece.cpp" />
-    <ClCompile Include="..\..\..\procon28\git_repository\procon\sources\include\utility.cpp" />
+    <ClCompile Include="..\..\..\sources\include\color.cpp" />
+    <ClCompile Include="..\..\..\sources\include\geometry.cpp" />
+    <ClCompile Include="..\..\..\sources\include\piece.cpp" />
+    <ClCompile Include="..\..\..\sources\include\utility.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -290,10 +290,10 @@
     <Font Include="Example\YomogiFont.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\procon28\git_repository\procon\sources\include\color.hpp" />
-    <ClInclude Include="..\..\..\procon28\git_repository\procon\sources\include\geometry.hpp" />
-    <ClInclude Include="..\..\..\procon28\git_repository\procon\sources\include\piece.hpp" />
-    <ClInclude Include="..\..\..\procon28\git_repository\procon\sources\include\utility.hpp" />
+    <ClInclude Include="..\..\..\sources\include\color.hpp" />
+    <ClInclude Include="..\..\..\sources\include\geometry.hpp" />
+    <ClInclude Include="..\..\..\sources\include\piece.hpp" />
+    <ClInclude Include="..\..\..\sources\include\utility.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

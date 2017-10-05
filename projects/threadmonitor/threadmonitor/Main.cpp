@@ -38,7 +38,7 @@ std::vector<Solver> solver;
 
 std::array<std::vector<putData>, 6> copyap;
 
-std::mutex areamtx;
+std::mutex areamtx[6];
 std::array<std::vector<std::vector<Point>>,6> copyarea;
 
 int checkHit(std::vector<putData> &, putData &, Geometry &);
@@ -495,7 +495,7 @@ int checkHit(std::vector<putData> &already_put, putData &put, Geometry &geometry
 
   
 
-  
+  /*
   //旧当たり判定
   for (int i = 0; i < static_cast<int>(already_put.size()); ++i) {
 	std::vector<Point> cp2(data[already_put[i].piece_num].getPoint()[already_put[i].point_num]);
@@ -519,15 +519,15 @@ int checkHit(std::vector<putData> &already_put, putData &put, Geometry &geometry
 	return 1;
   }
   //旧当たり判定ここまで
-  
+  */
 
-  /*
+  
   //新当たり判定（開発中）
   if (collisionNotPutArea(geometry.areaPoint, cp1)) {
 	return 1;
   }
   //新当たり判定ここまで
-  */
+  
 
   return 0;
 }
@@ -539,7 +539,7 @@ int solve(int num) {
   }
 
   //全ピース見ていこうな
-  Point tmp = solver[num].geometry.getPutPoint(data, solver[num].already_put,LEFT,areamtx);
+  Point tmp = solver[num].geometry.getPutPoint(data, solver[num].already_put,LEFT,areamtx[num]);
   for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
 	int ii;
 	ii = (i + solver[num].start) % data.size();

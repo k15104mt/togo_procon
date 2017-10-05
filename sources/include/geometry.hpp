@@ -6,12 +6,13 @@
 #include"utility.hpp"
 #include"piece.hpp"
 #include<vector>
+#include<mutex>
 
 
 
 class Geometry {
 public:
-	Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put,int putMode);	//設置し左上座標取得,UP,RIGHT,DOWN,RIGHT,UP_LEFT
+	Point getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put,int putMode,std::mutex&);	//設置し左上座標取得,UP,RIGHT,DOWN,RIGHT,UP_LEFT
 	void cancelPut();																//設置した後外す
 	std::vector<std::vector<Point>> areaPoint;										//未設置部エリアの情報
 	bool canPut(std::vector<Piece> &data, std::array<int, 100> &isPut);	//エリア面積<未設置ピース面積の場合0を，逆なら1を返す

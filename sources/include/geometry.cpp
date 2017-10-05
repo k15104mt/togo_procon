@@ -18,7 +18,7 @@ Geometry::Geometry(std::vector<std::vector<Point>> &framePoint) {
 }
 
 //とりあえず頂点が一番左上の部分に設置するとする
-Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put,int putMode){
+Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put,int putMode,std::mutex& mtx){
 	Point point;	//返り値
 	Point tmp;
 	int putNum;
@@ -91,7 +91,9 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 
 		//ここまでいくと更新
 	}
+	mtx.lock();
 	areaPoint = tmpArea;
+	mtx.unlock();
 	point = getPoint(areaPoint,putMode);
 	if (areaPoint.size() == 0) {
 		setColor(F_RED | F_INTENSITY); printf("エラー：エリアが全て埋まりました(getPutPoint)\n"); setColor();

@@ -14,13 +14,14 @@ double calculateSurface(std::vector<Point> &data);				//面積を取得
 //コンストラクタ
 Geometry::Geometry(std::vector<std::vector<Point>> &framePoint) {
 	areaPoint = framePoint;
-	putNum = 0;
+	//putNum = 0;
 }
 
 //とりあえず頂点が一番左上の部分に設置するとする
 Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &already_put,int putMode){
 	Point point;	//返り値
 	Point tmp;
+	int putNum;
 	int	ap=0, bp=0;	// 入力図形の記憶用	ap,bp:頂点数
 	std::vector<Point> a;
 	std::vector<Point> b;
@@ -39,12 +40,13 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 
 	tmpAreaPoint.push_back(areaPoint);	//設置前状態を保存
 
-	if (already_put.size() == 0) {
+	if (already_put.size() <= 0) {
 		return getPoint(areaPoint,putMode);
 	}
 
 	////ピースと設置情報より，未設置部の図形頂点を求める
 	for (int i = 0; i < (int)areaPoint.size(); i++) {	//分割エリア毎
+		putNum = already_put.size()-1;
 		a.clear();	//更新
 		b.clear();
 
@@ -99,12 +101,15 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 	//発生エリアの最小面積を格納
 	for (int i = 0; i < areaPoint.size(); i++) {
 		double surface = calculateSurface(areaPoint[i]);
-		if (i == 0)minSurface = surface;
-		else if (minSurface > surface)minSurface = surface;
+		if (i == 0 || minSurface > surface)minSurface = surface;
+
+		double angle=calculateAngle(areaPoint[i]);
+		if (i == 0 || minAngle > angle)minAngle = angle;
+
 	}	
 
 
-	putNum++;
+	//putNum++;
 	return point;
 }
 
@@ -112,7 +117,7 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 void Geometry::cancelPut() {
 	areaPoint = tmpAreaPoint[tmpAreaPoint.size()-1];
 	tmpAreaPoint.pop_back();
-	putNum--;
+	//putNum--;
 }
 
 // ptr: 削除位置  last: 配列末尾位置（最後の要素の次）
@@ -753,13 +758,15 @@ double calculateSurface(std::vector<Point> &data) {
 }
 
 //エリア面積<未設置ピース面積の場合0を，逆なら1を返す
-bool Geometry::isMinSurface(std::vector<Piece> &data,std::array<int,100> &isPut) {
+bool Geometry::canPut(std::vector<Piece> &data,std::array<int,100> &isPut) {
 	for (int i = 0; i < data.size(); i++) {
 		if (isPut[i]==0) {
 			double surface = calculateSurface(data[i].getPoint()[0]);
 			if (surface > minSurface)return 0;	//この時点でもう設置できない
 		}
 	}
+	
+
 
 	return 1;	//一通り見て面積としては大丈夫
 }

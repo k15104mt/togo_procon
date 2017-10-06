@@ -1,6 +1,7 @@
 ﻿#include<vector>
 #include<thread>
 #include<mutex>
+#include<utility>
 
 #define NO_S3D_USING
 #include<Siv3D.hpp>
@@ -39,9 +40,10 @@ std::vector<Solver> solver;
 std::array<std::vector<putData>, 6> copyap;
 
 std::mutex areamtx[6];
-std::array<std::vector<std::vector<Point>>,6> copyarea;
+std::array<std::vector<std::vector<Point>>, 6> copyarea;
 
 int checkHit(std::vector<putData> &, putData &, Geometry &);
+int isAlong(int,Geometry&, putData&);
 int solve(int);
 
 void func(int num) {
@@ -111,7 +113,7 @@ void monitor() {
   gui2.setPos(0, 700);
   gui2.add(L"update", s3d::GUIButton::Create(L"更新"));
   gui2.add(L"back", s3d::GUIButton::Create(L"戻る"));
-  gui2.add(L"copy", s3d::GUIButton::Create(L"回答データをコピー",false));
+  gui2.add(L"copy", s3d::GUIButton::Create(L"回答データをコピー", false));
   gui2.show(false);
 
 
@@ -305,7 +307,7 @@ void monitor() {
 		select = -1;
 	  }
 
-	  
+
 
 	  if (select == -1) {
 		for (int i = 0; i < 6; ++i) {
@@ -314,7 +316,7 @@ void monitor() {
 		  }
 		}
 
-		if(gui2.button(L"back").enabled) {
+		if (gui2.button(L"back").enabled) {
 		  gui2.button(L"back").enabled = false;
 		}
 		if (gui2.button(L"copy").enabled) {
@@ -381,7 +383,7 @@ void monitor() {
 		if (gui2.button(L"copy").pushed) {
 		  s3d::String clipboard;
 		  for (auto i : copyap[select]) {
-			clipboard += (s3d::ToString(i.piece_num) + L" " +  s3d::ToString(i.point_num) + L" (" + s3d::ToString(i.base_point.x) + L"," + s3d::ToString(i.base_point.y) + L")\r\n");
+			clipboard += (s3d::ToString(i.piece_num) + L" " + s3d::ToString(i.point_num) + L" (" + s3d::ToString(i.base_point.x) + L"," + s3d::ToString(i.base_point.y) + L")\r\n");
 		  }
 		  s3d::Clipboard::SetText(clipboard);
 		}
@@ -407,8 +409,8 @@ void monitor() {
 		  for (int j = 0; j < static_cast<int>(copyarea[select][i].size()); ++j) {
 			s3d::Line(copyarea[select][i][j].x,
 			  copyarea[select][i][j].y,
-			  copyarea[select][i][(j+1)% copyarea[select][i].size()].x,
-			  copyarea[select][i][(j+1)% copyarea[select][i].size()].y).draw(0.25,s3d::Color(255,255,255));
+			  copyarea[select][i][(j + 1) % copyarea[select][i].size()].x,
+			  copyarea[select][i][(j + 1) % copyarea[select][i].size()].y).draw(0.25, s3d::Color(255, 255, 255));
 		  }
 
 		}
@@ -434,8 +436,8 @@ void monitor() {
 		  forCollision.push_back(s3d::Polygon(tmp));
 		}
 		mOverPiece = -1;
-		for (int i = 0; i < static_cast<int>(forCollision.size());++i) {
-		  s3d::Polygon tmp (forCollision[i]);
+		for (int i = 0; i < static_cast<int>(forCollision.size()); ++i) {
+		  s3d::Polygon tmp(forCollision[i]);
 		  tmp.scale(10);
 		  if (tmp.mouseOver) {
 			tmp.scale(0.1);
@@ -493,9 +495,9 @@ int checkHit(std::vector<putData> &already_put, putData &put, Geometry &geometry
   //移動
   move(cp1, put.base_point);
 
-  
 
-  /*
+
+
   //旧当たり判定
   for (int i = 0; i < static_cast<int>(already_put.size()); ++i) {
 	std::vector<Point> cp2(data[already_put[i].piece_num].getPoint()[already_put[i].point_num]);
@@ -519,15 +521,39 @@ int checkHit(std::vector<putData> &already_put, putData &put, Geometry &geometry
 	return 1;
   }
   //旧当たり判定ここまで
-  */
 
-  
+
+  /*
   //新当たり判定（開発中）
   if (collisionNotPutArea(geometry.areaPoint, cp1)) {
 	return 1;
   }
   //新当たり判定ここまで
-  
+  */
+
+  return 0;
+}
+
+int isAlong(int num, Geometry &geometry, putData &putdata) {
+  std::pair<int, int> areaNum;
+  areaNum = solver[num].geometry.getAreaNum();
+
+  int size = solver[num].geometry.areaPoint[areaNum.first].size();
+  Vector f = solver[num].geometry.areaPoint[areaNum.first][(areaNum.second + 1) % size] - solver[num].geometry.areaPoint[areaNum.first][areaNum.second];
+  Vector b = solver[num].geometry.areaPoint[areaNum.first][(areaNum.second - 1 + size) % size] - solver[num].geometry.areaPoint[areaNum.first][areaNum.second];
+
+  for (int i = 0; i < static_cast<int>(data[putdata.piece_num].getPoint()[putdata.point_num].size()); ++i) {
+	//頂点上にあるかどうか
+	if (solver[num].geometry.areaPoint[areaNum.first][areaNum.second] == (data[putdata.piece_num].getPoint()[putdata.point_num][i]+putdata.base_point)) {
+	  Vector pf = data[putdata.piece_num].getPoint()[putdata.point_num][(i+1)% data[putdata.piece_num].getPoint()[putdata.point_num].size()] -
+		data[putdata.piece_num].getPoint()[putdata.point_num][i];
+	  Vector pb = data[putdata.piece_num].getPoint()[putdata.point_num][(i - 1 + data[putdata.piece_num].getPoint()[putdata.point_num].size()) % data[putdata.piece_num].getPoint()[putdata.point_num].size()] -
+		data[putdata.piece_num].getPoint()[putdata.point_num][i];
+	  if (cross(f, pf) == 0 || cross(b, pb) == 0) {
+		return 1;
+	  }
+	}
+  }
 
   return 0;
 }
@@ -539,7 +565,7 @@ int solve(int num) {
   }
 
   //全ピース見ていこうな
-  Point tmp = solver[num].geometry.getPutPoint(data, solver[num].already_put,LEFT,areamtx[num]);
+  Point tmp = solver[num].geometry.getPutPoint(data, solver[num].already_put, LEFT, areamtx[num]);
   for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
 	int ii;
 	ii = (i + solver[num].start) % data.size();
@@ -549,9 +575,12 @@ int solve(int num) {
 	  for (int j = 0; j < static_cast<int>(data[ii].getPoint().size()); ++j) {//回転の組み合わせの数
 
 																			  // printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", ii, j, k,tmp.x,tmp.y);
-		Point putPoint(tmp.x - data[ii].getShapeEdge(j,LEFT).x, tmp.y - data[ii].getShapeEdge(j, LEFT).y);
+		Point putPoint(tmp.x - data[ii].getShapeEdge(j, LEFT).x, tmp.y - data[ii].getShapeEdge(j, LEFT).y);
 		putData put(ii, j, 0, putPoint);
-		if (!checkHit(solver[num].already_put, put, solver[num].geometry)) {
+
+
+		if (isAlong(num, solver[num].geometry, put) && !checkHit(solver[num].already_put, put, solver[num].geometry)) {
+
 		  //もし当たり判定がokなら
 		  //setColor(F_CYAN | F_INTENSITY);
 		  //printf("       put\n");

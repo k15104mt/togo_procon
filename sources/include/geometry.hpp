@@ -17,11 +17,12 @@ public:
 	std::vector<std::vector<Point>> areaPoint;										//未設置部エリアの情報
 	bool canPut(std::vector<Piece> &data, std::array<int, 100> &isPut);	//エリア面積<未設置ピース面積の場合0を，逆なら1を返す
 	Geometry(std::vector<std::vector<Point>> &framePoint);							//コンストラクタ
+	std::pair<int, int> getAreaNum();
 private:
 	std::vector<std::vector<std::vector<Point>>> tmpAreaPoint;		//cancel用の設置前エリア保持
 	double minSurface;		//発生したエリアの最小面積
 	double minAngle;		//発生したエリアの最小角度
-	//int putNum;
+	std::vector<std::pair<int, int>> areaNum;				//getPutPointで得た頂点のvector番号
 };
 
 #endif

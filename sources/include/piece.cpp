@@ -32,7 +32,7 @@ void reverse(std::vector<Point> &data) {
 
 //保存済み図形(point)に生成した図形(tmp)と等しいものがあるかどうか
 bool shapeEquals(std::vector<Point> &tmp, std::vector<std::vector<Point>> &point, int &num) {
-  for (int j = 0; j < point.size(); j++) {
+  for (int j = 0; j < static_cast<int>(point.size()); j++) {
 	for (int k = 0; k < num; k++) {
 	  if (tmp[0] == point[j][k]) {
 		int count = 0;
@@ -127,7 +127,7 @@ int Piece::getSize() {
   return static_cast<int>(point[0].size());
 }
 
-double Piece::getMinSurface() {
+double Piece::getSurface() {
   return surface;
 }
 
@@ -184,7 +184,7 @@ std::vector<Point> calculateEdge(std::vector<Point> &areaPoint) {
   tmp.push_back(left);
   tmp.push_back(down);
   tmp.push_back(upperLeft);
-  printf("上(%d,%d) 右(%d,%d) 左(%d,%d) 下(%d,%d)\n",up.x,up.y,right.x, right.y, left.x, left.y ,down.x, down.y);
+  //printf("上(%d,%d) 右(%d,%d) 左(%d,%d) 下(%d,%d)\n",up.x,up.y,right.x, right.y, left.x, left.y ,down.x, down.y);
   //printf("暫定左上(%d,%d),tall:%d\n", point.x, point.y, tall);
   return tmp;
 }
@@ -201,7 +201,7 @@ double get_vector_length(Point v) {
 double calculateAngle(std::vector<Point> &point) {
 	Point a, b,C,P,Q;	//aux:補助線のベクトル
 	double angle,min=360;
-	for (int i = 0; i < point.size(); i++) {
+	for (int i = 0; i < static_cast<int>(point.size()); i++) {
 		//ベクトルにしてる
 		if (i == 0) {
 			a = point[0] - point[point.size() - 1];
@@ -243,9 +243,9 @@ double calculateAngle(std::vector<Point> &point) {
 
 double calculateSide(std::vector<Point> &point) {
 	Point a, b;
-	double len,min;
+	double len,min=100000;
 
-	for (int i = 0; i < point.size(); i++) {
+	for (int i = 0; i < static_cast<int>(point.size()); i++) {
 		a = point[i];
 		if (i == point.size()-1)b = point[0];
 		else b = point[i + 1];
@@ -254,4 +254,22 @@ double calculateSide(std::vector<Point> &point) {
 		if (i == 0 || len<min)min = len;
 	}
 	return min;
+}
+
+//面積を取得
+double calculateSurface(std::vector<Point> &data) {
+	int num = data.size();     		//頂点数
+	double sigma = 0;					//面積を求める公式におけるシグマ
+
+										//面積を求める
+	for (int i = 0; i < num; i++) {
+		if (i == num - 1) {
+			sigma += (double)(data[i].x * data[0].y - data[0].x * data[i].y);
+		}
+		else {
+			sigma += (double)(data[i].x * data[i + 1].y - data[i + 1].x * data[i].y);
+		}
+	}
+
+	return fabs((1.0 / 2.0)*sigma);
 }

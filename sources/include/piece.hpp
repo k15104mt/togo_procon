@@ -27,10 +27,10 @@ public:
   int getSize();
   double getMinAngle();
   double getMinSide();
-  double getMinSurface();
+  double getSurface();
   Point getShapeEdge(int eleNum,int putMode);	//ˆø”1:‰ñ“]”Ô†,ˆø”2:UP‚Æ‚©LEFT
 };
 
 double calculateAngle(std::vector<Point> &point);
-
+double calculateSurface(std::vector<Point> &data);
 #endif

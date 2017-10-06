@@ -715,27 +715,27 @@ Point getPoint(std::vector<std::vector<Point>> &areaPoint,int putMode, std::vect
 			printf("{%d,%d} ", areaPoint[i][j].x, areaPoint[i][j].y);
 
 			if (i == j&&i == 0) {	//Žb’è‚Ì¶ã
-				if(putMode==5)tall = areaPoint[i][j].x + areaPoint[i][j].y;
+				if(putMode==4)tall = areaPoint[i][j].x + areaPoint[i][j].y;
 				point = areaPoint[i][j];
 				pair.first = i;
 				pair.second = j;
 			}
 			//ŠeðŒ‚²‚Æ‚ÅÅ‚à‚»‚±Šñ‚è‚Ì’¸“_‚ðŠi”[
-			else if ((putMode == 5 && tall > areaPoint[i][j].x + areaPoint[i][j].y) ||
-			(putMode == 1 && areaPoint[i][j].y < point.y) ||
-			(putMode == 2 && areaPoint[i][j].x > point.x) ||
-			(putMode == 3 && areaPoint[i][j].x < point.x) ||
-			(putMode == 4 && areaPoint[i][j].y > point.y)) 
+			else if ((putMode == 4 && tall > areaPoint[i][j].x + areaPoint[i][j].y) ||
+			(putMode == 0 && areaPoint[i][j].y < point.y) ||
+			(putMode == 1 && areaPoint[i][j].x > point.x) ||
+			(putMode == 2 && areaPoint[i][j].x < point.x) ||
+			(putMode == 3 && areaPoint[i][j].y > point.y)) 
 			{
-				if (putMode == 5)tall = areaPoint[i][j].x + areaPoint[i][j].y;
+				if (putMode == 4)tall = areaPoint[i][j].x + areaPoint[i][j].y;
 				point= areaPoint[i][j]; 
 				pair.first = i;
 				pair.second = j;
 			}
 			//“™‚µ‚¢ê‡¶‚âã‚ÉŠñ‚¹‚é,tall‚Ì’l‚ª“¯‚¶‚È‚ç‚Îx‚ª¬‚³‚¢•û‚ð—Dæ(5)
-			else if ((putMode==5 && tall == areaPoint[i][j].x + areaPoint[i][j].y &&point.x>areaPoint[i][j].x)||
-				((putMode == 1||putMode==4) && areaPoint[i][j].y == point.y && areaPoint[i][j].x < point.x)||
-				((putMode == 2||putMode==3) && areaPoint[i][j].x == point.x && areaPoint[i][j].y < point.y)
+			else if ((putMode==4 && tall == areaPoint[i][j].x + areaPoint[i][j].y &&point.x>areaPoint[i][j].x)||
+				((putMode == 0||putMode==3) && areaPoint[i][j].y == point.y && areaPoint[i][j].x < point.x)||
+				((putMode == 1||putMode==2) && areaPoint[i][j].x == point.x && areaPoint[i][j].y < point.y)
 				) {	
 				if (putMode == 5)tall = areaPoint[i][j].x + areaPoint[i][j].y;
 				point= areaPoint[i][j]; 

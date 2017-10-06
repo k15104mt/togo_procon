@@ -5,7 +5,8 @@
 #include<color.hpp>
 #define PI 3.14159265358979
 
-std::vector<Point> calculateEdge(std::vector<Point> &areaPoint);
+//std::vector<Point> calculateEdge(std::vector<Point> &areaPoint, std::vector<std::vector<std::pair<int, int>>> &shapeNum);
+std::vector<Point> calculateEdge(std::vector<Point> &areaPoint, std::vector<std::vector<int>> &edgeNum);
 double calculateAngle(std::vector<Point> &point);
 double calculateSide(std::vector<Point> &point);
 
@@ -83,7 +84,7 @@ Piece::Piece(std::vector<Point> &data) {
   //////////////////////////////回転して座標//////////////////////////////////////////
   for (int i = 0; i<4; i++) {  			//4回回転(90度ずつ)
 	Point min;	//ずらすために取得する座標最小値
-				//setColor(F_CYAN | F_INTENSITY); printf("\n--回転パターン[%dπ/2]--\n", i); setColor();//debug
+	setColor(F_CYAN | F_INTENSITY); printf("\n--回転パターン[%dπ/2]--\n", i); setColor();//debug
 	for (int j = 0; j < num; j++) {
 	  tmp[j] = PointRotate((1.0 / 2.0)*i*PI, data[j]);
 	  if (j == 0) { min.x = tmp[j].x; min.y = tmp[j].y; }
@@ -91,11 +92,11 @@ Piece::Piece(std::vector<Point> &data) {
 	  min.y = std::min(min.y, tmp[j].y);
 	}
 	move(tmp, Point(-min.x, -min.y));
-	//for(int j=0;j<num;j++) printf("(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
+	for(int j=0;j<num;j++) printf("(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
 
 	if (i == 0 || !shapeEquals(tmp, point, num)) {
 	  point.push_back(tmp); //一つの回転パターンをpushback
-	  shapeEdge.push_back(calculateEdge(tmp));		//端の座標を格納
+	  shapeEdge.push_back(calculateEdge(tmp,edgeNum));		//端の座標を格納
 	}
 
 	//setColor(F_GREEN | F_INTENSITY); printf("\n--反転パターン[%dπ/2]--\n", i); setColor();
@@ -108,11 +109,11 @@ Piece::Piece(std::vector<Point> &data) {
 	}
 	move(tmp, Point(-min.x, -min.y));
 	reverse(tmp);
-	//for (int j = 0; j<num; j++) printf("(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
+	for (int j = 0; j<num; j++) printf("(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
 
 	if (!shapeEquals(tmp, point, num)) {
 	  point.push_back(tmp); //一つの反転パターンをpushback
-	  shapeEdge.push_back(calculateEdge(tmp));		//端の座標を格納
+	  shapeEdge.push_back(calculateEdge(tmp,edgeNum));		//端の座標を格納
 	}
   }
   minAngle= calculateAngle(point[0]);
@@ -139,43 +140,74 @@ double Piece::getMinAngle() {
 	return minAngle;
 }
 
+//std::pair<int, int> Piece::getEdgeNum(int rotateNum,int putMode) {
+int Piece::getEdgeNum(int rotateNum, int putMode) {
+	return edgeNum[rotateNum][putMode];
+}
+
 
 // 図形の上下左右頂点を格納
-std::vector<Point> calculateEdge(std::vector<Point> &areaPoint) {
+//std::vector<Point> calculateEdge(std::vector<Point> &areaPoint, std::vector<std::vector<std::pair<int, int>>> &edgeNum) {
+std::vector<Point> calculateEdge(std::vector<Point> &areaPoint, std::vector<std::vector<int>> &edgeNum) {
   int tall;			//直線方程式 y=-x+b のb
   Point up, left, right, down,upperLeft;
   std::vector<Point> tmp;
+  /*
+  std::vector<std::pair<int, int>> tmpNum;
+  std::pair<int, int> upN;
+  std::pair<int, int> rightN;
+  std::pair<int, int> leftN;
+  std::pair<int, int> downN;
+  std::pair<int, int> up_leftN;
+  */
+  std::vector<int> tmpNum(5);
+
+
   for (int i = 0; i < (int)areaPoint.size(); i++) {
 	//printf("{%d,%d} ", areaPoint[i].x, areaPoint[i].y);
 
 	if (i == 0) {	//暫定
 	  tall = areaPoint[i].x + areaPoint[i].y;
-	  upperLeft.x = areaPoint[i].x; upperLeft.y = areaPoint[i].y;
+	  upperLeft= areaPoint[i];
 	  up = left = right = down = upperLeft=areaPoint[i];
+	  //upN.first = leftN.first = rightN.first = downN.first = up_leftN.first = edgeNum.size();
+	  //upN.second = leftN.second = rightN.second = downN.second = up_leftN.second = edgeNum.size();
 	}
 	else if (tall > areaPoint[i].x + areaPoint[i].y) {	//最小
 	  tall = areaPoint[i].x + areaPoint[i].y;
-	  upperLeft.x = areaPoint[i].x; upperLeft.y = areaPoint[i].y;
+	  upperLeft = areaPoint[i]; 
+	  //up_leftN.second = i;
+	  tmpNum[UP_LEFT] = i;
 	}
 	else if (tall == areaPoint[i].x + areaPoint[i].y &&upperLeft.x > areaPoint[i].x) {	//tallの値が同じならばxが小さい方を優先
-	  tall = areaPoint[i].x + areaPoint[i].y;
-	  upperLeft.x = areaPoint[i].x; upperLeft.y = areaPoint[i].y;
+		tall = areaPoint[i].x + areaPoint[i].y;
+		upperLeft = areaPoint[i];
+		//up_leftN.second = i;
+		tmpNum[UP_LEFT] = i;
 	}
 	//上
 	if (up.y > areaPoint[i].y || (up.y==areaPoint[i].y&&up.x>areaPoint[i].x )) {
 		up = areaPoint[i];
+		//upN.second = i;
+		tmpNum[UP] = i;
 	}
 	//下
 	if (down.y < areaPoint[i].y || (down.y == areaPoint[i].y&&down.x > areaPoint[i].x)) {
 		down = areaPoint[i];
+		//downN.second = i;
+		tmpNum[DOWN] = i;
 	}
 	//左
 	if (left.x > areaPoint[i].x || (left.x == areaPoint[i].x&&left.y > areaPoint[i].y)) {
 		left = areaPoint[i];
+		//leftN.second = i;
+		tmpNum[LEFT] = i;
 	}
 	//右
 	if (right.x < areaPoint[i].x || (right.x == areaPoint[i].x&&right.y > areaPoint[i].y)) {
 		right = areaPoint[i];
+		//rightN.second = i;
+		tmpNum[RIGHT] = i;
 	}
   }
 
@@ -184,13 +216,19 @@ std::vector<Point> calculateEdge(std::vector<Point> &areaPoint) {
   tmp.push_back(left);
   tmp.push_back(down);
   tmp.push_back(upperLeft);
-  //printf("上(%d,%d) 右(%d,%d) 左(%d,%d) 下(%d,%d)\n",up.x,up.y,right.x, right.y, left.x, left.y ,down.x, down.y);
+  /*tmpNum.push_back(upN);
+  tmpNum.push_back(rightN);
+  tmpNum.push_back(leftN);
+  tmpNum.push_back(downN);
+  tmpNum.push_back(up_leftN);*/
+  edgeNum.push_back(tmpNum);
+  printf("上(%d,%d) 右(%d,%d) 左(%d,%d) 下(%d,%d)\n",up.x,up.y,right.x, right.y, left.x, left.y ,down.x, down.y);
   //printf("暫定左上(%d,%d),tall:%d\n", point.x, point.y, tall);
   return tmp;
 }
 
 Point Piece::getShapeEdge(int eleNum, int putMode) {
-  return shapeEdge[eleNum][putMode-1];
+  return shapeEdge[eleNum][putMode];
 }
 
 //ベクトルの長さを計算する

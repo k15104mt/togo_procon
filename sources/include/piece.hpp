@@ -18,7 +18,7 @@ class Piece {
 private:
 	std::vector<std::vector<Point>> point;	//頂点座標
 	std::vector < std::vector<Point> > shapeEdge;	//各回転状態での上、右、左、下、左上の頂点座標
-	double surface;							//ピース面積
+	double surface;	//ピース面積
 	double minAngle;	//ピース内の最小角度
 	double minSide;	//ピースの最小の辺の長さ
    // std::vector< std::vector<std::pair<int, int>>> edgeNum;	//各端の点の要素番号(上右左下左上の順に格納),vectorは、各回転要素の中に、各上下左右のペアがある
@@ -35,6 +35,7 @@ public:
 	int getEdgeNum(int rotateNum, int putMode);		//ピースの端の要素番号(引数:回転番号,UPとかLEFT)
 };
 
+double calculateSide(std::vector<Point> &point);
 double calculateAngle(std::vector<Point> &point);
 double calculateSurface(std::vector<Point> &data);
 #endif

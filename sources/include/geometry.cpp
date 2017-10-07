@@ -92,15 +92,15 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 		//ここまでいくと更新
 	}
 	mtx.lock();
-	areaPoint = tmpArea;
+	areaPoint = tmpArea;	//areaPointの更新
 	mtx.unlock();
-	point = getPoint(areaPoint,putMode,areaNum);
+	point = getPoint(areaPoint,putMode,areaNum);	//名前がPieceクラスのそれと被ってるけど上下左右の端を取得
 	if (areaPoint.size() == 0) {
 		setColor(F_RED | F_INTENSITY); printf("エラー：エリアが全て埋まりました(getPutPoint)\n"); setColor();
 		return Point(-1, -1);
 	}
 
-	//発生エリアの最小面積を格納
+	//発生エリアの最小面積、角度を格納
 	for (int i = 0; i < static_cast<int>(areaPoint.size()); i++) {
 		double surface = calculateSurface(areaPoint[i]);
 		if (i == 0 || minSurface > surface)minSurface = surface;
@@ -108,6 +108,8 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 		double angle=calculateAngle(areaPoint[i]);
 		if (i == 0 || minAngle > angle)minAngle = angle;
 
+		double side = calculateSide(areaPoint[i]);
+		if (i == 0 || minSide > side)minSide = side;
 	}	
 
 
@@ -708,7 +710,7 @@ Point getPoint(std::vector<std::vector<Point>> &areaPoint,int putMode, std::vect
 	Point point;
 	std::pair<int, int> pair;
 	int tall;			//直線方程式 y=-x+b のb
-	setColor(F_RED | F_INTENSITY, B_BLACK); printf("%dで埋めます\n", putMode); setColor();
+	//setColor(F_RED | F_INTENSITY, B_BLACK); printf("%dで埋めます\n", putMode); setColor();
 	for (int i = 0; i < (int)areaPoint.size(); i++) {
 		printf("area[%d]:", i);
 		for (int j = 0; j < (int)areaPoint[i].size(); j++) {
@@ -755,18 +757,20 @@ Point getPoint(std::vector<std::vector<Point>> &areaPoint,int putMode, std::vect
 //エリア面積<未設置ピース面積の場合0を，逆なら1を返す
 bool Geometry::canPut(std::vector<Piece> &data,std::array<int,100> &isPut) {
 	for (int i = 0; i < static_cast<int>(data.size()); i++) {
+		//未設置ピースと未設置エリアの最小の面積、角度、辺と比べることで探索の枝切りを行う
 		if (isPut[i]==0) {
-			double surface = calculateSurface(data[i].getPoint()[0]);
-//			double surface = data[i].getSurface;
+			double surface = data[i].getSurface();
 			if (surface > minSurface)return 0;	//この時点でもう設置できない
 
-			//double angle=
+			double angle = data[i].getMinAngle();	
+			if (angle > minAngle)return 0;	//この時点でもう設置できない
+
+			double side = data[i].getMinSide();
+			if (side > minSide)return 0;	//この時点でもう設置できない
 		}
 	}
-	
 
-
-	return 1;	//一通り見て面積としては大丈夫
+	return 1;	//一通り見てとりあえずは大丈夫
 }
 
 std::pair<int, int> Geometry::getAreaNum(){

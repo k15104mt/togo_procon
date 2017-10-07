@@ -84,7 +84,7 @@ Piece::Piece(std::vector<Point> &data) {
   //////////////////////////////回転して座標//////////////////////////////////////////
   for (int i = 0; i<4; i++) {  			//4回回転(90度ずつ)
 	Point min;	//ずらすために取得する座標最小値
-	setColor(F_CYAN | F_INTENSITY); printf("\n--回転パターン[%dπ/2]--\n", i); setColor();//debug
+	//setColor(F_CYAN | F_INTENSITY); printf("\n--回転パターン[%dπ/2]--\n", i); setColor();//debug
 	for (int j = 0; j < num; j++) {
 	  tmp[j] = PointRotate((1.0 / 2.0)*i*PI, data[j]);
 	  if (j == 0) { min.x = tmp[j].x; min.y = tmp[j].y; }
@@ -92,7 +92,7 @@ Piece::Piece(std::vector<Point> &data) {
 	  min.y = std::min(min.y, tmp[j].y);
 	}
 	move(tmp, Point(-min.x, -min.y));
-	for(int j=0;j<num;j++) printf("(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
+	//for(int j=0;j<num;j++) printf("(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
 
 	if (i == 0 || !shapeEquals(tmp, point, num)) {
 	  point.push_back(tmp); //一つの回転パターンをpushback
@@ -109,7 +109,7 @@ Piece::Piece(std::vector<Point> &data) {
 	}
 	move(tmp, Point(-min.x, -min.y));
 	reverse(tmp);
-	for (int j = 0; j<num; j++) printf("(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
+	//for (int j = 0; j<num; j++) printf("(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
 
 	if (!shapeEquals(tmp, point, num)) {
 	  point.push_back(tmp); //一つの反転パターンをpushback
@@ -222,7 +222,7 @@ std::vector<Point> calculateEdge(std::vector<Point> &areaPoint, std::vector<std:
   tmpNum.push_back(downN);
   tmpNum.push_back(up_leftN);*/
   edgeNum.push_back(tmpNum);
-  printf("上(%d,%d) 右(%d,%d) 左(%d,%d) 下(%d,%d)\n",up.x,up.y,right.x, right.y, left.x, left.y ,down.x, down.y);
+  //printf("上(%d,%d) 右(%d,%d) 左(%d,%d) 下(%d,%d)\n",up.x,up.y,right.x, right.y, left.x, left.y ,down.x, down.y);
   //printf("暫定左上(%d,%d),tall:%d\n", point.x, point.y, tall);
   return tmp;
 }

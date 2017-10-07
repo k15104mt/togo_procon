@@ -34,13 +34,13 @@ private:
 std::mutex startmtx;
 int startflag = 0;
 
-std::mutex mtx[6];
+std::mutex mtx[8];
 std::vector<Solver> solver;
 
-std::array<std::vector<putData>, 6> copyap;
+std::array<std::vector<putData>, 8> copyap;
 
-std::mutex areamtx[6];
-std::array<std::vector<std::vector<Point>>, 6> copyarea;
+std::mutex areamtx[8];
+std::array<std::vector<std::vector<Point>>, 8> copyarea;
 
 int checkHit(std::vector<putData> &, putData &, Geometry &);
 int isAlong(int,Geometry&, putData&);
@@ -68,7 +68,7 @@ void func(int num) {
 
 void monitor() {
   s3d::Window::SetTitle(L"solver");
-  s3d::Window::Resize(640, 550);
+  s3d::Window::Resize(1800,800);
 
   //初期設定
 
@@ -88,16 +88,16 @@ void monitor() {
   gui.add(s3d::GUIText::Create(L"PC番号"));
   gui.add(L"pcNum", s3d::GUIRadioButton::Create({ L"0", L"1", L"2" }, 0));
   gui.add(s3d::GUIText::Create(L"  スレッド数"));
-  gui.addln(L"thNum", s3d::GUIRadioButton::Create({ L"1", L"2", L"3",L"4",L"5",L"6" }, 0, true));
+  gui.addln(L"thNum", s3d::GUIRadioButton::Create({ L"1", L"2", L"3",L"4",L"5",L"6",L"7",L"8" }, 0, true));
   gui.add(s3d::GUIText::Create(L"  　　　　　　　　　　　　　　　　　　　　　　　　　　　"));
   gui.addln(L"apply", s3d::GUIButton::Create(L"適用"));
 
-  for (int i = 0; i < 6; ++i) {
+  for (int i = 0; i < 8; ++i) {
 	gui.add(s3d::GUIText::Create(s3d::ToString(i)));
 	if (i == 0) {
 	  gui.add(L"range" + s3d::ToString(i), s3d::GUITextField::Create(s3d::none));
 	}
-	else if ((i + 1) % 3 == 0) {
+	else if ((i + 1) % 4 == 0) {
 	  gui.addln(L"range" + s3d::ToString(i), s3d::GUITextField::Create(s3d::none, false));
 	}
 	else {
@@ -123,7 +123,7 @@ void monitor() {
 
   //***************  data  ******************
   int useNum = 1, pcNum = 0, thNum = 1;
-  int status[6] = { 0 };
+  int status[8] = { 0 };
 
   while (s3d::System::Update()) {
 
@@ -134,7 +134,7 @@ void monitor() {
 	if (gui.button(L"apply").pushed) {
 	  //テキストフィールドのON/OFF
 
-	  for (int i = 0; i < 6; ++i) {
+	  for (int i = 0; i < 8; ++i) {
 		if (gui.radioButton(L"thNum").checked(i)) {
 		  thNum = (i + 1);
 		  gui.textField(L"range" + s3d::ToString(i)).enabled = true;
@@ -183,7 +183,7 @@ void monitor() {
 
 	if (gui.button(L"start").pushed) {
 	  //----------------適用と同じことする--------------------
-	  for (int i = 0; i < 6; ++i) {
+	  for (int i = 0; i < 8; ++i) {
 		if (gui.radioButton(L"thNum").checked(i)) {
 		  thNum = (i + 1);
 		  gui.textField(L"range" + s3d::ToString(i)).enabled = true;
@@ -231,7 +231,7 @@ void monitor() {
 
 	  gui.show(false);
 	  gui2.show();
-	  s3d::Window::Resize(1400, 780);
+	  s3d::Window::Resize(1800, 800);
 
 	  //------------------------------------------------------
 	  std::vector<std::string> input = split(gui.textArea(L"input").text.narrow(), '\n');
@@ -272,7 +272,7 @@ void monitor() {
 	  }
 	  //------------------------------------------------------
 
-	  solver.resize(6);
+	  solver.resize(8);
 
 
 	  //int range = data.size() / (thNum*useNum);
@@ -292,7 +292,7 @@ void monitor() {
 	  static int updatecount = 0;
 	  updatecount++;
 	  if (updatecount > 60 || gui2.button(L"update").pushed) {
-		for (int i = 0; i < 6; ++i) {
+		for (int i = 0; i < 8; ++i) {
 		  if (solver[i].active) {
 			mtx[i].lock();
 			copyap[i] = solver[i].already_put;
@@ -310,8 +310,8 @@ void monitor() {
 
 
 	  if (select == -1) {
-		for (int i = 0; i < 6; ++i) {
-		  if (s3d::Rect(400 * (i % 3) + 10 * ((i % 3) + 1), 256 * (i / 3) + 40 * ((i / 3) + 1), 400, 256).leftClicked && solver[i].active) {
+		for (int i = 0; i < 8; ++i) {
+		  if (s3d::Rect(400 * (i % 4) + 10 * ((i % 4) + 1), 256 * (i / 4) + 40 * ((i / 4) + 1), 400, 256).leftClicked && solver[i].active) {
 			select = i;
 		  }
 		}
@@ -325,10 +325,10 @@ void monitor() {
 
 
 
-		for (int i = 0; i < 6; ++i) {
+		for (int i = 0; i < 8; ++i) {
 		  s3d::Graphics2D::SetTransform(
 			s3d::Mat3x2::Scale(4, s3d::Float2(0, 0))*
-			s3d::Mat3x2::Translate(400 * (i % 3) + 10 * ((i % 3) + 1), 256 * (i / 3) + 40 * ((i / 3) + 1))
+			s3d::Mat3x2::Translate(400 * (i % 4) + 10 * ((i % 4) + 1), 256 * (i / 4) + 40 * ((i / 4) + 1))
 		  );
 
 		  s3d::Rect(0, 0, 100, 64).draw(s3d::Color(60, 60, 60));
@@ -363,7 +363,7 @@ void monitor() {
 		  else {
 			s3d::Graphics2D::SetTransform(
 			  s3d::Mat3x2::Scale(1, s3d::Float2(0, 0))*
-			  s3d::Mat3x2::Translate(400 * (i % 3) + 10 * ((i % 3) + 1), 256 * (i / 3) + 40 * ((i / 3) + 1))
+			  s3d::Mat3x2::Translate(400 * (i % 4) + 10 * ((i % 4) + 1), 256 * (i / 4) + 40 * ((i / 4) + 1))
 			);
 			font30(L"none").draw(100, 100);
 
@@ -477,12 +477,12 @@ void Main() {
 
   std::vector<std::thread> th;
 
-  for (int i = 0; i < 6; ++i) {
+  for (int i = 0; i < 8; ++i) {
 	th.push_back(std::thread(func, i));
   }
 
   m.join();
-  for (int i = 0; i < 6; ++i) {
+  for (int i = 0; i < 8; ++i) {
 	th[i].join();
   }
 

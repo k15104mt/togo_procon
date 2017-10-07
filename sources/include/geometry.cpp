@@ -778,30 +778,35 @@ Point getPoint(std::vector<std::vector<Point>> &areaPoint,int putMode, std::vect
 
 //エリア面積<未設置ピース面積の場合0を，逆なら1を返す
 bool Geometry::canPut(std::vector<Piece> &data,std::array<int,100> &isPut) {
-	double pieceAngleMin;
-	double pieceSurfaceMin;
+	double pieceAngleMin=100000;
+	double pieceSurfaceMin=100000;
+	puts("1");
 	for (int i = 0; i < static_cast<int>(data.size()); i++) {
 		if(isPut[i] == 0) {	//未設置ピース
-			if (i == 0 || data[i].getSurface < pieceSurfaceMin) {
-
+			if (i == 0 || data[i].getSurface() < pieceSurfaceMin) {
+				pieceSurfaceMin= data[i].getSurface();
+			}
+			if (i == 0 || data[i].getMinAngle() < pieceAngleMin) {
+				pieceAngleMin = data[i].getMinAngle();
 			}
 		}
 	}
+	puts("2");
 	for (int i = 0; i < static_cast<int>(data.size()); i++) {
 		//未設置ピースと未設置エリアの最小の面積、角度、辺と比べることで探索の枝切りを行う
 		if (isPut[i]==0) {	//未設置ピース
-			double surface = data[i].getSurface();	
-			if (surface > minSurface) {		//ピース面積より未設置エリアの方が小さいと置けないよね
-				printf("ピース[%d]面積%lf,エリア面積%lfのため枝切り\n",i,surface,minSurface);
+			//double surface = data[i].getSurface();	
+			if (pieceSurfaceMin > minSurface) {		//ピース面積より未設置エリアの方が小さいと置けないよね
+				printf("ピース[%d]面積%lf,エリア面積%lfのため枝切り\n",i, pieceSurfaceMin,minSurface);
 				return 0;	//この時点でもう設置できない
 			}
-			double angle = data[i].getMinAngle();	
-			if (angle > minAngle) {			//ピース最小角度より未設置エリア最小角度が小さいと置けないよね
-				printf("ピース[%d]角度%lf,エリア角度%lfのため枝切り\n", i, angle, minAngle);
+			//double angle = data[i].getMinAngle();	
+			if (pieceAngleMin > minAngle) {			//ピース最小角度より未設置エリア最小角度が小さいと置けないよね
+				printf("ピース[%d]角度%lf,エリア角度%lfのため枝切り\n", i, pieceAngleMin, minAngle);
 				return 0;	//この時点でもう設置できない
 			}
 
-			printf("OK ：ピース[%d]面積%lf,エリア面積%lf，角度%lf,エリア角度%lf\n", i, surface, minSurface, angle, minAngle);
+			printf("OK ：ピース[%d]面積%lf,エリア面積%lf，角度%lf,エリア角度%lf\n", i, pieceSurfaceMin, minSurface, pieceAngleMin, minAngle);
 
 			/*	//ここは最小辺の比較してるけどダメだった
 			double side = data[i].getMinSide();

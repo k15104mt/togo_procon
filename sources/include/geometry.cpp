@@ -4,7 +4,7 @@
 #include<cstdlib>
 #include<math.h>
 #define PI 3.1415926535
-
+//コミットしろ～～～～～～～
 void OnNot(int &ap,int &bp, std::vector<Point> &a, std::vector<Point> &b,int &rc,int *rp, std::vector<std::vector<D_Point>> &r);
 void OnMerge(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp);
 void OnClean(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp);
@@ -758,15 +758,23 @@ Point getPoint(std::vector<std::vector<Point>> &areaPoint,int putMode, std::vect
 bool Geometry::canPut(std::vector<Piece> &data,std::array<int,100> &isPut) {
 	for (int i = 0; i < static_cast<int>(data.size()); i++) {
 		//未設置ピースと未設置エリアの最小の面積、角度、辺と比べることで探索の枝切りを行う
-		if (isPut[i]==0) {
-			double surface = data[i].getSurface();
-			if (surface > minSurface)return 0;	//この時点でもう設置できない
-
+		if (isPut[i]==0) {	//未設置ピース
+			double surface = data[i].getSurface();	
+			if (surface > minSurface) {		//ピース面積より未設置エリアの方が小さいと置けないよね
+				//printf("ピース[%d]面積%lf,エリア面積%lfのため枝切り\n",i,surface,minSurface);
+				return 0;	//この時点でもう設置できない
+			}
 			double angle = data[i].getMinAngle();	
-			if (angle > minAngle)return 0;	//この時点でもう設置できない
-
+			if (angle > minAngle) {			//ピース最小角度より未設置エリア最小角度が小さいと置けないよね
+				//printf("ピース[%d]角度%lf,エリア角度%lfのため枝切り\n", i, angle, minAngle);
+				return 0;	//この時点でもう設置できない
+			}
+			/*	//ここは最小辺の比較してるけどダメだった
 			double side = data[i].getMinSide();
-			if (side > minSide)return 0;	//この時点でもう設置できない
+			if (side > minSide) {			//ピース最小辺より未設置エリア最小辺が小さいと置けないよね
+				printf("ピース[%d]辺%lf,エリア辺%lfのため枝切り\n", i, side, minSide);
+				return 0;	//この時点でもう設置できない
+			}*/
 		}
 	}
 

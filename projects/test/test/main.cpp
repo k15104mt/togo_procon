@@ -206,7 +206,7 @@ int checkHit(const std::vector<Piece> &data,const std::vector<putData> &already_
   }
   
   if (!flag) {
-	//printf("frame");
+	printf("frame");
 	return 1;
   }
 
@@ -224,9 +224,9 @@ int solve(int start,std::vector<Piece> &data, std::vector<putData> &already_put,
 	//全部置いたってこと
 	return 1;
   }
-
+  std::mutex mtx;
   //全ピース見ていこうな
-  Point tmp = geometry.getPutPoint(data, already_put);
+  Point tmp = geometry.getPutPoint(data, already_put,LEFT,mtx);
   for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
 	int ii;
 	ii = (i + start) % data.size();
@@ -246,13 +246,17 @@ int solve(int start,std::vector<Piece> &data, std::vector<putData> &already_put,
 	if(isPut[ii]==0){
 	  for (int j = 0; j < static_cast<int>(data[ii].getPoint().size()); ++j) {//回転の組み合わせの数
 
-		 // printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", ii, j, k,tmp.x,tmp.y);
-		  putData put(ii, j, 0, Point(tmp.x-data[ii].getUpperLeft(j).x,tmp.y-data[ii].getUpperLeft(j).y));
+		  printf("(%2d,%2d,%2d) --> (%3d,%3d) result -->", ii, j, -1,tmp.x,tmp.y);
+		  putData put(ii, j, 0, Point(tmp.x-data[ii].getShapeEdge(j,LEFT).x,tmp.y-data[ii].getShapeEdge(j,LEFT).y));
+		  if (!geometry.canPut(data, isPut)) {
+			  goto dame;
+		  }
+
 		  if (!checkHit(data, already_put, put,geometry)) {
 			//もし当たり判定がokなら
-			//setColor(F_CYAN | F_INTENSITY);
-			//printf("       put\n");
-			//setColor();
+			setColor(F_CYAN | F_INTENSITY);
+			printf("       put\n");
+			setColor();
 			already_put.push_back(put);
 			isPut[ii]=1;
 			
@@ -261,28 +265,28 @@ int solve(int start,std::vector<Piece> &data, std::vector<putData> &already_put,
 			  return 1;
 			}
 		  }else{
-			//setColor(F_RED | F_INTENSITY);
-			//printf_s("Hit!!!!\n");
-			//setColor();
+			setColor(F_RED | F_INTENSITY);
+			printf_s("Hit!!!!\n");
+			setColor();
 		  }
 	  }
 	}
   }
-
+  dame:
   //ここまで来たってことはダメだったってことだからpopしてバック
   if (already_put.size()) {
-	//setColor(F_ORANGE | F_INTENSITY);
-	//printf("back  depth = %10d\n", already_put.size());
-	//setColor();
+	setColor(F_ORANGE | F_INTENSITY);
+	printf("back  depth = %10d\n", already_put.size());
+	setColor();
 
 	isPut[already_put[already_put.size()-1].piece_num] = 0;
 	geometry.cancelPut();
 	already_put.pop_back();
   }
   else {
-	//setColor(F_ORANGE | F_INTENSITY);
-	//printf("back  depth = %10d\n",0);
-	//setColor();
+	setColor(F_ORANGE | F_INTENSITY);
+	printf("back  depth = %10d\n",0);
+	setColor();
   }
 
   return 0;

@@ -35,7 +35,7 @@ public:
 	int getEdgeNum(int rotateNum, int putMode);		//ピースの端の要素番号(引数:回転番号,UPとかLEFT)
 };
 
-int shapeEquals(std::vector<Point> &tmp, std::vector<std::vector<Point>> &point, int &num);
+int shapeEquals(std::vector<Point> &tmp, std::vector<std::vector<Point>> &point);
 double calculateSide(std::vector<Point> &point);
 double calculateAngle(std::vector<Point> &point);
 double calculateSurface(std::vector<Point> &data);

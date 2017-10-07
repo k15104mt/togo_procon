@@ -778,13 +778,15 @@ Point getPoint(std::vector<std::vector<Point>> &areaPoint,int putMode, std::vect
 
 //エリア面積<未設置ピース面積の場合0を，逆なら1を返す
 bool Geometry::canPut(std::vector<Piece> &data,std::array<int,100> &isPut) {
-	//for (int i = 0; i < static_cast<int>(data.size()); i++) {
-	//	int min;
-	//	
-	//	if(isPut[i] == 0) {	//未設置ピース
+	double pieceAngleMin;
+	double pieceSurfaceMin;
+	for (int i = 0; i < static_cast<int>(data.size()); i++) {
+		if(isPut[i] == 0) {	//未設置ピース
+			if (i == 0 || data[i].getSurface < pieceSurfaceMin) {
 
-	//	}
-	//}
+			}
+		}
+	}
 	for (int i = 0; i < static_cast<int>(data.size()); i++) {
 		//未設置ピースと未設置エリアの最小の面積、角度、辺と比べることで探索の枝切りを行う
 		if (isPut[i]==0) {	//未設置ピース

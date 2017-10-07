@@ -1,14 +1,11 @@
 #ifndef _GEOMETRY_HPP_
 #define _GEOMETRY_HPP_
 #define MAX 256	//NOT処理とかで使う固定長配列の要素数(分割ベクトルや頂点数)
-
-
+//コミットしろ～～～～～～～
 #include"utility.hpp"
 #include"piece.hpp"
 #include<vector>
 #include<mutex>
-
-
 
 class Geometry {
 public:
@@ -18,11 +15,12 @@ public:
 	bool canPut(std::vector<Piece> &data, std::array<int, 100> &isPut);	//エリア面積<未設置ピース面積の場合0を，逆なら1を返す
 	Geometry(std::vector<std::vector<Point>> &framePoint);							//コンストラクタ
 	std::pair<int, int> getAreaNum();
+
 private:
 	std::vector<std::vector<std::vector<Point>>> tmpAreaPoint;		//cancel用の設置前エリア保持
 	double minSurface;		//発生したエリアの最小面積
 	double minAngle;		//発生したエリアの最小角度
+	double minSide;			//発生したエリアの最小辺
 	std::vector<std::pair<int, int>> areaNum;				//getPutPointで得た頂点のvector番号
 };
-
 #endif

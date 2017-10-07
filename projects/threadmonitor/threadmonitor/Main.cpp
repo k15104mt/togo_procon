@@ -75,12 +75,18 @@ void monitor() {
   //**************** GUI 1 ******************
   s3d::GUI gui(s3d::GUIStyle::Default);
 
+  gui.addln(s3d::GUIText::Create(L"データ　　　　　　　　　　                                         　　　　　　　　　　　　　　　　ヒント"));
+
   gui.add(L"input", s3d::GUITextArea::Create(10, 30));
-  gui.addln(L"inputClear", s3d::GUIButton::Create(L"X"));
+  gui.add(L"inputClear", s3d::GUIButton::Create(L"X"));
+  gui.add(s3d::GUIText::Create(L"     "));
 
   s3d::TextReader reader(L"out.txt");
   s3d::String fileinput = reader.readAll();
   gui.textArea(L"input").setText(fileinput);
+
+  gui.add(L"hint", s3d::GUITextArea::Create(10, 30));
+  gui.addln(L"hintClear", s3d::GUIButton::Create(L"X"));
 
 
   gui.add(s3d::GUIText::Create(L"使用PC数"));
@@ -88,7 +94,17 @@ void monitor() {
   gui.add(s3d::GUIText::Create(L"PC番号"));
   gui.add(L"pcNum", s3d::GUIRadioButton::Create({ L"0", L"1", L"2" }, 0));
   gui.add(s3d::GUIText::Create(L"  スレッド数"));
-  gui.addln(L"thNum", s3d::GUIRadioButton::Create({ L"1", L"2", L"3",L"4",L"5",L"6",L"7",L"8" }, 0, true));
+
+  gui.add(s3d::GUIText::Create(L"0:"));
+  gui.add(L"th0", s3d::GUITextField::Create(2));
+  gui.textField(L"th0").setText(L"8");
+  gui.add(s3d::GUIText::Create(L"  1:"));
+  gui.add(L"th1", s3d::GUITextField::Create(2));
+  gui.textField(L"th1").setText(L"8");
+  gui.add(s3d::GUIText::Create(L"  2:"));
+  gui.addln(L"th2", s3d::GUITextField::Create(2));
+  gui.textField(L"th2").setText(L"4");
+
   gui.add(s3d::GUIText::Create(L"  　　　　　　　　　　　　　　　　　　　　　　　　　　　"));
   gui.addln(L"apply", s3d::GUIButton::Create(L"適用"));
 
@@ -131,22 +147,14 @@ void monitor() {
 	  gui.textArea(L"input").setText(L"");
 	}
 
+	if (gui.button(L"hintClear").pushed) {
+	  gui.textArea(L"hint").setText(L"");
+	}
+
 	if (gui.button(L"apply").pushed) {
 	  //テキストフィールドのON/OFF
 
-	  for (int i = 0; i < 8; ++i) {
-		if (gui.radioButton(L"thNum").checked(i)) {
-		  thNum = (i + 1);
-		  gui.textField(L"range" + s3d::ToString(i)).enabled = true;
-		  for (int j = 0; j < i; ++j) {
-			gui.textField(L"range" + s3d::ToString(j)).enabled = true;
-		  }
-		}
-		else {
-		  gui.textField(L"range" + s3d::ToString(i)).setText(L"");
-		  gui.textField(L"range" + s3d::ToString(i)).enabled = false;
-		}
-	  }
+	  
 
 	  for (int i = 0; i < 3; ++i) {
 		if (gui.radioButton(L"useNum").checked(i)) {
@@ -160,6 +168,18 @@ void monitor() {
 		}
 	  }
 
+	  thNum = s3d::Parse<int>(gui.textField(L"th" + s3d::ToString(pcNum)).text);
+	  for(int i=0;i<8;++i){
+		if (i < thNum) {
+		  gui.textField(L"range" + s3d::ToString(i)).enabled = true;
+		}
+		else {
+		  gui.textField(L"range" + s3d::ToString(i)).setText(L"");
+		  gui.textField(L"range" + s3d::ToString(i)).enabled = false;
+		}
+	  }
+
+
 	  std::vector<std::string> inputdata = split(gui.textArea(L"input").text.narrow(), '\n');
 	  int piece = 0;
 	  for (int i = 1; i < static_cast<int>(inputdata.size()); ++i) {
@@ -167,14 +187,42 @@ void monitor() {
 		piece += std::stoi(tmp[0]);
 	  }
 
-	  int range = piece / (thNum*useNum);
+	  int sumthread = 0;
+	  for (int i = 0; i < useNum; ++i) {
+		sumthread += s3d::Parse<int>(gui.textField(L"th" + s3d::ToString(i)).text);
+	  }
+
+	  int div = piece / sumthread;
+	  int rem = piece % sumthread;
+
+	  std::vector<std::vector<int>> start;
+
+	  int sum=0;
+	  for (int i = 0; i < useNum; ++i) {
+		std::vector<int> tmp;
+		for (int j = 0; j < s3d::Parse<int>(gui.textField(L"th" + s3d::ToString(i)).text); ++j) {
+		  if (rem) {
+			tmp.push_back(sum);
+			sum += div + 1;
+			rem--;
+		  }
+		  else {
+			tmp.push_back(sum);
+			sum += div;
+		  }
+		}
+		start.push_back(tmp);
+	  }
 
 	  for (int i = 0; i < thNum; ++i) {
 		if (i == thNum - 1 && useNum == (pcNum + 1)) {
-		  gui.textField(L"range" + s3d::ToString(i)).setText(s3d::ToString((range * i) + (range *thNum * pcNum)) + L"～" + s3d::ToString(piece - 1));
+		  gui.textField(L"range" + s3d::ToString(i)).setText(s3d::ToString(start[pcNum][i]) + L"～" + s3d::ToString(piece - 1));
+		}
+		else if(i == thNum - 1){
+		  gui.textField(L"range" + s3d::ToString(i)).setText(s3d::ToString(start[pcNum][i]) + L"～" + s3d::ToString(start[pcNum+1][0] -1));
 		}
 		else {
-		  gui.textField(L"range" + s3d::ToString(i)).setText(s3d::ToString((range * i) + (range *thNum * pcNum)) + L"～" + s3d::ToString((range * (i + 1)) + (range *thNum * pcNum) - 1));
+		  gui.textField(L"range" + s3d::ToString(i)).setText(s3d::ToString(start[pcNum][i]) + L"～" + s3d::ToString(start[pcNum][i+1] -1));
 		}
 	  }
 
@@ -183,20 +231,6 @@ void monitor() {
 
 	if (gui.button(L"start").pushed) {
 	  //----------------適用と同じことする--------------------
-	  for (int i = 0; i < 8; ++i) {
-		if (gui.radioButton(L"thNum").checked(i)) {
-		  thNum = (i + 1);
-		  gui.textField(L"range" + s3d::ToString(i)).enabled = true;
-		  for (int j = 0; j < i; ++j) {
-			gui.textField(L"range" + s3d::ToString(j)).enabled = true;
-		  }
-		}
-		else {
-		  gui.textField(L"range" + s3d::ToString(i)).setText(L"");
-		  gui.textField(L"range" + s3d::ToString(i)).enabled = false;
-		}
-	  }
-
 	  for (int i = 0; i < 3; ++i) {
 		if (gui.radioButton(L"useNum").checked(i)) {
 		  useNum = (i + 1);
@@ -209,6 +243,18 @@ void monitor() {
 		}
 	  }
 
+	  thNum = s3d::Parse<int>(gui.textField(L"th" + s3d::ToString(pcNum)).text);
+	  for (int i = 0; i<8; ++i) {
+		if (i < thNum) {
+		  gui.textField(L"range" + s3d::ToString(i)).enabled = true;
+		}
+		else {
+		  gui.textField(L"range" + s3d::ToString(i)).setText(L"");
+		  gui.textField(L"range" + s3d::ToString(i)).enabled = false;
+		}
+	  }
+
+
 	  std::vector<std::string> inputdata = split(gui.textArea(L"input").text.narrow(), '\n');
 	  int piece = 0;
 	  for (int i = 1; i < static_cast<int>(inputdata.size()); ++i) {
@@ -216,14 +262,42 @@ void monitor() {
 		piece += std::stoi(tmp[0]);
 	  }
 
-	  int range = piece / (thNum*useNum);
+	  int sumthread = 0;
+	  for (int i = 0; i < useNum; ++i) {
+		sumthread += s3d::Parse<int>(gui.textField(L"th" + s3d::ToString(i)).text);
+	  }
+
+	  int div = piece / sumthread;
+	  int rem = piece % sumthread;
+
+	  std::vector<std::vector<int>> start;
+
+	  int sum = 0;
+	  for (int i = 0; i < useNum; ++i) {
+		std::vector<int> tmp;
+		for (int j = 0; j < s3d::Parse<int>(gui.textField(L"th" + s3d::ToString(i)).text); ++j) {
+		  if (rem) {
+			tmp.push_back(sum);
+			sum += div + 1;
+			rem--;
+		  }
+		  else {
+			tmp.push_back(sum);
+			sum += div;
+		  }
+		}
+		start.push_back(tmp);
+	  }
 
 	  for (int i = 0; i < thNum; ++i) {
 		if (i == thNum - 1 && useNum == (pcNum + 1)) {
-		  gui.textField(L"range" + s3d::ToString(i)).setText(s3d::ToString((range * i) + (range *thNum * pcNum)) + L"～" + s3d::ToString(piece - 1));
+		  gui.textField(L"range" + s3d::ToString(i)).setText(s3d::ToString(start[pcNum][i]) + L"～" + s3d::ToString(piece - 1));
+		}
+		else if (i == thNum - 1) {
+		  gui.textField(L"range" + s3d::ToString(i)).setText(s3d::ToString(start[pcNum][i]) + L"～" + s3d::ToString(start[pcNum + 1][0] - 1));
 		}
 		else {
-		  gui.textField(L"range" + s3d::ToString(i)).setText(s3d::ToString((range * i) + (range *thNum * pcNum)) + L"～" + s3d::ToString((range * (i + 1)) + (range *thNum * pcNum) - 1));
+		  gui.textField(L"range" + s3d::ToString(i)).setText(s3d::ToString(start[pcNum][i]) + L"～" + s3d::ToString(start[pcNum][i + 1] - 1));
 		}
 	  }
 	  //------------------------------------------------------
@@ -278,7 +352,7 @@ void monitor() {
 	  //int range = data.size() / (thNum*useNum);
 	  for (int i = 0; i < thNum; ++i) {
 		solver[i].active = 1;
-		solver[i].start = (range * i) + (range *thNum * pcNum);
+		solver[i].start = start[pcNum][i];
 	  }
 
 

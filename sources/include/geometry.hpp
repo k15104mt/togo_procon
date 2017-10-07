@@ -20,7 +20,7 @@ private:
 	std::vector<std::vector<std::vector<Point>>> tmpAreaPoint;		//cancel用の設置前エリア保持
 	double minSurface;		//発生したエリアの最小面積
 	double minAngle;		//発生したエリアの最小角度
-	double minSide;			//発生したエリアの最小辺
+	//double minSide;			//発生したエリアの最小辺
 	std::vector<std::pair<int, int>> areaNum;				//getPutPointで得た頂点のvector番号
 };
 #endif

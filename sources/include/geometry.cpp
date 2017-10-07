@@ -4,7 +4,6 @@
 #include<cstdlib>
 #include<math.h>
 #define PI 3.1415926535
-//コミットしろ～～～～～～～
 void OnNot(int &ap,int &bp, std::vector<Point> &a, std::vector<Point> &b,int &rc,int *rp, std::vector<std::vector<D_Point>> &r);
 void OnMerge(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp);
 void OnClean(int &tcnt, int &tp, double *tx, double *ty, double *used, std::vector<std::vector<D_Point>> &r, int &rc, int *rp);
@@ -40,7 +39,19 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 
 	tmpAreaPoint.push_back(areaPoint);	//設置前状態を保存
 
+	
 	if (already_put.size() <= 0) {
+		//発生エリアの最小面積、角度を格納
+		for (int i = 0; i < static_cast<int>(areaPoint.size()); i++) {
+			double surface = calculateSurface(areaPoint[i]);
+			if (i == 0 || minSurface > surface)minSurface = surface;
+
+			double angle = calculateAngle(areaPoint[i]);
+			if (i == 0 || minAngle > angle)minAngle = angle;
+
+			//double side = calculateSide(areaPoint[i]);
+			//if (i == 0 || minSide > side)minSide = side;
+		}
 		return getPoint(areaPoint,putMode,areaNum);
 	}
 
@@ -108,8 +119,8 @@ Point Geometry::getPutPoint(std::vector<Piece> &data, std::vector<putData> &alre
 		double angle=calculateAngle(areaPoint[i]);
 		if (i == 0 || minAngle > angle)minAngle = angle;
 
-		double side = calculateSide(areaPoint[i]);
-		if (i == 0 || minSide > side)minSide = side;
+		//double side = calculateSide(areaPoint[i]);
+		//if (i == 0 || minSide > side)minSide = side;
 	}	
 
 
@@ -122,6 +133,17 @@ void Geometry::cancelPut() {
 	areaPoint = tmpAreaPoint[tmpAreaPoint.size()-1];
 	tmpAreaPoint.pop_back();
 	areaNum.pop_back();
+	//発生エリアの最小面積、角度を格納
+	for (int i = 0; i < static_cast<int>(areaPoint.size()); i++) {
+		double surface = calculateSurface(areaPoint[i]);
+		if (i == 0 || minSurface > surface)minSurface = surface;
+
+		double angle = calculateAngle(areaPoint[i]);
+		if (i == 0 || minAngle > angle)minAngle = angle;
+
+		//double side = calculateSide(areaPoint[i]);
+		//if (i == 0 || minSide > side)minSide = side;
+	}
 	//putNum--;
 }
 
@@ -756,19 +778,29 @@ Point getPoint(std::vector<std::vector<Point>> &areaPoint,int putMode, std::vect
 
 //エリア面積<未設置ピース面積の場合0を，逆なら1を返す
 bool Geometry::canPut(std::vector<Piece> &data,std::array<int,100> &isPut) {
+	//for (int i = 0; i < static_cast<int>(data.size()); i++) {
+	//	int min;
+	//	
+	//	if(isPut[i] == 0) {	//未設置ピース
+
+	//	}
+	//}
 	for (int i = 0; i < static_cast<int>(data.size()); i++) {
 		//未設置ピースと未設置エリアの最小の面積、角度、辺と比べることで探索の枝切りを行う
 		if (isPut[i]==0) {	//未設置ピース
 			double surface = data[i].getSurface();	
 			if (surface > minSurface) {		//ピース面積より未設置エリアの方が小さいと置けないよね
-				//printf("ピース[%d]面積%lf,エリア面積%lfのため枝切り\n",i,surface,minSurface);
+				printf("ピース[%d]面積%lf,エリア面積%lfのため枝切り\n",i,surface,minSurface);
 				return 0;	//この時点でもう設置できない
 			}
 			double angle = data[i].getMinAngle();	
 			if (angle > minAngle) {			//ピース最小角度より未設置エリア最小角度が小さいと置けないよね
-				//printf("ピース[%d]角度%lf,エリア角度%lfのため枝切り\n", i, angle, minAngle);
+				printf("ピース[%d]角度%lf,エリア角度%lfのため枝切り\n", i, angle, minAngle);
 				return 0;	//この時点でもう設置できない
 			}
+
+			printf("OK ：ピース[%d]面積%lf,エリア面積%lf，角度%lf,エリア角度%lf\n", i, surface, minSurface, angle, minAngle);
+
 			/*	//ここは最小辺の比較してるけどダメだった
 			double side = data[i].getMinSide();
 			if (side > minSide) {			//ピース最小辺より未設置エリア最小辺が小さいと置けないよね
@@ -777,7 +809,7 @@ bool Geometry::canPut(std::vector<Piece> &data,std::array<int,100> &isPut) {
 			}*/
 		}
 	}
-
+	
 	return 1;	//一通り見てとりあえずは大丈夫
 }
 

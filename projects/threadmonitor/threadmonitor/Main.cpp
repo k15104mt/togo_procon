@@ -152,10 +152,6 @@ void monitor() {
 	}
 
 	if (gui.button(L"apply").pushed) {
-	  //テキストフィールドのON/OFF
-
-	  
-
 	  for (int i = 0; i < 3; ++i) {
 		if (gui.radioButton(L"useNum").checked(i)) {
 		  useNum = (i + 1);
@@ -353,6 +349,43 @@ void monitor() {
 	  for (int i = 0; i < thNum; ++i) {
 		solver[i].active = 1;
 		solver[i].start = start[pcNum][i];
+	  }
+
+	  //ヒントの処理
+	  std::vector<std::string>  hintdata = split(gui.textArea(L"hint").text.narrow(), '\n');
+	  std::vector<putData> hint;
+
+	  for (int i = 1; i < static_cast<int>(hintdata.size()); ++i) {
+		std::vector<std::string> pieceStr = split(hintdata[i],':');
+		for (int j = 1; j < static_cast<int>(pieceStr.size()); ++j) {
+		  std::vector<std::string> numStr = split(pieceStr[j], ' ');
+		  std::vector<Point> pieceTemp;
+
+		  int miny=200, minx=200;
+		  for (int k = 1; k < static_cast<int>(numStr.size()); k += 2) {
+			Point poinTtmp(stoi(numStr[k]),stoi(numStr[k+1]));
+			if (minx > stoi(numStr[k]))minx = stoi(numStr[k]);
+			if (miny > stoi(numStr[k + 1]))miny = stoi(numStr[k + 1]);
+
+			pieceTemp.push_back(poinTtmp);
+		  }
+		  Piece makePiece(pieceTemp);
+		  for (int k = 0; k < data.size(); ++k) {
+			int pointNum = shapeEquals(makePiece.getPoint()[0], data[k].getPoint());
+			if (pointNum != -1) {
+			  hint.push_back(putData(k, pointNum, 0,Point(minx,miny)));
+			}
+		  }
+		}
+	  }
+
+	  for (int i = 0; i < thNum; ++i) {
+		for (int j = 0; j < static_cast<int>(hint.size()); ++j) {
+		  solver[i].geometry.getPutPoint(data,solver[i].already_put,LEFT,mtx[i]);
+		  solver[i].already_put.push_back(hint[j]);
+		  solver[i].isPut[hint[j].piece_num] = 1;
+		}
+		solver[i].geometry.getPutPoint(data, solver[i].already_put, LEFT, mtx[i]);
 	  }
 
 
@@ -612,9 +645,11 @@ int isAlong(int num, Geometry &geometry, putData &putdata) {
   std::pair<int, int> areaNum;
   areaNum = solver[num].geometry.getAreaNum();
 
+  areamtx[num].lock();
   int size = solver[num].geometry.areaPoint[areaNum.first].size();
   Vector f = solver[num].geometry.areaPoint[areaNum.first][(areaNum.second + 1) % size] - solver[num].geometry.areaPoint[areaNum.first][areaNum.second];
   Vector b = solver[num].geometry.areaPoint[areaNum.first][(areaNum.second - 1 + size) % size] - solver[num].geometry.areaPoint[areaNum.first][areaNum.second];
+  areamtx[num].unlock();
 
   for (int i = 0; i < static_cast<int>(data[putdata.piece_num].getPoint()[putdata.point_num].size()); ++i) {
 	//頂点上にあるかどうか

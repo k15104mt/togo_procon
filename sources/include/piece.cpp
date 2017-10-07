@@ -32,7 +32,7 @@ void reverse(std::vector<Point> &data) {
 }
 
 //ï€ë∂çœÇ›ê}å`(point)Ç…ê∂ê¨ÇµÇΩê}å`(tmp)Ç∆ìôÇµÇ¢Ç‡ÇÃÇ™Ç†ÇÈÇ©Ç«Ç§Ç©
-bool shapeEquals(std::vector<Point> &tmp, std::vector<std::vector<Point>> &point, int &num) {
+int shapeEquals(std::vector<Point> &tmp, std::vector<std::vector<Point>> &point, int &num) {
   for (int j = 0; j < static_cast<int>(point.size()); j++) {
 	for (int k = 0; k < num; k++) {
 	  if (tmp[0] == point[j][k]) {
@@ -53,13 +53,13 @@ bool shapeEquals(std::vector<Point> &tmp, std::vector<std::vector<Point>> &point
 		}
 		if (count == num) {
 		  //printf("çáÇ¢Ç‹ÇµÇΩÅI\n");
-		  return 1;
+		  return j;
 		}
 	  }
 	}
 	//printf("\n");
   }
-  return 0;
+  return -1;
 }
 
 
@@ -94,7 +94,7 @@ Piece::Piece(std::vector<Point> &data) {
 	move(tmp, Point(-min.x, -min.y));
 	//for(int j=0;j<num;j++) printf("(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
 
-	if (i == 0 || !shapeEquals(tmp, point, num)) {
+	if (i == 0 || shapeEquals(tmp, point, num)!=-1) {
 	  point.push_back(tmp); //àÍÇ¬ÇÃâÒì]ÉpÉ^Å[ÉìÇpushback
 	  shapeEdge.push_back(calculateEdge(tmp,edgeNum));		//í[ÇÃç¿ïWÇäiî[
 	}
@@ -111,13 +111,13 @@ Piece::Piece(std::vector<Point> &data) {
 	reverse(tmp);
 	//for (int j = 0; j<num; j++) printf("(%d,%d)\n", tmp[j].x, tmp[j].y); //debug
 
-	if (!shapeEquals(tmp, point, num)) {
+	if (shapeEquals(tmp, point, num)!=-1) {
 	  point.push_back(tmp); //àÍÇ¬ÇÃîΩì]ÉpÉ^Å[ÉìÇpushback
 	  shapeEdge.push_back(calculateEdge(tmp,edgeNum));		//í[ÇÃç¿ïWÇäiî[
 	}
   }
   minAngle= calculateAngle(point[0]);
-  minSide = calculateSide(point[0]);
+ // minSide = calculateSide(point[0]);
 }
 
 std::vector<std::vector<Point>> Piece::getPoint() const {
@@ -132,9 +132,9 @@ double Piece::getSurface() {
   return surface;
 }
 
-double Piece::getMinSide() {
-	return minSide;
-}
+//double Piece::getMinSide() {
+//	return minSide;
+//}
 
 double Piece::getMinAngle() {
 	return minAngle;

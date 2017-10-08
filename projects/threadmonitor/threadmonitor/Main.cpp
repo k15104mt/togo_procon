@@ -15,6 +15,8 @@
 std::vector<Piece> data;
 std::vector<std::vector<Point>> framePoint;
 
+std::mutex alSmtx;
+std::array<int, 100> alreadySolve = {0};
 
 class Solver {
 public:
@@ -349,6 +351,7 @@ void monitor() {
 	  for (int i = 0; i < thNum; ++i) {
 		solver[i].active = 1;
 		solver[i].start = start[pcNum][i];
+		//alreadySolve[start[pcNum][i]] = 1;
 	  }
 
 	  //ヒントの処理
@@ -676,8 +679,22 @@ int solve(int num) {
   //全ピース見ていこうな
   Point tmp = solver[num].geometry.getPutPoint(data, solver[num].already_put, LEFT, areamtx[num]);
   for (int i = 0; i < static_cast<int>(data.size()); ++i) {//ピースの数
+
 	int ii;
 	ii = (i + solver[num].start) % data.size();
+
+	
+	if (solver[num].already_put.size() == 0) {
+		alSmtx.lock();
+		if (alreadySolve[ii]) {
+		  alSmtx.unlock();
+		  continue;
+		}
+		else {
+		  alreadySolve[ii] = 1;
+		  alSmtx.unlock();
+		}
+	}
 
 	//今のピースがすでに置かれているかどうか
 	if (solver[num].isPut[ii] == 0) {

@@ -1,0 +1,7 @@
+﻿  Main.cpp
+f:\procon\piece\piece\main.cpp(63): warning C4389: '==': signed と unsigned の数値を比較しようとしました。
+f:\procon\piece\piece\main.cpp(92): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+f:\procon\piece\piece\main.cpp(99): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+f:\procon\piece\piece\main.cpp(108): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+  piece.vcxproj -> F:\procon\piece\Debug\piece.exe
+  piece.vcxproj -> F:\procon\piece\Debug\piece.pdb (Full PDB)
